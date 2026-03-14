@@ -1,0 +1,602 @@
+{
+  "info": {
+    "name": "DiaDiem, Tag, TagDiaDiem API Collection",
+    "description": "Complete API collection for Location (DiaDiem), Tag, and TagDiaDiem management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Địa Điểm (DiaDiem)",
+      "item": [
+        {
+          "name": "1. Lấy danh sách tất cả địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "2. Lấy danh sách với phân trang",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem?page=1",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Tìm kiếm địa điểm theo tên",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem?search=Nhà",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Nhà"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Lọc addressa điểm theo loại (1=Du lịch)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/1",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "1"]
+            }
+          }
+        },
+        {
+          "name": "5. Lọc addressa điểm theo loại (2=Khách sạn)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/2",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "2"]
+            }
+          }
+        },
+        {
+          "name": "6. Lọc addressa điểm theo loại (3=Nhà hàng)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/3",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "3"]
+            }
+          }
+        },
+        {
+          "name": "7. Lọc addressa điểm theo tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/tag/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "tag", "001"]
+            }
+          }
+        },
+        {
+          "name": "8. Xem chi tiết một địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "001"]
+            }
+          }
+        },
+        {
+          "name": "9. Thêm điểm mới (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_dia_diem\": \"006\",\n  \"ten_dia_diem\": \"Chợ Bến Thành\",\n  \"loai\": 2,\n  \"dia_chi\": \"8 Lê Thánh Tôn, Quận 1, TP.HCM\",\n  \"sdt\": \"0989999999\",\n  \"kinh_do\": 106.6973,\n  \"vi_do\": 10.7725,\n  \"gio_mo_cua\": \"06:00\",\n  \"gio_dong_cua\": \"18:00\",\n  \"gia_giao_dong\": 100000,\n  \"hinh_anh\": \"https://example.com/cho-ben-thanh.jpg\",\n  \"mo_ta\": \"Chợ Bến Thành nổi tiếng\",\n  \"thoi_gian_tham_quan\": \"2.5 giờ\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "10. Chỉnh sửa địa điểm (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_dia_diem\": \"Nhà thờ Đức Bà - Tòa nhà lịch sử Sài Gòn\",\n  \"gia_giao_dong\": 60000,\n  \"mo_ta\": \"Nhà thờ Đức Bà - Công trình kiến trúc cổ điển pháp tuyệt đẹp\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "001"]
+            }
+          }
+        },
+        {
+          "name": "11. Xóa địa điểm (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/006",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "006"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tag",
+      "item": [
+        {
+          "name": "1. Lấy danh sách tất cả tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag"]
+            }
+          }
+        },
+        {
+          "name": "2. Lấy chi tiết một tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag", "001"]
+            }
+          }
+        },
+        {
+          "name": "3. Thêm tag mới (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_tag\": \"006\",\n  \"ten_tag\": \"Tâm linh\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag"]
+            }
+          }
+        },
+        {
+          "name": "4. Chỉnh sửa tag (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_tag\": \"Lịch sử - Di sản\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag", "001"]
+            }
+          }
+        },
+        {
+          "name": "5. Xóa tag (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag/006",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag", "006"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tag Địa Điểm",
+      "item": [
+        {
+          "name": "1. Lấy danh sách tất cả tag địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "2. Xem chi tiết một tag địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem", "001"]
+            }
+          }
+        },
+        {
+          "name": "3. Lấy tất cả tag của một địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem/location/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem", "location", "001"]
+            }
+          }
+        },
+        {
+          "name": "4. Lấy tất cả địa điểm của một tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem/tag/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem", "tag", "001"]
+            }
+          }
+        },
+        {
+          "name": "5. Thêm tag cho địa điểm (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_tag_dia_diem\": \"009\",\n  \"ma_dia_diem\": \"001\",\n  \"ma_tag\": \"005\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "6. Chỉnh sửa tag của địa điểm (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_tag\": \"002\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem/009",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem", "009"]
+            }
+          }
+        },
+        {
+          "name": "7. Xóa tag khỏi địa điểm (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag-dia-diem/009",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag-dia-diem", "009"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Cases - Tìm kiếm & Lọc",
+      "item": [
+        {
+          "name": "Test 1: Tìm kiếm 'Dinh Độc Lập'",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem?search=Dinh%20Độc%20Lập",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Dinh Độc Lập"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Test 2: Lọc tất cả khách sạn (loai=2)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/2",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "2"]
+            }
+          }
+        },
+        {
+          "name": "Test 3: Lọc tất cả nhà hàng (loai=3)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/3",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "3"]
+            }
+          }
+        },
+        {
+          "name": "Test 4: Lọc địa điểm theo tag 'Lịch sử' (001)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/tag/001",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "tag", "001"]
+            }
+          }
+        },
+        {
+          "name": "Test 5: Lọc địa điểm theo tag 'Giải trí' (003)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/tag/003",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "tag", "003"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Cases - Validation Errors",
+      "item": [
+        {
+          "name": "Test 1: Thêm địa điểm với mã trùng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_dia_diem\": \"001\",\n  \"ten_dia_diem\": \"Test\",\n  \"loai\": 1,\n  \"dia_chi\": \"123 test\",\n  \"kinh_do\": 106.7,\n  \"vi_do\": 10.7\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "Test 2: Thêm địa điểm với loại không hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_dia_diem\": \"999\",\n  \"ten_dia_diem\": \"Test\",\n  \"loai\": 5,\n  \"dia_chi\": \"123 test\",\n  \"kinh_do\": 106.7,\n  \"vi_do\": 10.7\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem"]
+            }
+          }
+        },
+        {
+          "name": "Test 3: Lọc theo loại không hợp lệ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/filter/type/99",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "filter", "type", "99"]
+            }
+          }
+        },
+        {
+          "name": "Test 4: Xem chi tiết địa điểm không tồn tại",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/dia-diem/999",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "dia-diem", "999"]
+            }
+          }
+        },
+        {
+          "name": "Test 5: Thêm tag với mã trùng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_tag\": \"001\",\n  \"ten_tag\": \"Trùng lặp\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/tag",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "tag"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "Admin API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+
+    {
+      "name": "Login Admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/login",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"email\": \"admin@example.com\",\n \"Mat_khau\": \"111111\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Get All Admins",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admins",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admins"]
+        }
+      }
+    },
+    {
+      "name": "Get Admin By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/1",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","1"]
+        }
+      }
+    },
+    {
+      "name": "Add Admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/store",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","store"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"Ma_admin\": \"9\",\n \"Ho_va_ten\": \"Nguyen Van B\",\n \"Mat_khau\": \"password123\",\n \"Email\": \"admin9@gmail.com\",\n \"Ngay_sinh\": \"1990-01-01\",\n \"Gioi_tinh\": 1,\n \"id_chuc_vu\": 1,\n \"so_dien_thoai\": \"0123456799\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Update Admin",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/1",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","1"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"Ho_va_ten\": \"Nguyen Van Updated\",\n \"so_dien_thoai\": \"0123456777\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete Admin",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/1",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","1"]
+        }
+      }
+    },
+    {
+      "name": "Search Admin",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admins/search?name=Nguyen",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admins","search"],
+          "query": [
+            { "key": "name", "value": "Nguyen" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Change Password",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/password",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","password"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"current_password\": \"password123\",\n \"new_password\": \"password999\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Change Admin Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/admin/1/status",
+          "host": ["127.0.0.1"],
+          "port": "8000",
+          "path": ["api","admin","1","status"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"is_block\": 1\n}"
+        }
+      }
+    },
+    {
+      "name": "KhachHang API",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/khach-hang/register",
+          "host": ["http://127.0.0.1:8000"],
+          "path": ["api", "khach-hang", "register"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"Ma_khach_hang\": \"KH00000001\",\n    \"Ho_va_ten\": \"Nguyen Van A\",\n    \"Mat_khau\": \"password123\",\n    \"Email\": \"example@gmail.com\",\n    \"Ngay_sinh\": \"01/01/2000\",\n    \"Gioi_tinh\": 1,\n    \"so_dien_thoai\": \"0123456789\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Đăng nhập",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/khach-hang/login",
+          "host": ["http://127.0.0.1:8000"],
+          "path": ["api", "khach-hang", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"Email\": \"example@gmail.com\",\n    \"Mat_khau\": \"password123\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Xem thông tin cá nhân",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/khach-hang/profile",
+          "host": ["http://127.0.0.1:8000"],
+          "path": ["api", "khach-hang", "profile"]
+        }
+      }
+    },
+    {
+      "name": "Cập nhật thông tin cá nhân",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/khach-hang/profile",
+          "host": ["http://127.0.0.1:8000"],
+          "path": ["api", "khach-hang", "profile"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"Ho_va_ten\": \"Nguyen Van B\",\n    \"Ngay_sinh\": \"02/02/2000\",\n    \"Gioi_tinh\": 0,\n    \"so_dien_thoai\": \"0987654321\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Đổi mật khẩu",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/khach-hang/change-password",
+          "host": ["http://127.0.0.1:8000"],
+          "path": ["api", "khach-hang", "change-password"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"current_password\": \"password123\",\n    \"new_password\": \"newpassword123\"\n}"
+        }
+      }
+    }
+  ]
+}

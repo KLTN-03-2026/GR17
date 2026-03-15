@@ -1,0 +1,252 @@
+{
+  "info": {
+    "_postman_id": "phan_quyen_admin_collection",
+    "name": "API Phân Quyền Admin",
+    "description": "Bộ sưu tập dùng để kiểm thử các API Phân Quyền Admin",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Route Công Khai",
+      "item": [
+        {
+          "name": "Lấy tất cả quyền",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin"]
+            },
+            "description": "Lấy tất cả quyền kèm theo thông tin Chức Năng và Chức Vụ liên quan"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route Quản Trị (Admin)",
+      "item": [
+        {
+          "name": "Lấy tất cả quyền (Admin - có phân trang)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/all?per_page=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "all"],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lấy tất cả quyền có phân trang"
+          }
+        },
+        {
+          "name": "Tìm kiếm quyền theo chức vụ",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/search?type=chuc_vu&keyword=Giám đốc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "search"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "chuc_vu"
+                },
+                {
+                  "key": "keyword",
+                  "value": "Giám đốc"
+                }
+              ]
+            },
+            "description": "Tìm kiếm quyền theo Chức Vụ. Tham số type có thể là: all, chuc_vu, chuc_nang"
+          }
+        },
+        {
+          "name": "Tìm kiếm quyền theo chức năng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/search?type=chuc_nang&keyword=Xem danh sách",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "search"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "chuc_nang"
+                },
+                {
+                  "key": "keyword",
+                  "value": "Xem danh sách"
+                }
+              ]
+            },
+            "description": "Tìm kiếm quyền theo Chức Năng. Tham số type có thể là: all, chuc_vu, chuc_nang"
+          }
+        },
+        {
+          "name": "Lấy chi tiết quyền",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "1"]
+            },
+            "description": "Lấy thông tin chi tiết của một quyền theo ID"
+          }
+        },
+        {
+          "name": "Tạo quyền mới",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_chuc_nang\": 1,\n  \"id_chuc_vu\": 3\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin"]
+            },
+            "description": "Tạo quyền mới với ID Chức Năng và ID Chức Vụ (cặp này phải là duy nhất)"
+          }
+        },
+        {
+          "name": "Cập nhật quyền",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_chuc_nang\": 2,\n  \"id_chuc_vu\": 3\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "1"]
+            },
+            "description": "Cập nhật quyền (Chức Năng và/hoặc Chức Vụ)"
+          }
+        },
+        {
+          "name": "Xóa quyền",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/phan-quyen-admin/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "phan-quyen-admin", "1"]
+            },
+            "description": "Xóa một quyền"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    }
+  ]
+}

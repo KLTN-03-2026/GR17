@@ -18,9 +18,15 @@ class DatabaseSeeder extends Seeder
 $this->call([
             AdminSeeder::class,
             KhachHangSeeder::class,
+            ChucVuSeeder::class,
+            ChucNangSeeder::class,
             DiaDiemSeeder::class,
             TagSeeder::class,
             TagDiaDiemSeeder::class,
+            PhanQuyenAdminSeeder::class,
+            XeSeeder::class,
+            KeHoachSeeder::class,
+            XeKeHoachSeeder::class,
         ]);
     }
 }

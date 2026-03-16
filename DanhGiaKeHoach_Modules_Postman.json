@@ -1,0 +1,263 @@
+{
+    "info": {
+        "name": "Nhóm Modules (Nhom, ThanhVienNhom, DanhGiaKeHoach, HoaDon)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Nhom",
+            "item": [
+                {
+                    "name": "Get All Nhom",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/nhom"
+                    }
+                },
+                {
+                    "name": "Get Nhom By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/nhom/NHOM001"
+                    }
+                },
+                {
+                    "name": "Search Nhom",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/nhom/search?ten_nhom=Gia",
+                            "host": ["{{base_url}}"],
+                            "path": ["nhom", "search"],
+                            "query": [{"key": "ten_nhom", "value": "Gia"}]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Nhom",
+                    "request": {
+                        "method": "POST",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"Ma_nhom\": \"NHOM001\", \"ten_nhom\": \"Nhóm Của Sơn\"}"
+                        },
+                        "url": "{{base_url}}/nhom"
+                    }
+                },
+                {
+                    "name": "Update Nhom",
+                    "request": {
+                        "method": "PUT",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"ten_nhom\": \"Tuyệt Vời\"}"
+                        },
+                        "url": "{{base_url}}/nhom/NHOM001"
+                    }
+                },
+                {
+                    "name": "Delete Nhom",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/nhom/NHOM001"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Thanh Vien Nhom",
+            "item": [
+                {
+                    "name": "Get All TVN",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/thanh-vien-nhom"
+                    }
+                },
+                {
+                    "name": "Get TVN By Nhóm",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/thanh-vien-nhom/nhom/NHOM001"
+                    }
+                },
+                {
+                    "name": "Search TVN",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/thanh-vien-nhom/search?vai_tro=1",
+                            "host": ["{{base_url}}"],
+                            "path": ["thanh-vien-nhom", "search"],
+                            "query": [{"key": "vai_tro", "value": "1"}]
+                        }
+                    }
+                },
+                {
+                    "name": "Add TVN",
+                    "request": {
+                        "method": "POST",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"Ma_thanh_vien\": \"TV001\", \"Ma_nhom\": \"NHOM001\", \"Ma_khach_hang\": \"KH100\", \"vai_tro\": 1}"
+                        },
+                        "url": "{{base_url}}/thanh-vien-nhom"
+                    }
+                },
+                {
+                    "name": "Update TVN",
+                    "request": {
+                        "method": "PUT",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"vai_tro\": 0}"
+                        },
+                        "url": "{{base_url}}/thanh-vien-nhom/TV001"
+                    }
+                },
+                {
+                    "name": "Remove TVN",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/thanh-vien-nhom/TV001"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Danh Gia Ke Hoach (Brand Mới)",
+            "item": [
+                {
+                    "name": "Get All Danh Gia",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/danh-gia-ke-hoach"
+                    }
+                },
+                {
+                    "name": "Get By Dia Diem",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/danh-gia-ke-hoach/dia-diem/DD001"
+                    }
+                },
+                {
+                    "name": "Search Danh Gia",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/danh-gia-ke-hoach/search?so_sao=5",
+                            "host": ["{{base_url}}"],
+                            "path": ["danh-gia-ke-hoach", "search"],
+                            "query": [{"key": "so_sao", "value": "5"}]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Danh Gia",
+                    "request": {
+                        "method": "POST",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"Ma_danh_gia\": \"DG001\", \"Ma_khach_hang\": \"KH100\", \"ma_dia_diem\": \"DD001\", \"so_sao\": 5, \"noi_dung\": \"Tuyệt vời quá!\"}"
+                        },
+                        "url": "{{base_url}}/danh-gia-ke-hoach"
+                    }
+                },
+                {
+                    "name": "Update Danh Gia",
+                    "request": {
+                        "method": "PUT",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"so_sao\": 4, \"noi_dung\": \"Khá ổn\"}"
+                        },
+                        "url": "{{base_url}}/danh-gia-ke-hoach/DG001"
+                    }
+                },
+                {
+                    "name": "Delete Danh Gia",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/danh-gia-ke-hoach/DG001"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Hoa Don",
+            "item": [
+                {
+                    "name": "Get All Hoa Don",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/hoa-don"
+                    }
+                },
+                {
+                    "name": "Get Hoa Don By Nguoi Dung",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/hoa-don/nguoi-dung/KH100"
+                    }
+                },
+                {
+                    "name": "Search Hoa Don",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/hoa-don/search?trang_thai=1",
+                            "host": ["{{base_url}}"],
+                            "path": ["hoa-don", "search"],
+                            "query": [{"key": "trang_thai", "value": "1"}]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Hoa Don",
+                    "request": {
+                        "method": "POST",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"Ma_hoa_don\": \"HD001\", \"Ma_khach_hang\": \"KH100\", \"Ma_nhom\": \"NHOM001\", \"ma_dia_diem\": \"DD001\", \"tong_tien\": 150000, \"trang_thai\": 0}"
+                        },
+                        "url": "{{base_url}}/hoa-don"
+                    }
+                },
+                {
+                    "name": "Update Hoa Don",
+                    "request": {
+                        "method": "PUT",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"trang_thai\": 1}"
+                        },
+                        "url": "{{base_url}}/hoa-don/HD001"
+                    }
+                },
+                {
+                    "name": "Delete Hoa Don",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/hoa-don/HD001"
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/BEKhoaLuan/public/api",
+            "type": "string"
+        }
+    ]
+}

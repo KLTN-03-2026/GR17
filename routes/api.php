@@ -8,10 +8,17 @@ use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\DiaDiemController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TagDiaDiemController;
-use App\Http\Controllers\ChucVuController;
-use App\Http\Controllers\PhanQuyenAdminController;
-use App\Http\Controllers\XeController;
-use App\Http\Controllers\XeKeHoachController;
+// <<<<<<< theanh
+// use App\Http\Controllers\ChucVuController;
+// use App\Http\Controllers\PhanQuyenAdminController;
+// use App\Http\Controllers\XeController;
+// use App\Http\Controllers\XeKeHoachController;
+// =======
+// use App\Http\Controllers\NhomController;
+// use App\Http\Controllers\ThanhVienNhomController;
+// use App\Http\Controllers\DanhGiaKeHoachController;
+// use App\Http\Controllers\HoaDonController;
+// >>>>>>> develop
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -123,3 +130,38 @@ Route::put('/khach-hang/change-password', [KhachHangController::class, 'changePa
 Route::put('/khach-hang/profile/{maKhachHang}', [KhachHangController::class, 'updateProfile']);
 Route::put('/khach-hang/change-password/{maKhachHang}', [KhachHangController::class, 'changePassword']);
 // });
+
+// Routes Nhom
+Route::get('/nhom/search', [NhomController::class, 'search']);
+Route::get('/nhom', [NhomController::class, 'index']);
+Route::get('/nhom/{id}', [NhomController::class, 'show']);
+Route::post('/nhom', [NhomController::class, 'store']);
+Route::put('/nhom/{id}', [NhomController::class, 'update']);
+Route::delete('/nhom/{id}', [NhomController::class, 'destroy']);
+
+// Routes ThanhVienNhom
+Route::get('/thanh-vien-nhom/search', [ThanhVienNhomController::class, 'search']);
+Route::get('/thanh-vien-nhom/nhom/{maNhom}', [ThanhVienNhomController::class, 'getByNhom']);
+Route::get('/thanh-vien-nhom', [ThanhVienNhomController::class, 'index']);
+Route::get('/thanh-vien-nhom/{id}', [ThanhVienNhomController::class, 'show']);
+Route::post('/thanh-vien-nhom', [ThanhVienNhomController::class, 'store']);
+Route::put('/thanh-vien-nhom/{id}', [ThanhVienNhomController::class, 'update']);
+Route::delete('/thanh-vien-nhom/{id}', [ThanhVienNhomController::class, 'destroy']);
+
+// Routes DanhGiaKeHoach
+Route::get('/danh-gia-ke-hoach/search', [DanhGiaKeHoachController::class, 'search']);
+Route::get('/danh-gia-ke-hoach/dia-diem/{maDiaDiem}', [DanhGiaKeHoachController::class, 'getByDiaDiem']);
+Route::get('/danh-gia-ke-hoach', [DanhGiaKeHoachController::class, 'index']);
+Route::get('/danh-gia-ke-hoach/{id}', [DanhGiaKeHoachController::class, 'show']);
+Route::post('/danh-gia-ke-hoach', [DanhGiaKeHoachController::class, 'store']);
+Route::put('/danh-gia-ke-hoach/{id}', [DanhGiaKeHoachController::class, 'update']);
+Route::delete('/danh-gia-ke-hoach/{id}', [DanhGiaKeHoachController::class, 'destroy']);
+
+// Routes HoaDon
+Route::get('/hoa-don/search', [HoaDonController::class, 'search']);
+Route::get('/hoa-don/nguoi-dung/{maKhachHang}', [HoaDonController::class, 'getByNguoiDung']);
+Route::get('/hoa-don', [HoaDonController::class, 'index']);
+Route::get('/hoa-don/{id}', [HoaDonController::class, 'show']);
+Route::post('/hoa-don', [HoaDonController::class, 'store']);
+Route::put('/hoa-don/{id}', [HoaDonController::class, 'update']);
+Route::delete('/hoa-don/{id}', [HoaDonController::class, 'destroy']);

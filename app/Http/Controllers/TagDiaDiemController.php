@@ -15,7 +15,7 @@ class TagDiaDiemController extends Controller
      */
     public function index()
     {
-        $tagDiaDiems = TagDiaDiem::with(['diaDiem', 'tag'])->paginate(10);
+        $tagDiaDiems = TagDiaDiem::with(['diaDiem', 'tag'])->get();
 
         return response()->json([
             'success' => true,

@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Xe extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'xe';
-    protected $primaryKey = 'id_xe';
+    protected $primaryKey = 'ma_xe';
+    public $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [
+        'ma_xe',
         'ten_xe',
         'loai_xe',
         'so_cho',

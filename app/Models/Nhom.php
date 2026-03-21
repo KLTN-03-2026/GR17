@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Nhom extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'nhom';

@@ -31,7 +31,7 @@ class ChucVuController extends Controller
     public function indexAll(Request $request): JsonResponse
     {
         $perPage = $request->query('per_page', 10);
-        $chucVu = ChucVu::orderBy('id_chuc_vu', 'desc')->paginate($perPage);
+        $chucVu = ChucVu::orderBy('ma_chuc_vu', 'desc')->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -73,9 +73,9 @@ class ChucVuController extends Controller
     /**
      * Display the specified position
      */
-    public function show($id_chuc_vu): JsonResponse
+    public function show($ma_chuc_vu): JsonResponse
     {
-        $chucVu = ChucVu::find($id_chuc_vu);
+        $chucVu = ChucVu::find($ma_chuc_vu);
 
         if (!$chucVu) {
             return response()->json([
@@ -117,9 +117,9 @@ class ChucVuController extends Controller
     /**
      * Update the specified position (admin only)
      */
-    public function update(UpdateChucVuRequest $request, $id_chuc_vu): JsonResponse
+    public function update(UpdateChucVuRequest $request, $ma_chuc_vu): JsonResponse
     {
-        $chucVu = ChucVu::find($id_chuc_vu);
+        $chucVu = ChucVu::find($ma_chuc_vu);
 
         if (!$chucVu) {
             return response()->json([
@@ -155,9 +155,9 @@ class ChucVuController extends Controller
     /**
      * Change the status of a position (admin only)
      */
-    public function changeStatus($id_chuc_vu): JsonResponse
+    public function changeStatus($ma_chuc_vu): JsonResponse
     {
-        $chucVu = ChucVu::find($id_chuc_vu);
+        $chucVu = ChucVu::find($ma_chuc_vu);
 
         if (!$chucVu) {
             return response()->json([
@@ -186,9 +186,9 @@ class ChucVuController extends Controller
     /**
      * Delete the specified position (admin only)
      */
-    public function destroy($id_chuc_vu): JsonResponse
+    public function destroy($ma_chuc_vu): JsonResponse
     {
-        $chucVu = ChucVu::find($id_chuc_vu);
+        $chucVu = ChucVu::find($ma_chuc_vu);
 
         if (!$chucVu) {
             return response()->json([

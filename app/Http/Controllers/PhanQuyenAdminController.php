@@ -3,104 +3,88 @@
 namespace App\Http\Controllers;
 
 use App\Models\PhanQuyenAdmin;
-use App\Models\ChucNang;
-use App\Models\ChucVu;
 use App\Http\Requests\StorePhanQuyenAdminRequest;
 use App\Http\Requests\UpdatePhanQuyenAdminRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 
 class PhanQuyenAdminController extends Controller
 {
-    /**
-     * Display a listing of permissions (public access)
-     */
-    public function index(): JsonResponse
+    public function index()
     {
         $phanQuyen = PhanQuyenAdmin::with(['chucNang', 'chucVu'])
-            ->orderBy('id_phan_quyen')
+            ->orderBy('ma_phan_quyen')
             ->get();
 
         return response()->json([
             'success' => true,
             'data' => $phanQuyen,
-            'total' => count($phanQuyen),
+            'total' => $phanQuyen->count(),
         ]);
     }
 
-    /**
-     * Display all permissions with pagination (admin only)
-     */
-    public function indexAll(Request $request): JsonResponse
+    public function indexAll()
     {
-        $perPage = $request->query('per_page', 10);
         $phanQuyen = PhanQuyenAdmin::with(['chucNang', 'chucVu'])
-            ->orderBy('id_phan_quyen', 'desc')
-            ->paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'data' => $phanQuyen->items(),
-            'pagination' => [
-                'current_page' => $phanQuyen->currentPage(),
-                'per_page' => $phanQuyen->perPage(),
-                'total' => $phanQuyen->total(),
-                'last_page' => $phanQuyen->lastPage(),
-            ],
-        ]);
-    }
-
-    /**
-     * Search permissions by ChucVu or ChucNang (admin only)
-     */
-    public function search(Request $request): JsonResponse
-    {
-        $searchType = $request->query('type', 'all'); // all, chuc_vu, chuc_nang
-        $keyword = $request->query('keyword');
-
-        if (!$keyword || strlen($keyword) < 1) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Từ khóa tìm kiếm không được để trống',
-            ], 400);
-        }
-
-        $query = PhanQuyenAdmin::with(['chucNang', 'chucVu']);
-
-        if ($searchType === 'chuc_vu') {
-            $query->whereHas('chucVu', function ($q) use ($keyword) {
-                $q->where('ten_chuc_vu', 'like', '%' . $keyword . '%');
-            });
-        } elseif ($searchType === 'chuc_nang') {
-            $query->whereHas('chucNang', function ($q) use ($keyword) {
-                $q->where('ten_chuc_nang', 'like', '%' . $keyword . '%');
-            });
-        } else {
-            $query->where(function ($q) use ($keyword) {
-                $q->whereHas('chucVu', function ($subQ) use ($keyword) {
-                    $subQ->where('ten_chuc_vu', 'like', '%' . $keyword . '%');
-                })
-                ->orWhereHas('chucNang', function ($subQ) use ($keyword) {
-                    $subQ->where('ten_chuc_nang', 'like', '%' . $keyword . '%');
-                });
-            });
-        }
-
-        $phanQuyen = $query->get();
+            ->orderBy('ma_phan_quyen', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
             'data' => $phanQuyen,
-            'total' => count($phanQuyen),
+            'total' => $phanQuyen->count(),
         ]);
     }
 
-    /**
-     * Display the specified permission
-     */
-    public function show($id_phan_quyen): JsonResponse
+    // public function search(Request $request)
+    // {
+    //     $searchType = $request->query('type', 'all');
+    //     $keyword = $request->query('keyword');
+
+    //     if (!$keyword) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Từ khóa tìm kiếm không được để trống',
+    //         ], 400);
+    //     }
+
+    //     $query = PhanQuyenAdmin::with(['chucNang', 'chucVu']);
+
+    //     if ($searchType === 'chuc_vu') {
+    //         $query->whereHas('chucVu', function ($q) use ($keyword) {
+    //             $q->where('ten_chuc_vu', 'like', "%{$keyword}%");
+    //         });
+    //     }
+    //     elseif ($searchType === 'chuc_nang') {
+    //         $query->whereHas('chucNang', function ($q) use ($keyword) {
+    //             $q->where('ten_chuc_nang', 'like', "%{$keyword}%");
+    //         });
+    //     }
+    //     else {
+    //         $query->where(function ($q) use ($keyword) {
+    //             $q->whereHas('chucVu', function ($subQ) use ($keyword) {
+    //                     $subQ->where('ten_chuc_vu', 'like', "%{$keyword}%");
+    //                 }
+    //                 )
+    //                     ->orWhereHas('chucNang', function ($subQ) use ($keyword) {
+    //                 $subQ->where('ten_chuc_nang', 'like', "%{$keyword}%");
+    //             }
+    //             );
+    //         });
+    //     }
+
+    //     $phanQuyen = $query->get();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $phanQuyen,
+    //         'total' => $phanQuyen->count(),
+    //     ]);
+    // }
+
+    public function show($ma_phan_quyen)
     {
-        $phanQuyen = PhanQuyenAdmin::with(['chucNang', 'chucVu'])->find($id_phan_quyen);
+        $phanQuyen = PhanQuyenAdmin::with(['chucNang', 'chucVu'])
+            ->find($ma_phan_quyen);
 
         if (!$phanQuyen) {
             return response()->json([
@@ -115,15 +99,11 @@ class PhanQuyenAdminController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created permission (admin only)
-     */
-    public function store(StorePhanQuyenAdminRequest $request): JsonResponse
+    public function store(StorePhanQuyenAdminRequest $request)
     {
         try {
-            // Check if combination already exists
-            $existing = PhanQuyenAdmin::where('id_chuc_nang', $request->id_chuc_nang)
-                ->where('id_chuc_vu', $request->id_chuc_vu)
+            $existing = PhanQuyenAdmin::where('ma_chuc_nang', $request->ma_chuc_nang)
+                ->where('ma_chuc_vu', $request->ma_chuc_vu)
                 ->first();
 
             if ($existing) {
@@ -133,11 +113,7 @@ class PhanQuyenAdminController extends Controller
                 ], 409);
             }
 
-            $phanQuyen = PhanQuyenAdmin::create([
-                'id_chuc_nang' => $request->id_chuc_nang,
-                'id_chuc_vu' => $request->id_chuc_vu,
-            ]);
-
+            $phanQuyen = PhanQuyenAdmin::create($request->validated());
             $phanQuyen = $phanQuyen->load(['chucNang', 'chucVu']);
 
             return response()->json([
@@ -145,7 +121,9 @@ class PhanQuyenAdminController extends Controller
                 'message' => 'Thêm phân quyền thành công',
                 'data' => $phanQuyen,
             ], 201);
-        } catch (\Exception $e) {
+
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi thêm phân quyền: ' . $e->getMessage(),
@@ -153,12 +131,9 @@ class PhanQuyenAdminController extends Controller
         }
     }
 
-    /**
-     * Update the specified permission (admin only)
-     */
-    public function update(UpdatePhanQuyenAdminRequest $request, $id_phan_quyen): JsonResponse
+    public function update(UpdatePhanQuyenAdminRequest $request, $ma_phan_quyen)
     {
-        $phanQuyen = PhanQuyenAdmin::find($id_phan_quyen);
+        $phanQuyen = PhanQuyenAdmin::find($ma_phan_quyen);
 
         if (!$phanQuyen) {
             return response()->json([
@@ -168,15 +143,7 @@ class PhanQuyenAdminController extends Controller
         }
 
         try {
-            if ($request->has('id_chuc_nang')) {
-                $phanQuyen->id_chuc_nang = $request->id_chuc_nang;
-            }
-
-            if ($request->has('id_chuc_vu')) {
-                $phanQuyen->id_chuc_vu = $request->id_chuc_vu;
-            }
-
-            $phanQuyen->save();
+            $phanQuyen->update($request->validated());
             $phanQuyen = $phanQuyen->load(['chucNang', 'chucVu']);
 
             return response()->json([
@@ -184,7 +151,9 @@ class PhanQuyenAdminController extends Controller
                 'message' => 'Cập nhật phân quyền thành công',
                 'data' => $phanQuyen,
             ]);
-        } catch (\Exception $e) {
+
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật phân quyền: ' . $e->getMessage(),
@@ -192,12 +161,9 @@ class PhanQuyenAdminController extends Controller
         }
     }
 
-    /**
-     * Delete the specified permission (admin only)
-     */
-    public function destroy($id_phan_quyen): JsonResponse
+    public function destroy($ma_phan_quyen)
     {
-        $phanQuyen = PhanQuyenAdmin::find($id_phan_quyen);
+        $phanQuyen = PhanQuyenAdmin::find($ma_phan_quyen);
 
         if (!$phanQuyen) {
             return response()->json([
@@ -213,7 +179,9 @@ class PhanQuyenAdminController extends Controller
                 'success' => true,
                 'message' => 'Xoá phân quyền thành công',
             ]);
-        } catch (\Exception $e) {
+
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi xoá phân quyền: ' . $e->getMessage(),

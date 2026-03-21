@@ -27,31 +27,22 @@ class XeController extends Controller
     }
 
     /**
-     * Display all vehicles with pagination (admin only)
+     * Display all vehicles (admin only)
      */
-    public function indexAll(Request $request): JsonResponse
+    public function indexAll(): JsonResponse
     {
-        $perPage = $request->query('per_page', 10);
-        $xe = Xe::orderBy('id_xe', 'desc')->paginate($perPage);
+        $xe = Xe::orderBy('ma_xe', 'desc')->get();
 
         return response()->json([
             'success' => true,
-            'data' => $xe->items(),
-            'pagination' => [
-                'current_page' => $xe->currentPage(),
-                'per_page' => $xe->perPage(),
-                'total' => $xe->total(),
-                'last_page' => $xe->lastPage(),
-            ],
+            'data' => $xe,
+            'total' => count($xe),
         ]);
     }
 
-    /**
-     * Search vehicles by name or type (admin only)
-     */
     public function search(Request $request): JsonResponse
     {
-        $searchType = $request->query('type', 'all'); // all, ten_xe, loai_xe
+        $searchType = $request->query('type', 'all'); 
         $keyword = $request->query('keyword');
 
         if (!$keyword || strlen($keyword) < 1) {
@@ -86,9 +77,9 @@ class XeController extends Controller
     /**
      * Display the specified vehicle
      */
-    public function show($id_xe): JsonResponse
+    public function show($ma_xe): JsonResponse
     {
-        $xe = Xe::find($id_xe);
+        $xe = Xe::find($ma_xe);
 
         if (!$xe) {
             return response()->json([
@@ -135,9 +126,9 @@ class XeController extends Controller
     /**
      * Update the specified vehicle (admin only)
      */
-    public function update(UpdateXeRequest $request, $id_xe): JsonResponse
+    public function update(UpdateXeRequest $request, $ma_xe): JsonResponse
     {
-        $xe = Xe::find($id_xe);
+        $xe = Xe::find($ma_xe);
 
         if (!$xe) {
             return response()->json([
@@ -193,9 +184,9 @@ class XeController extends Controller
     /**
      * Change the status of a vehicle (admin only)
      */
-    public function changeStatus($id_xe): JsonResponse
+    public function changeStatus($ma_xe): JsonResponse
     {
-        $xe = Xe::find($id_xe);
+        $xe = Xe::find($ma_xe);
 
         if (!$xe) {
             return response()->json([
@@ -224,9 +215,9 @@ class XeController extends Controller
     /**
      * Delete the specified vehicle (admin only)
      */
-    public function destroy($id_xe): JsonResponse
+    public function destroy($ma_xe): JsonResponse
     {
-        $xe = Xe::find($id_xe);
+        $xe = Xe::find($ma_xe);
 
         if (!$xe) {
             return response()->json([

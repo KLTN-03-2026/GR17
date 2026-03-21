@@ -27,6 +27,15 @@ $this->call([
             XeSeeder::class,
             KeHoachSeeder::class,
             XeKeHoachSeeder::class,
+            NhomSeeder::class,
+            ThanhVienNhomSeeder::class,
+            DanhGiaKeHoachSeeder::class,
+            HoaDonSeeder::class,
+            HoatDongChiTietSeeder::class,
+            TourSeeder::class,
+            ChiTietTourSeeder::class,
+            TourKhoiHanhSeeder::class,
+            CauHinhNgaySeeder::class,
         ]);
     }
 }

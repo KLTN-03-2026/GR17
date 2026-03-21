@@ -4,35 +4,51 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KeHoach extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'ke_hoach';
-    protected $primaryKey = 'id_ke_hoach';
+    protected $primaryKey = 'ma_ke_hoach';
+    public $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [
+        'ma_ke_hoach',
+        'ma_nhom',
         'ten_ke_hoach',
-        'mo_ta',
+        'so_nguoi',
         'ngay_bat_dau',
         'ngay_ket_thuc',
-        'tong_chi_phi',
+        'ngan_sach_du_kien',
         'trang_thai',
     ];
 
     protected $casts = [
         'ngay_bat_dau' => 'date',
         'ngay_ket_thuc' => 'date',
-        'tong_chi_phi' => 'decimal:2',
-        'trang_thai' => 'integer',
+        'ngan_sach_du_kien' => 'decimal:2',
+        'so_nguoi' => 'integer',
+        'trang_thai' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    public function xeKeHoach()
+    /**
+     * Get the group that owns this plan.
+     */
+    public function nhom(): BelongsTo
     {
-        return $this->hasMany(XeKeHoach::class, 'id_ke_hoach');
+        return $this->belongsTo(Nhom::class, 'ma_nhom', 'Ma_nhom');
+    }
+
+    public function xeKeHoach(): HasMany
+    {
+        return $this->hasMany(XeKeHoach::class, 'ma_ke_hoach');
     }
 }

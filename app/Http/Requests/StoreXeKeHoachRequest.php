@@ -22,8 +22,8 @@ class StoreXeKeHoachRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_ke_hoach' => 'required|integer|exists:ke_hoach,id_ke_hoach',
-            'id_xe' => 'required|integer|exists:xe,id_xe',
+            'ma_ke_hoach' => 'required|string|exists:ke_hoach,ma_ke_hoach',
+            'ma_xe' => 'required|string|exists:xe,ma_xe',
             'so_luong' => 'required|integer|min:1',
             'so_ngay' => 'required|integer|min:1',
             'tong_tien' => 'required|numeric|min:0',
@@ -36,12 +36,12 @@ class StoreXeKeHoachRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'id_ke_hoach.required' => 'Kế hoạch không được để trống',
-            'id_ke_hoach.integer' => 'Kế hoạch phải là số nguyên',
-            'id_ke_hoach.exists' => 'Kế hoạch không tồn tại',
-            'id_xe.required' => 'Xe không được để trống',
-            'id_xe.integer' => 'Xe phải là số nguyên',
-            'id_xe.exists' => 'Xe không tồn tại',
+            'ma_ke_hoach.required' => 'Kế hoạch không được để trống',
+            'ma_ke_hoach.string' => 'Kế hoạch phải là chuỗi ký tự',
+            'ma_ke_hoach.exists' => 'Kế hoạch không tồn tại',
+            'ma_xe.required' => 'Xe không được để trống',
+            'ma_xe.string' => 'Xe phải là chuỗi ký tự',
+            'ma_xe.exists' => 'Xe không tồn tại',
             'so_luong.required' => 'Số lượng không được để trống',
             'so_luong.integer' => 'Số lượng phải là số nguyên',
             'so_luong.min' => 'Số lượng phải ít nhất là 1',

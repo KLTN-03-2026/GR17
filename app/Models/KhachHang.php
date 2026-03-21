@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class KhachHang extends Authenticatable
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'khach_hang';

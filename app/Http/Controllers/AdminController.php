@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
+    public function checkLogin(Request $request)
+    {
+        $admin = $request->user();
+
+        if (!$admin instanceof Admin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa đăng nhập admin'
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin đã đăng nhập',
+            'data' => $admin
+        ], 200);
+    }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -76,13 +94,13 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'Ma_admin' => 'required|unique:admins|max:10',
+            // 'Ma_admin' => 'required|unique:admins|max:10',
             'Ho_va_ten' => 'required|min:5|max:40',
             'Mat_khau' => 'required|min:8',
             'Email' => 'required|email|unique:admins',
             'Ngay_sinh' => 'required|date_format:Y-m-d',
             'Gioi_tinh' => 'required|boolean',
-            'id_chuc_vu' => 'required',
+            'ma_chuc_vu' => 'required',
             'so_dien_thoai' => 'required|unique:admins|regex:/^0[0-9]{9}$/',
         ]);
         if ($validator->fails()) {
@@ -104,7 +122,8 @@ class AdminController extends Controller
                 'message' => 'Thêm quản trị viên thành công',
                 'data' => $admin
             ], 201);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
 
             return response()->json([
                 'success' => false,
@@ -115,12 +134,12 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $admin = Admin::find($id);
-        if (!$admin) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy quản trị viên'
-            ], 404);
-        }
+        // if (!$admin) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Không tìm thấy quản trị viên'
+        //     ], 404);
+        // }
         try {
 
             $admin->update($request->all());
@@ -130,7 +149,8 @@ class AdminController extends Controller
                 'message' => 'Cập nhật quản trị viên thành công',
                 'data' => $admin
             ], 200);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
 
             return response()->json([
                 'success' => false,
@@ -141,12 +161,12 @@ class AdminController extends Controller
     public function delete($id)
     {
         $admin = Admin::find($id);
-        if (!$admin) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy quản trị viên'
-            ], 404);
-        }
+        // if (!$admin) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Không tìm thấy quản trị viên'
+        //     ], 404);
+        // }
         $admin->delete();
 
         return response()->json([

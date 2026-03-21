@@ -14,6 +14,7 @@ class KeHoachSeeder extends Seeder
     {
         $keHoachData = [
             [
+                'ma_ke_hoach' => '001',
                 'ten_ke_hoach' => 'Chuyên du lịch Hà Nội - Hạ Long',
                 'mo_ta' => 'Kế hoạch du lịch 3 ngày 2 đêm đến Vịnh Hạ Long',
                 'ngay_bat_dau' => '2026-03-20',
@@ -22,6 +23,7 @@ class KeHoachSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_ke_hoach' => '002',
                 'ten_ke_hoach' => 'Chuyên cử công sở tháng 3',
                 'mo_ta' => 'Vận chuyển nhân viên công sở hàng ngày',
                 'ngay_bat_dau' => '2026-03-01',
@@ -30,6 +32,7 @@ class KeHoachSeeder extends Seeder
                 'trang_thai' => 2,
             ],
             [
+                'ma_ke_hoach' => '003',
                 'ten_ke_hoach' => 'Du lịch Sapa - Lào Cai',
                 'mo_ta' => 'Kế hoạch du lịch 4 ngày 3 đêm tới Sapa',
                 'ngay_bat_dau' => '2026-04-10',
@@ -38,6 +41,7 @@ class KeHoachSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_ke_hoach' => '004',
                 'ten_ke_hoach' => 'Chuyến di tích lịch sử miền Bắc',
                 'mo_ta' => 'Tham quan các di tích lịch sử tuần Tây Bắc',
                 'ngay_bat_dau' => '2026-05-01',
@@ -46,6 +50,7 @@ class KeHoachSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_ke_hoach' => '005',
                 'ten_ke_hoach' => 'Team building công ty quý 2',
                 'mo_ta' => 'Hoạt động gắn kết nhân viên toàn công ty',
                 'ngay_bat_dau' => '2026-04-25',
@@ -57,8 +62,9 @@ class KeHoachSeeder extends Seeder
 
         foreach ($keHoachData as $data) {
             KeHoach::firstOrCreate(
-                ['ten_ke_hoach' => $data['ten_ke_hoach']],
+                ['ma_ke_hoach' => $data['ma_ke_hoach']],
                 [
+                    'ten_ke_hoach' => $data['ten_ke_hoach'],
                     'mo_ta' => $data['mo_ta'],
                     'ngay_bat_dau' => $data['ngay_bat_dau'],
                     'ngay_ket_thuc' => $data['ngay_ket_thuc'],

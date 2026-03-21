@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TagDiaDiem extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     protected $table = 'tag_dia_diem';
     protected $primaryKey = 'ma_tag_dia_diem';
     public $incrementing = false;

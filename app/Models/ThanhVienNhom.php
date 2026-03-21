@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ThanhVienNhom extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'thanh_vien_nhom';

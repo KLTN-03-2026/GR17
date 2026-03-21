@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tag extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     protected $table = 'tag';
     protected $primaryKey = 'ma_tag';
     public $incrementing = false;

@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChucVu extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'chuc_vu';
-    protected $primaryKey = 'id_chuc_vu';
+    protected $primaryKey = 'ma_chuc_vu';
+    public $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [

@@ -7,38 +7,35 @@ use Illuminate\Database\Seeder;
 
 class PhanQuyenAdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $phanQuyenData = [
-            // Giám đốc - có quyền tất cả
-            ['id_chuc_nang' => 1, 'id_chuc_vu' => 1], // Giám đốc - Xem danh sách
-            ['id_chuc_nang' => 2, 'id_chuc_vu' => 1], // Giám đốc - Tạo mới
-            ['id_chuc_nang' => 3, 'id_chuc_vu' => 1], // Giám đốc - Cập nhật
-            ['id_chuc_nang' => 4, 'id_chuc_vu' => 1], // Giám đốc - Xóa
-            ['id_chuc_nang' => 5, 'id_chuc_vu' => 1], // Giám đốc - Tìm kiếm
+            // Giám đốc
+            ['ma_phan_quyen'=>'001','ma_chuc_nang'=>'001','ma_chuc_vu'=>'001'],
+            ['ma_phan_quyen'=>'002','ma_chuc_nang'=>'002','ma_chuc_vu'=>'001'],
+            ['ma_phan_quyen'=>'003','ma_chuc_nang'=>'003','ma_chuc_vu'=>'001'],
+            ['ma_phan_quyen'=>'004','ma_chuc_nang'=>'004','ma_chuc_vu'=>'001'],
+            ['ma_phan_quyen'=>'005','ma_chuc_nang'=>'005','ma_chuc_vu'=>'001'],
 
-            // Quản lý - có quyền xem, tạo, cập nhật, tìm kiếm
-            ['id_chuc_nang' => 1, 'id_chuc_vu' => 2], // Quản lý - Xem danh sách
-            ['id_chuc_nang' => 2, 'id_chuc_vu' => 2], // Quản lý - Tạo mới
-            ['id_chuc_nang' => 3, 'id_chuc_vu' => 2], // Quản lý - Cập nhật
-            ['id_chuc_nang' => 5, 'id_chuc_vu' => 2], // Quản lý - Tìm kiếm
+            // Quản lý
+            ['ma_phan_quyen'=>'006','ma_chuc_nang'=>'001','ma_chuc_vu'=>'002'],
+            ['ma_phan_quyen'=>'007','ma_chuc_nang'=>'002','ma_chuc_vu'=>'002'],
+            ['ma_phan_quyen'=>'008','ma_chuc_nang'=>'003','ma_chuc_vu'=>'002'],
+            ['ma_phan_quyen'=>'009','ma_chuc_nang'=>'005','ma_chuc_vu'=>'002'],
 
-            // Kỹ sư - có quyền xem, tạo, tìm kiếm
-            ['id_chuc_nang' => 1, 'id_chuc_vu' => 3], // Kỹ sư - Xem danh sách
-            ['id_chuc_nang' => 2, 'id_chuc_vu' => 3], // Kỹ sư - Tạo mới
-            ['id_chuc_nang' => 5, 'id_chuc_vu' => 3], // Kỹ sư - Tìm kiếm
+            // Kỹ sư
+            ['ma_phan_quyen'=>'010','ma_chuc_nang'=>'001','ma_chuc_vu'=>'003'],
+            ['ma_phan_quyen'=>'011','ma_chuc_nang'=>'002','ma_chuc_vu'=>'003'],
+            ['ma_phan_quyen'=>'012','ma_chuc_nang'=>'005','ma_chuc_vu'=>'003'],
 
-            // Thiết kế viên - có quyền xem, tạo, cập nhật
-            ['id_chuc_nang' => 1, 'id_chuc_vu' => 4], // Thiết kế viên - Xem danh sách
-            ['id_chuc_nang' => 2, 'id_chuc_vu' => 4], // Thiết kế viên - Tạo mới
-            ['id_chuc_nang' => 3, 'id_chuc_vu' => 4], // Thiết kế viên - Cập nhật
+            // Thiết kế viên
+            ['ma_phan_quyen'=>'013','ma_chuc_nang'=>'001','ma_chuc_vu'=>'004'],
+            ['ma_phan_quyen'=>'014','ma_chuc_nang'=>'002','ma_chuc_vu'=>'004'],
+            ['ma_phan_quyen'=>'015','ma_chuc_nang'=>'003','ma_chuc_vu'=>'004'],
 
-            // Hỗ trợ khách hàng - có quyền xem, tìm kiếm
-            ['id_chuc_nang' => 1, 'id_chuc_vu' => 5], // Hỗ trợ khách hàng - Xem danh sách
-            ['id_chuc_nang' => 5, 'id_chuc_vu' => 5], // Hỗ trợ khách hàng - Tìm kiếm
+            // Hỗ trợ khách hàng
+            ['ma_phan_quyen'=>'016','ma_chuc_nang'=>'001','ma_chuc_vu'=>'005'],
+            ['ma_phan_quyen'=>'017','ma_chuc_nang'=>'005','ma_chuc_vu'=>'005'],
         ];
 
         foreach ($phanQuyenData as $data) {

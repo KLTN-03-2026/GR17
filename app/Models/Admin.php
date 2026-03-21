@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Admin extends Authenticatable
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'admins';
@@ -24,7 +25,7 @@ class Admin extends Authenticatable
         'Email',
         'Ngay_sinh',
         'Gioi_tinh',
-        'id_chuc_vu',
+        'ma_chuc_vu',
         'is_block',
         'hash_reset',
         'so_dien_thoai',

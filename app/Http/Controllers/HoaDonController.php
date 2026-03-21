@@ -2,101 +2,156 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\HoaDon;
+use App\Models\ThanhVienNhom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class HoaDonController extends Controller
 {
-    public function index()
+    // ============================================
+    // API CỦA ADMIN
+    // ============================================
+
+    public function indexAdmin(Request $request)
     {
-        $hoaDons = HoaDon::with(['khachHang', 'nhom', 'diaDiem'])->get();
+        // $admin = auth('sanctum')->user();
+
+        // if (!$admin instanceof Admin) {
+        //     return response()->json(['success' => false, 'message' => 'Bạn không có quyền'], 403);
+        // }
+
+        $hoaDons = HoaDon::with(['nhom'])->get();
         if ($hoaDons->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Không có hóa đơn nào'], 404);
         }
-        return response()->json(['success' => true, 'data' => $hoaDons], 200);
+        return response()->json(['success' => true, 'message' => 'Lấy danh sách hóa đơn thành công', 'data' => $hoaDons], 200);
     }
 
-    public function show($id)
+    public function showAdmin($ma_hoa_don)
     {
-        $hoaDon = HoaDon::with(['khachHang', 'nhom', 'diaDiem'])->find($id);
+        $hoaDon = HoaDon::with(['nhom'])->find($ma_hoa_don);
         if (!$hoaDon) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
         }
-        return response()->json(['success' => true, 'data' => $hoaDon], 200);
+        return response()->json(['success' => true, 'message' => 'Lấy hóa đơn thành công', 'data' => $hoaDon], 200);
     }
 
-    public function getByNguoiDung($maKhachHang)
+    public function updateStatusAdmin(Request $request, $ma_hoa_don)
     {
-        $hoaDons = HoaDon::with(['nhom', 'diaDiem'])
-                         ->where('Ma_khach_hang', $maKhachHang)
-                         ->get();
-        if ($hoaDons->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Khách hàng này chưa có hóa đơn nào hoặc không tồn tại'], 404);
+        $hoaDon = HoaDon::find($ma_hoa_don);
+        if (!$hoaDon) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
         }
-        return response()->json(['success' => true, 'data' => $hoaDons], 200);
-    }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'Ma_hoa_don'   => 'required|string|unique:hoa_don|max:20',
-            'Ma_khach_hang' => 'required|string|exists:khach_hang,Ma_khach_hang',
-            'Ma_nhom'       => 'nullable|string|exists:nhom,Ma_nhom',
-            'ma_dia_diem'   => 'required|string|exists:dia_diem,ma_dia_diem',
-            'tong_tien'     => 'nullable|numeric|min:0',
-            'trang_thai'    => 'nullable|integer|in:0,1,2',
-            'ngay_dat'      => 'nullable|date',
+        $validator = Validator::make($request->all(), [
+            'trang_thai_thanh_toan' => 'required|integer|in:0,1,2',
         ]);
-        $hoaDon = HoaDon::create($validated);
-        return response()->json(['success' => true, 'message' => 'Thêm hóa đơn thành công', 'data' => $hoaDon], 201);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $hoaDon->update(['trang_thai_thanh_toan' => $request->trang_thai_thanh_toan]);
+            return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thanh toán thành công', 'data' => $hoaDon], 200);
+        }
+        catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Lỗi khi cập nhật'], 500);
+        }
     }
 
-    public function update(Request $request, $id)
-    {
-        $hoaDon = HoaDon::find($id);
-        if (!$hoaDon) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
-        }
-        $validated = $request->validate([
-            'tong_tien'  => 'sometimes|required|numeric|min:0',
-            'trang_thai' => 'sometimes|required|integer|in:0,1,2',
-        ]);
-        $hoaDon->update($validated);
-        return response()->json(['success' => true, 'message' => 'Cập nhật hóa đơn thành công', 'data' => $hoaDon], 200);
-    }
 
-    public function destroy($id)
-    {
-        $hoaDon = HoaDon::find($id);
-        if (!$hoaDon) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
-        }
-        $hoaDon->delete();
-        return response()->json(['success' => true, 'message' => 'Xóa hóa đơn thành công'], 200);
-    }
+    // ============================================
+    // API CỦA KHÁCH HÀNG
+    // ============================================
 
-    public function search(Request $request)
+    public function indexCustomer(Request $request)
     {
-        $query = HoaDon::with(['khachHang', 'nhom', 'diaDiem']);
-        if ($request->has('Ma_hoa_don')) {
-            $query->where('Ma_hoa_don', $request->Ma_hoa_don);
+        $khachHang = clone $request->user();
+        $maKhachHang = $request->ma_khach_hang ?? ($khachHang ? $khachHang->Ma_khach_hang : null);
+
+        if (!$maKhachHang) {
+            return response()->json(['success' => false, 'message' => 'Vui lòng cung cấp mã khách hàng hoặc đăng nhập'], 401);
         }
-        if ($request->has('Ma_khach_hang')) {
-            $query->where('Ma_khach_hang', $request->Ma_khach_hang);
-        }
-        if ($request->has('Ma_nhom')) {
-            $query->where('Ma_nhom', $request->Ma_nhom);
-        }
-        if ($request->has('ma_dia_diem')) {
-            $query->where('ma_dia_diem', $request->ma_dia_diem);
-        }
-        if ($request->has('trang_thai')) {
-            $query->where('trang_thai', $request->trang_thai);
-        }
-        $hoaDons = $query->get();
+
+        $maNhoms = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)->pluck('Ma_nhom');
+
+        $hoaDons = HoaDon::with(['nhom'])->whereIn('ma_nhom', $maNhoms)->get();
         if ($hoaDons->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Không tìm thấy kết quả'], 404);
+            return response()->json(['success' => false, 'message' => 'Bạn không có hóa đơn nào'], 404);
         }
-        return response()->json(['success' => true, 'data' => $hoaDons], 200);
+
+        return response()->json(['success' => true, 'message' => 'Lấy danh sách thành công', 'data' => $hoaDons], 200);
+    }
+
+    public function showCustomer(Request $request, $ma_hoa_don)
+    {
+        $khachHang = clone $request->user();
+        $maKhachHang = $request->ma_khach_hang ?? ($khachHang ? $khachHang->Ma_khach_hang : null);
+
+        $hoaDon = HoaDon::with(['nhom'])->find($ma_hoa_don);
+        if (!$hoaDon) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
+        }
+
+        if (!$maKhachHang) {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn này do thiếu xác thực'], 403);
+        }
+
+        // Kiem tra thuoc nhom
+        $isMember = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)
+            ->where('Ma_nhom', $hoaDon->ma_nhom)
+            ->exists();
+
+        if (!$isMember) {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn của nhóm này'], 403);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Lấy thông tin thành công', 'data' => $hoaDon], 200);
+    }
+
+    public function storeCustomer(Request $request)
+    {
+        $khachHang = clone $request->user();
+        $maKhachHang = $request->ma_khach_hang ?? ($khachHang ? $khachHang->Ma_khach_hang : null);
+
+        $validator = Validator::make($request->all(), [
+            'ma_hoa_don' => 'required|unique:hoa_don,ma_hoa_don|max:10',
+            'ma_nhom' => 'required|exists:nhom,Ma_nhom|max:20',
+            'loai_hoa_don' => 'required|integer|in:0,1',
+            'ma_doi_tuong' => 'required|string',
+            'tong_tien' => 'required|numeric|min:0',
+            'ma_giao_dich' => 'nullable|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        if (!$maKhachHang) {
+            return response()->json(['success' => false, 'message' => 'Bạn phải xác thực khách hàng (hoặc truyền ma_khach_hang) để thêm mới'], 403);
+        }
+
+        $isMember = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)
+            ->where('Ma_nhom', $request->ma_nhom)
+            ->exists();
+
+        if (!$isMember) {
+            return response()->json(['success' => false, 'message' => 'Bạn không nằm trong nhóm này để có quyền thêm hóa đơn'], 403);
+        }
+
+        try {
+            $data = $request->except(['ma_khach_hang']); // bỏ đi trường ma_khach_hang truyền hờ 
+            $data['trang_thai_thanh_toan'] = 0; // Luôn chờ xử lý lúc mới đặt
+            $data['ngay_tao'] = now();
+
+            $hoaDon = HoaDon::create($data);
+            return response()->json(['success' => true, 'message' => 'Thêm hóa đơn thành công', 'data' => $hoaDon], 201);
+        }
+        catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Đã xảy ra lỗi khi thêm hóa đơn. ' . $e->getMessage()], 500);
+        }
     }
 }

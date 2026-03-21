@@ -13,7 +13,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::with('tagDiaDiems')->paginate(10);
+        $tags = Tag::with('tagDiaDiems')->get();
 
         return response()->json([
             'success' => true,

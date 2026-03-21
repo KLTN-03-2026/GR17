@@ -19,13 +19,11 @@ return new class extends Migration {
             $table->string('Email')->unique();
             $table->date('Ngay_sinh');
             $table->boolean('Gioi_tinh');
-            $table->unsignedBigInteger('id_chuc_vu');
+            $table->string('ma_chuc_vu', 10);
             $table->boolean('is_block')->default(1);
             $table->string('hash_reset')->nullable();
             $table->string('so_dien_thoai', 10)->unique();
-            $table->timestamps();
-
-            // $table->foreign('id_chuc_vu')->references('id')->on('roles')->onDelete('cascade');
+            $table->timestamps();         // $table->foreign('ma_chuc_vu')->references('ma_chuc_vu')->on('chuc_vu')->onDelete('cascade');
         });
     }
 

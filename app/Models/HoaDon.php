@@ -7,41 +7,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class HoaDon extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'hoa_don';
-    protected $primaryKey = 'Ma_hoa_don';
+    protected $primaryKey = 'ma_hoa_don';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'Ma_hoa_don',
-        'Ma_khach_hang',
-        'Ma_nhom',
-        'ma_dia_diem',
+        'ma_hoa_don',
+        'ma_nhom',
+        'loai_hoa_don',
+        'ma_doi_tuong',
         'tong_tien',
-        'trang_thai',
-        'ngay_dat',
+        'trang_thai_thanh_toan',
+        'ma_giao_dich',
+        'ngay_tao',
     ];
 
     protected $casts = [
-        'tong_tien'   => 'decimal:2',
-        'trang_thai'  => 'integer',
-        'ngay_dat'    => 'datetime',
+        'tong_tien' => 'decimal:2',
+        'loai_hoa_don' => 'integer',
+        'trang_thai_thanh_toan' => 'integer',
+        'ngay_tao' => 'datetime',
     ];
-
-    public function khachHang()
-    {
-        return $this->belongsTo(KhachHang::class, 'Ma_khach_hang', 'Ma_khach_hang');
-    }
 
     public function nhom()
     {
-        return $this->belongsTo(Nhom::class, 'Ma_nhom', 'Ma_nhom');
-    }
-
-    public function diaDiem()
-    {
-        return $this->belongsTo(DiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
+        return $this->belongsTo(Nhom::class, 'ma_nhom', 'Ma_nhom');
     }
 }

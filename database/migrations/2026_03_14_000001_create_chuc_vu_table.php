@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('chuc_vu', function (Blueprint $table) {
-            $table->increments('id_chuc_vu');
+            $table->string('ma_chuc_vu', 10)->primary();
             $table->string('ten_chuc_vu', 50)->unique();
             $table->tinyInteger('tinh_trang')->default(1)->comment('1: hoạt động, 0: khóa');
             $table->timestamps();

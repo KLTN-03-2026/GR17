@@ -21,10 +21,10 @@ class UpdateChucVuRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id_chuc_vu');
+        $id = $this->route('ma_chuc_vu');
 
         return [
-            'ten_chuc_vu' => 'sometimes|required|string|min:3|max:50|unique:chuc_vu,ten_chuc_vu,' . $id . ',id_chuc_vu|regex:/^[a-zA-ZÀ-ỿ\s]+$/',
+            'ten_chuc_vu' => 'sometimes|required|string|min:3|max:50|unique:chuc_vu,ten_chuc_vu,' . $id . ',ma_chuc_vu|regex:/^[a-zA-ZÀ-ỿ\s]+$/',
             'tinh_trang' => 'sometimes|required|in:0,1',
         ];
     }

@@ -7,23 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class XeKeHoach extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'xe_ke_hoach';
-    protected $primaryKey = 'id_xe_ke_hoach';
+    protected $primaryKey = 'ma_xe_ke_hoach';
+    public $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [
-        'id_ke_hoach',
-        'id_xe',
+        'ma_xe_ke_hoach',
+        'ma_ke_hoach',
+        'ma_xe',
         'so_luong',
         'so_ngay',
         'tong_tien',
     ];
 
     protected $casts = [
-        'id_ke_hoach' => 'integer',
-        'id_xe' => 'integer',
         'so_luong' => 'integer',
         'so_ngay' => 'integer',
         'tong_tien' => 'decimal:2',
@@ -33,11 +35,11 @@ class XeKeHoach extends Model
 
     public function keHoach()
     {
-        return $this->belongsTo(KeHoach::class, 'id_ke_hoach');
+        return $this->belongsTo(KeHoach::class, 'ma_ke_hoach');
     }
 
     public function xe()
     {
-        return $this->belongsTo(Xe::class, 'id_xe');
+        return $this->belongsTo(Xe::class, 'ma_xe');
     }
 }

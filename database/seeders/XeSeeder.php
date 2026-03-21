@@ -14,6 +14,7 @@ class XeSeeder extends Seeder
     {
         $xeData = [
             [
+                'ma_xe' => '001',
                 'ten_xe' => 'Toyota Hiace Standard',
                 'loai_xe' => 'Xe 16 chỗ',
                 'so_cho' => 16,
@@ -23,6 +24,7 @@ class XeSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_xe' => '002',
                 'ten_xe' => 'Hyundai County Deluxe',
                 'loai_xe' => 'Xe 29 chỗ',
                 'so_cho' => 29,
@@ -32,6 +34,7 @@ class XeSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_xe' => '003',
                 'ten_xe' => 'Ford Transit 12 chỗ',
                 'loai_xe' => 'Xe 12 chỗ',
                 'so_cho' => 12,
@@ -41,6 +44,7 @@ class XeSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_xe' => '004',
                 'ten_xe' => 'Kia Sorento 7 chỗ',
                 'loai_xe' => 'Xe 7 chỗ',
                 'so_cho' => 7,
@@ -50,6 +54,7 @@ class XeSeeder extends Seeder
                 'trang_thai' => 1,
             ],
             [
+                'ma_xe' => '005',
                 'ten_xe' => 'Honda Accord 4 chỗ',
                 'loai_xe' => 'Xe 4 chỗ',
                 'so_cho' => 4,
@@ -62,8 +67,9 @@ class XeSeeder extends Seeder
 
         foreach ($xeData as $data) {
             Xe::firstOrCreate(
-                ['ten_xe' => $data['ten_xe']],
+                ['ma_xe' => $data['ma_xe']],
                 [
+                    'ten_xe' => $data['ten_xe'],
                     'loai_xe' => $data['loai_xe'],
                     'so_cho' => $data['so_cho'],
                     'gia_theo_ngay' => $data['gia_theo_ngay'],

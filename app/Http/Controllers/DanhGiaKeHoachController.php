@@ -28,8 +28,8 @@ class DanhGiaKeHoachController extends Controller
     public function getByDiaDiem($maDiaDiem)
     {
         $danhGias = DanhGiaKeHoach::with('khachHang')
-                           ->where('ma_dia_diem', $maDiaDiem)
-                           ->get();
+            ->where('ma_dia_diem', $maDiaDiem)
+            ->get();
         if ($danhGias->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Địa điểm này chưa có đánh giá nào hoặc không tồn tại'], 404);
         }
@@ -39,11 +39,11 @@ class DanhGiaKeHoachController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'Ma_danh_gia'   => 'required|string|unique:danh_gia_ke_hoach|max:20',
+            // 'Ma_danh_gia'   => 'required|string|unique:danh_gia_ke_hoach|max:20',
             'Ma_khach_hang' => 'required|string|exists:khach_hang,Ma_khach_hang',
-            'ma_dia_diem'   => 'required|string|exists:dia_diem,ma_dia_diem',
-            'so_sao'        => 'required|integer|min:1|max:5',
-            'noi_dung'      => 'nullable|string|max:1000',
+            'ma_dia_diem' => 'required|string|exists:dia_diem,ma_dia_diem',
+            'so_sao' => 'required|integer|min:1|max:5',
+            'noi_dung' => 'nullable|string|max:1000',
         ]);
         $danhGia = DanhGiaKeHoach::create($validated);
         return response()->json(['success' => true, 'message' => 'Thêm đánh giá thành công', 'data' => $danhGia], 201);
@@ -56,7 +56,7 @@ class DanhGiaKeHoachController extends Controller
             return response()->json(['success' => false, 'message' => 'Không tìm thấy đánh giá'], 404);
         }
         $validated = $request->validate([
-            'so_sao'   => 'sometimes|required|integer|min:1|max:5',
+            'so_sao' => 'sometimes|required|integer|min:1|max:5',
             'noi_dung' => 'nullable|string|max:1000',
         ]);
         $danhGia->update($validated);

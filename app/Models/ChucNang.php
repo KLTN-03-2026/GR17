@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChucNang extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
     protected $table = 'chuc_nang';
-    protected $primaryKey = 'id_chuc_nang';
+    protected $primaryKey = 'ma_chuc_nang';
+    public $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [
+        'ma_chuc_nang',
         'ten_chuc_nang',
         'mo_ta',
     ];
@@ -25,6 +29,6 @@ class ChucNang extends Model
 
     public function phanQuyen()
     {
-        return $this->hasMany(PhanQuyenAdmin::class, 'id_chuc_nang');
+        return $this->hasMany(PhanQuyenAdmin::class, 'ma_chuc_nang');
     }
 }

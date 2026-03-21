@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DiaDiem extends Model
 {
+    use \App\Traits\GeneratesIdFromZero;
     protected $table = 'dia_diem';
     protected $primaryKey = 'ma_dia_diem';
     public $incrementing = false;

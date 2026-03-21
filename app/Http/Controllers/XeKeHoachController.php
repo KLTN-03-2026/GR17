@@ -18,7 +18,7 @@ class XeKeHoachController extends Controller
     public function index(): JsonResponse
     {
         $xeKeHoach = XeKeHoach::with(['keHoach', 'xe'])
-            ->orderBy('id_xe_ke_hoach')
+            ->orderBy('ma_xe_ke_hoach')
             ->get();
 
         return response()->json([
@@ -35,7 +35,7 @@ class XeKeHoachController extends Controller
     {
         $perPage = $request->query('per_page', 10);
         $xeKeHoach = XeKeHoach::with(['keHoach', 'xe'])
-            ->orderBy('id_xe_ke_hoach', 'desc')
+            ->orderBy('ma_xe_ke_hoach', 'desc')
             ->paginate($perPage);
 
         return response()->json([
@@ -71,25 +71,27 @@ class XeKeHoachController extends Controller
             $query->whereHas('keHoach', function ($q) use ($keyword) {
                 $q->where('ten_ke_hoach', 'like', '%' . $keyword . '%');
             });
-        } elseif ($searchType === 'xe') {
+        }
+        elseif ($searchType === 'xe') {
             $query->whereHas('xe', function ($q) use ($keyword) {
                 $q->where('ten_xe', 'like', '%' . $keyword . '%')
-                  ->orWhere('loai_xe', 'like', '%' . $keyword . '%');
-            });
-        } else {
-            $query->where(function ($q) use ($keyword) {
-                $q->whereHas('keHoach', function ($subQ) use ($keyword) {
-                    $subQ->where('ten_ke_hoach', 'like', '%' . $keyword . '%');
-                })
-                ->orWhereHas('xe', function ($subQ) use ($keyword) {
-                    $subQ->where('ten_xe', 'like', '%' . $keyword . '%')
-                      ->orWhere('loai_xe', 'like', '%' . $keyword . '%');
-                });
+                    ->orWhere('loai_xe', 'like', '%' . $keyword . '%');
             });
         }
-
+        else {
+            $query->where(function ($q) use ($keyword) {
+                $q->whereHas('keHoach', function ($subQ) use ($keyword) {
+                        $subQ->where('ten_ke_hoach', 'like', '%' . $keyword . '%');
+                    }
+                    )
+                        ->orWhereHas('xe', function ($subQ) use ($keyword) {
+                    $subQ->where('ten_xe', 'like', '%' . $keyword . '%')
+                        ->orWhere('loai_xe', 'like', '%' . $keyword . '%');
+                }
+                );
+            });
+        }
         $xeKeHoach = $query->get();
-
         return response()->json([
             'success' => true,
             'data' => $xeKeHoach,
@@ -100,9 +102,9 @@ class XeKeHoachController extends Controller
     /**
      * Display the specified vehicle plan
      */
-    public function show($id_xe_ke_hoach): JsonResponse
+    public function show($ma_xe_ke_hoach): JsonResponse
     {
-        $xeKeHoach = XeKeHoach::with(['keHoach', 'xe'])->find($id_xe_ke_hoach);
+        $xeKeHoach = XeKeHoach::with(['keHoach', 'xe'])->find($ma_xe_ke_hoach);
 
         if (!$xeKeHoach) {
             return response()->json([
@@ -124,8 +126,8 @@ class XeKeHoachController extends Controller
     {
         try {
             // Check if combination already exists
-            $existing = XeKeHoach::where('id_ke_hoach', $request->id_ke_hoach)
-                ->where('id_xe', $request->id_xe)
+            $existing = XeKeHoach::where('ma_ke_hoach', $request->ma_ke_hoach)
+                ->where('ma_xe', $request->ma_xe)
                 ->first();
 
             if ($existing) {
@@ -136,8 +138,8 @@ class XeKeHoachController extends Controller
             }
 
             $xeKeHoach = XeKeHoach::create([
-                'id_ke_hoach' => $request->id_ke_hoach,
-                'id_xe' => $request->id_xe,
+                'ma_ke_hoach' => $request->ma_ke_hoach,
+                'ma_xe' => $request->ma_xe,
                 'so_luong' => $request->so_luong,
                 'so_ngay' => $request->so_ngay,
                 'tong_tien' => $request->tong_tien,
@@ -150,7 +152,8 @@ class XeKeHoachController extends Controller
                 'message' => 'Thêm xe vào kế hoạch thành công',
                 'data' => $xeKeHoach,
             ], 201);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi thêm xe vào kế hoạch: ' . $e->getMessage(),
@@ -161,9 +164,9 @@ class XeKeHoachController extends Controller
     /**
      * Update the specified vehicle plan (admin only)
      */
-    public function update(UpdateXeKeHoachRequest $request, $id_xe_ke_hoach): JsonResponse
+    public function update(UpdateXeKeHoachRequest $request, $ma_xe_ke_hoach): JsonResponse
     {
-        $xeKeHoach = XeKeHoach::find($id_xe_ke_hoach);
+        $xeKeHoach = XeKeHoach::find($ma_xe_ke_hoach);
 
         if (!$xeKeHoach) {
             return response()->json([
@@ -173,12 +176,12 @@ class XeKeHoachController extends Controller
         }
 
         try {
-            if ($request->has('id_ke_hoach')) {
-                $xeKeHoach->id_ke_hoach = $request->id_ke_hoach;
+            if ($request->has('ma_ke_hoach')) {
+                $xeKeHoach->ma_ke_hoach = $request->ma_ke_hoach;
             }
 
-            if ($request->has('id_xe')) {
-                $xeKeHoach->id_xe = $request->id_xe;
+            if ($request->has('ma_xe')) {
+                $xeKeHoach->ma_xe = $request->ma_xe;
             }
 
             if ($request->has('so_luong')) {
@@ -201,7 +204,8 @@ class XeKeHoachController extends Controller
                 'message' => 'Cập nhật xe trong kế hoạch thành công',
                 'data' => $xeKeHoach,
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật xe trong kế hoạch: ' . $e->getMessage(),
@@ -212,9 +216,9 @@ class XeKeHoachController extends Controller
     /**
      * Delete the specified vehicle plan (admin only)
      */
-    public function destroy($id_xe_ke_hoach): JsonResponse
+    public function destroy($ma_xe_ke_hoach): JsonResponse
     {
-        $xeKeHoach = XeKeHoach::find($id_xe_ke_hoach);
+        $xeKeHoach = XeKeHoach::find($ma_xe_ke_hoach);
 
         if (!$xeKeHoach) {
             return response()->json([
@@ -230,7 +234,8 @@ class XeKeHoachController extends Controller
                 'success' => true,
                 'message' => 'Xoá xe khỏi kế hoạch thành công',
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi xoá xe khỏi kế hoạch: ' . $e->getMessage(),

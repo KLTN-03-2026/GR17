@@ -22,10 +22,12 @@ class KeHoach extends Model
         'ma_ke_hoach',
         'ma_nhom',
         'ten_ke_hoach',
+        'mo_ta',
         'so_nguoi',
         'ngay_bat_dau',
         'ngay_ket_thuc',
         'ngan_sach_du_kien',
+        'tong_chi_phi',
         'trang_thai',
     ];
 
@@ -33,6 +35,7 @@ class KeHoach extends Model
         'ngay_bat_dau' => 'date',
         'ngay_ket_thuc' => 'date',
         'ngan_sach_du_kien' => 'decimal:2',
+        'tong_chi_phi' => 'decimal:2',
         'so_nguoi' => 'integer',
         'trang_thai' => 'boolean',
         'created_at' => 'datetime',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\KhachHang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class KhachHangController extends Controller
@@ -17,19 +16,19 @@ class KhachHangController extends Controller
         if (!$khachHang instanceof KhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ban chua dang nhap khach hang'
+                'message' => 'Bạn chưa đăng nhập khách hàng',
             ], 401);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Khach hang da dang nhap',
-            'data' => $khachHang
+            'message' => 'Khách hàng đã đăng nhập',
+            'data' => $khachHang,
         ], 200);
     }
 
     /**
-     * ÄÄƒng kÃ½ tÃ i khoáº£n khÃ¡ch hÃ ng.
+     * Đăng ký tài khoản khách hàng.
      */
     public function register(Request $request)
     {
@@ -41,14 +40,14 @@ class KhachHangController extends Controller
             'Gioi_tinh' => 'required|boolean',
             'so_dien_thoai' => 'required|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai',
         ], [
-            'Ho_va_ten.regex' => 'Ho va ten chi duoc chua chu cai va khoang trang.',
-            'Ngay_sinh.date_format' => 'Ngay sinh phai dung dinh dang dd/mm/YYYY.',
+            'Ho_va_ten.regex' => 'Họ và tên chỉ được chứa chữ cái và khoảng trắng.',
+            'Ngay_sinh.date_format' => 'Ngày sinh phải đúng định dạng dd/mm/YYYY.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Du lieu dang ky khong hop le',
+                'message' => 'Dữ liệu đăng ký không hợp lệ',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -61,13 +60,13 @@ class KhachHangController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Dang ky thanh cong',
-            'data' => $khachHang
+            'message' => 'Đăng ký thành công',
+            'data' => $khachHang,
         ], 201);
     }
 
     /**
-     * Dang nhap khach hang.
+     * Đăng nhập khách hàng.
      */
     public function login(Request $request)
     {
@@ -79,20 +78,20 @@ class KhachHangController extends Controller
         $khachHang = KhachHang::where('Email', $credentials['Email'])->first();
 
         if (!$khachHang || !Hash::check($credentials['Mat_khau'], $khachHang->Mat_khau)) {
-            return response()->json(['message' => 'ThÃ´ng tin Ä‘Äƒng nháº­p khÃ´ng chÃ­nh xÃ¡c'], 401);
+            return response()->json(['message' => 'Thông tin đăng nhập không chính xác'], 401);
         }
 
         if (!$khachHang->is_block) {
-            return response()->json(['message' => 'TÃ i khoáº£n cá»§a báº¡n Ä‘Ã£ bá»‹ khÃ³a'], 403);
+            return response()->json(['message' => 'Tài khoản của bạn đã bị khóa'], 403);
         }
 
         $token = $khachHang->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['message' => 'ÄÄƒng nháº­p thÃ nh cÃ´ng', 'token' => $token], 200);
+        return response()->json(['message' => 'Đăng nhập thành công', 'token' => $token], 200);
     }
 
     /**
-     * Xem thÃ´ng tin cÃ¡ nhÃ¢n dá»±a trÃªn Ma_khach_hang.
+     * Xem thông tin cá nhân dựa trên Ma_khach_hang.
      */
     public function profile(Request $request, $maKhachHang)
     {
@@ -103,8 +102,8 @@ class KhachHangController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Láº¥y thÃ´ng tin cÃ¡ nhÃ¢n tháº¥t báº¡i',
-                'errors' => $validator->errors()
+                'message' => 'Lấy thông tin cá nhân thất bại',
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -113,18 +112,19 @@ class KhachHangController extends Controller
         if (!$khachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'KhÃ¡ch hÃ ng khÃ´ng tá»“n táº¡i'
+                'message' => 'Khách hàng không tồn tại',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Láº¥y thÃ´ng tin thÃ nh cÃ´ng',
-            'data' => $khachHang
+            'message' => 'Lấy thông tin thành công',
+            'data' => $khachHang,
         ], 200);
     }
+
     /**
-     * Cáº­p nháº­t thÃ´ng tin cÃ¡ nhÃ¢n dá»±a trÃªn Ma_khach_hang.
+     * Cập nhật thông tin cá nhân dựa trên Ma_khach_hang.
      */
     public function updateProfile(Request $request, $maKhachHang)
     {
@@ -143,11 +143,11 @@ class KhachHangController extends Controller
 
         $khachHang->update($validated);
 
-        return response()->json(['message' => 'Cáº­p nháº­t thÃ´ng tin thÃ nh cÃ´ng', 'data' => $khachHang]);
+        return response()->json(['message' => 'Cập nhật thông tin thành công', 'data' => $khachHang]);
     }
 
     /**
-     * Äá»•i máº­t kháº©u dá»±a trÃªn Ma_khach_hang.
+     * Đổi mật khẩu dựa trên Ma_khach_hang.
      */
     public function changePassword(Request $request, $maKhachHang)
     {
@@ -159,12 +159,12 @@ class KhachHangController extends Controller
         ]);
 
         if (!Hash::check($validated['current_password'], $khachHang->Mat_khau)) {
-            return response()->json(['message' => 'Máº­t kháº©u hiá»‡n táº¡i khÃ´ng chÃ­nh xÃ¡c'], 401);
+            return response()->json(['message' => 'Mật khẩu hiện tại không chính xác'], 401);
         }
 
         $khachHang->update(['Mat_khau' => Hash::make($validated['new_password'])]);
 
-        return response()->json(['message' => 'Äá»•i máº­t kháº©u thÃ nh cÃ´ng']);
+        return response()->json(['message' => 'Đổi mật khẩu thành công']);
     }
 
     /**
@@ -177,10 +177,7 @@ class KhachHangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Lấy danh sách khách hàng thành công',
-            'data' => $khachHang
+            'data' => $khachHang,
         ], 200);
     }
 }
-
-
-

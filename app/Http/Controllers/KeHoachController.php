@@ -27,8 +27,7 @@ class KeHoachController extends Controller
         }
 
         $maNhoms = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)->pluck('Ma_nhom');
-        $ke_hoach = KeHoach::where('trang_thai', 1)
-            ->whereIn('ma_nhom', $maNhoms)
+        $ke_hoach = KeHoach::whereIn('ma_nhom', $maNhoms)
             ->with('nhom')
             ->orderBy('ma_ke_hoach', 'desc')
             ->get();
@@ -115,6 +114,20 @@ class KeHoachController extends Controller
      */
     public function store(StoreKeHoachRequest $request): JsonResponse
     {
+        $maKhachHang = $request->input('ma_khach_hang');
+        if ($maKhachHang) {
+            $isMember = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)
+                ->where('Ma_nhom', $request->ma_nhom)
+                ->exists();
+
+            if (!$isMember) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khách hàng không thuộc nhóm hành trình đã chọn',
+                ], 422);
+            }
+        }
+
         try {
             $ke_hoach = KeHoach::create([
                 'ma_ke_hoach' => $request->ma_ke_hoach,
@@ -152,6 +165,21 @@ class KeHoachController extends Controller
                 'success' => false,
                 'message' => 'Kế hoạch không tồn tại',
             ], 404);
+        }
+
+        $maKhachHang = $request->input('ma_khach_hang');
+        if ($maKhachHang) {
+            $targetGroup = $request->input('ma_nhom', $ke_hoach->ma_nhom);
+            $isMember = ThanhVienNhom::where('Ma_khach_hang', $maKhachHang)
+                ->where('Ma_nhom', $targetGroup)
+                ->exists();
+
+            if (!$isMember) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khách hàng không thuộc nhóm hành trình đã chọn',
+                ], 422);
+            }
         }
 
         try {

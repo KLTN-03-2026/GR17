@@ -21,6 +21,7 @@ class StoreKeHoachRequest extends FormRequest
     {
         return [
             'ma_ke_hoach' => 'required|unique:ke_hoach|max:10',
+            'ma_khach_hang' => 'sometimes|exists:khach_hang,Ma_khach_hang',
             'ma_nhom' => 'required|exists:nhom,Ma_nhom',
             'ten_ke_hoach' => 'required|min:3|max:100',
             'so_nguoi' => 'required|integer|min:1',

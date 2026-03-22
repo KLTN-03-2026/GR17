@@ -38,7 +38,7 @@ class ChucNangController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Them chuc nang thanh cong',
+            'message' => 'Thêm chức năng thành công',
             'data' => $chucNang,
         ], 201);
     }
@@ -50,7 +50,7 @@ class ChucNangController extends Controller
         if (!$chucNang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Khong tim thay chuc nang',
+                'message' => 'Không tìm thấy chức năng',
             ], 404);
         }
 
@@ -70,7 +70,7 @@ class ChucNangController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Cap nhat chuc nang thanh cong',
+            'message' => 'Cập nhật chức năng thành công',
             'data' => $chucNang,
         ], 200);
     }
@@ -82,7 +82,7 @@ class ChucNangController extends Controller
         if (!$chucNang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Khong tim thay chuc nang',
+                'message' => 'Không tìm thấy chức năng',
             ], 404);
         }
 
@@ -90,7 +90,7 @@ class ChucNangController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Xoa chuc nang thanh cong',
+            'message' => 'Xóa chức năng thành công',
         ], 200);
     }
 }

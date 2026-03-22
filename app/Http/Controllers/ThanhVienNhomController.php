@@ -37,11 +37,27 @@ class ThanhVienNhomController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'Ma_thanh_vien' => 'required|string|unique:thanh_vien_nhom|max:20',
+            'Ma_thanh_vien' => 'sometimes|string|unique:thanh_vien_nhom|max:20',
             'Ma_nhom' => 'required|string|exists:nhom,Ma_nhom',
             'Ma_khach_hang' => 'required|string|exists:khach_hang,Ma_khach_hang',
             'vai_tro' => 'nullable|integer|in:0,1',
         ]);
+
+        $exists = ThanhVienNhom::where('Ma_nhom', $validated['Ma_nhom'])
+            ->where('Ma_khach_hang', $validated['Ma_khach_hang'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khách hàng đã tồn tại trong nhóm này',
+            ], 422);
+        }
+
+        if (!array_key_exists('vai_tro', $validated) || is_null($validated['vai_tro'])) {
+            $validated['vai_tro'] = 0;
+        }
+
         $tvn = ThanhVienNhom::create($validated);
         return response()->json(['success' => true, 'message' => 'Thêm thành viên thành công', 'data' => $tvn], 201);
     }

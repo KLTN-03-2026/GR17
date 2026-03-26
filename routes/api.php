@@ -179,6 +179,7 @@ Route::post('/khach-hang/hoa-don', [HoaDonController::class, 'storeCustomer']);
 // Routes DanhSachYeuThich cho khach hang
 Route::get('/khach-hang/danh-sach-yeu-thich', [DanhSachYeuThichController::class, 'indexCustomer']);
 Route::post('/khach-hang/danh-sach-yeu-thich', [DanhSachYeuThichController::class, 'storeCustomer']);
+Route::put('/khach-hang/danh-sach-yeu-thich/{ma_danh_sach_ua_thich}', [DanhSachYeuThichController::class, 'updateCustomer']);
 Route::delete('/khach-hang/danh-sach-yeu-thich/{ma_danh_sach_ua_thich}', [DanhSachYeuThichController::class, 'destroyCustomer']);
 
 // Admin

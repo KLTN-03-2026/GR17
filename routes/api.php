@@ -58,6 +58,10 @@ Route::get('/tag-dia-diem/tag/{maTag}', [TagDiaDiemController::class, 'getLocati
 // Route::post('/admin/login', [AdminController::class, 'login']);
 Route::get('/admins', [AdminController::class, 'index']); //
 
+// Admin routes for KhachHang
+Route::post('/admin/khach-hang', [KhachHangController::class, 'storeByAdmin']);
+Route::delete('/admin/khach-hang/{maKhachHang}', [KhachHangController::class, 'destroy']);
+
 // Admin routes for DiaDiem
 Route::post('/dia-diem', [DiaDiemController::class, 'store']);
 Route::put('/dia-diem/{maDiaDiem}', [DiaDiemController::class, 'update']);

@@ -135,6 +135,8 @@ class KhachHangController extends Controller
             'Ngay_sinh' => 'nullable|date_format:d/m/Y',
             'Gioi_tinh' => 'nullable|boolean',
             'so_dien_thoai' => 'nullable|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai,' . $maKhachHang . ',Ma_khach_hang',
+            'Email' => 'nullable|email|unique:khach_hang,Email,' . $maKhachHang . ',Ma_khach_hang',
+            'is_block' => 'nullable|boolean',
         ]);
 
         if (isset($validated['Ngay_sinh'])) {
@@ -178,6 +180,70 @@ class KhachHangController extends Controller
             'success' => true,
             'message' => 'Lấy danh sách khách hàng thành công',
             'data' => $khachHang,
+        ], 200);
+    }
+
+    /**
+     * Thêm mới khách hàng (Admin)
+     */
+    public function storeByAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'Ho_va_ten' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[\pL\s]+$/u'],
+            'Mat_khau' => 'required|string|min:8',
+            'Email' => 'required|email|unique:khach_hang,Email',
+            'Ngay_sinh' => 'required|date_format:d/m/Y',
+            'Gioi_tinh' => 'required|boolean',
+            'so_dien_thoai' => 'required|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai',
+            'is_block' => 'boolean',
+        ], [
+            'Ho_va_ten.regex' => 'Họ và tên chỉ được chứa chữ cái và khoảng trắng.',
+            'Ngay_sinh.date_format' => 'Ngày sinh phải đúng định dạng dd/mm/YYYY.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+        $validated['Mat_khau'] = Hash::make($validated['Mat_khau']);
+        $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
+        
+        if ($request->has('is_block')) {
+             $validated['is_block'] = $request->is_block;
+        }
+
+        $khachHang = KhachHang::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thêm khách hàng thành công',
+            'data' => $khachHang,
+        ], 201);
+    }
+
+    /**
+     * Xóa khách hàng (Admin)
+     */
+    public function destroy($maKhachHang)
+    {
+        $khachHang = KhachHang::find($maKhachHang);
+        if (!$khachHang) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khách hàng không tồn tại'
+            ], 404);
+        }
+        
+        $khachHang->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Xóa khách hàng thành công'
         ], 200);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\HoatDongChiTiet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreHoatDongChiTietRequest;
+use App\Http\Requests\UpdateHoatDongChiTietRequest;
 
 class HoatDongChiTietController extends Controller
 {
@@ -54,7 +56,7 @@ class HoatDongChiTietController extends Controller
             'data' => $hoatDongChiTiet
         ], 200);
     }
-    public function store(Request $request)
+    public function store(StoreHoatDongChiTietRequest $request)
     {
         $khachHang = $request->user();
         if (!$khachHang) {
@@ -64,26 +66,8 @@ class HoatDongChiTietController extends Controller
             ], 401);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ma_hoat_dong_chi_tiet' => 'required|unique:hoat_dong_chi_tiet|max:10',
-            'ma_ke_hoach' => 'required|exists:ke_hoach,ma_ke_hoach',
-            'ma_nhom' => 'required|exists:nhom,Ma_nhom',
-            'ma_dia_diem' => 'required|exists:dia_diem,ma_dia_diem',
-            'gio_bat_dau' => 'required|date_format:H:i',
-            'gio_ket_thuc' => 'required|date_format:H:i|after:gio_bat_dau',
-            'ngay_cu_the' => 'required|date_format:Y-m-d',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm hoạt động chi tiết thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $hoatDongChiTiet = HoatDongChiTiet::create($request->all());
+            $hoatDongChiTiet = HoatDongChiTiet::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -98,7 +82,7 @@ class HoatDongChiTietController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateHoatDongChiTietRequest $request, $id)
     {
         $khachHang = $request->user();
         if (!$khachHang) {
@@ -116,28 +100,8 @@ class HoatDongChiTietController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ma_ke_hoach' => 'sometimes|required|exists:ke_hoach,ma_ke_hoach',
-            'ma_nhom' => 'sometimes|required|exists:nhom,Ma_nhom',
-            'ma_dia_diem' => 'sometimes|required|exists:dia_diem,ma_dia_diem',
-            'gio_bat_dau' => 'sometimes|required|date_format:H:i',
-            'gio_ket_thuc' => 'sometimes|required|date_format:H:i|after:gio_bat_dau',
-            'ngay_cu_the' => 'sometimes|required|date_format:Y-m-d',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật hoạt động chi tiết thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $data = $request->all();
-            unset($data['ma_hoat_dong_chi_tiet']);
-
-            $hoatDongChiTiet->update($data);
+            $hoatDongChiTiet->update($request->validated());
 
             return response()->json([
                 'success' => true,

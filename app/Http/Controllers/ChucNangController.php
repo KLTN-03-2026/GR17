@@ -6,6 +6,8 @@ use App\Models\ChucNang;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreChucNangRequest;
+use App\Http\Requests\UpdateChucNangRequest;
 
 class ChucNangController extends Controller
 {
@@ -20,21 +22,9 @@ class ChucNangController extends Controller
         ], 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreChucNangRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'ten_chuc_nang' => 'required|string|max:100|unique:chuc_nang,ten_chuc_nang',
-            'mo_ta' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $chucNang = ChucNang::create($validator->validated());
+        $chucNang = ChucNang::create($request->validated());
 
         return response()->json([
             'success' => true,
@@ -43,7 +33,7 @@ class ChucNangController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $ma_chuc_nang): JsonResponse
+    public function update(UpdateChucNangRequest $request, $ma_chuc_nang): JsonResponse
     {
         $chucNang = ChucNang::find($ma_chuc_nang);
 
@@ -54,19 +44,7 @@ class ChucNangController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ten_chuc_nang' => 'sometimes|required|string|max:100|unique:chuc_nang,ten_chuc_nang,' . $ma_chuc_nang . ',ma_chuc_nang',
-            'mo_ta' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $chucNang->update($validator->validated());
+        $chucNang->update($request->validated());
 
         return response()->json([
             'success' => true,

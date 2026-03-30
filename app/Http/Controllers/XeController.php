@@ -100,15 +100,7 @@ class XeController extends Controller
     public function store(StoreXeRequest $request): JsonResponse
     {
         try {
-            $xe = Xe::create([
-                'ten_xe' => $request->ten_xe,
-                'loai_xe' => $request->loai_xe,
-                'so_cho' => $request->so_cho,
-                'gia_theo_ngay' => $request->gia_theo_ngay,
-                'tong_so_xe' => $request->tong_so_xe,
-                'mo_ta' => $request->mo_ta,
-                'trang_thai' => 1,
-            ]);
+            $xe = Xe::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -138,35 +130,7 @@ class XeController extends Controller
         }
 
         try {
-            if ($request->has('ten_xe')) {
-                $xe->ten_xe = $request->ten_xe;
-            }
-
-            if ($request->has('loai_xe')) {
-                $xe->loai_xe = $request->loai_xe;
-            }
-
-            if ($request->has('so_cho')) {
-                $xe->so_cho = $request->so_cho;
-            }
-
-            if ($request->has('gia_theo_ngay')) {
-                $xe->gia_theo_ngay = $request->gia_theo_ngay;
-            }
-
-            if ($request->has('tong_so_xe')) {
-                $xe->tong_so_xe = $request->tong_so_xe;
-            }
-
-            if ($request->has('mo_ta')) {
-                $xe->mo_ta = $request->mo_ta;
-            }
-
-            if ($request->has('trang_thai')) {
-                $xe->trang_thai = $request->trang_thai;
-            }
-
-            $xe->save();
+            $xe->update($request->validated());
 
             return response()->json([
                 'success' => true,

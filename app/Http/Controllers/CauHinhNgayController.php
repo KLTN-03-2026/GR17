@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\CauHinhNgay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreCauHinhNgayRequest;
+use App\Http\Requests\UpdateCauHinhNgayRequest;
 
 class CauHinhNgayController extends Controller
 {
@@ -53,25 +55,10 @@ class CauHinhNgayController extends Controller
     /**
      * Thêm mới cấu hình ngày (Admin)
      */
-    public function store(Request $request)
+    public function store(StoreCauHinhNgayRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            // 'ma_cau_hinh_ngay' => 'required|string|unique:cau_hinh_ngay,ma_cau_hinh_ngay|max:10',
-            'loai_ngay_le' => 'required|integer|in:1,2,3',
-            'ten_ngay_le' => 'nullable|string|max:255',
-            'ngay' => 'required|date'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm cấu hình ngày thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $cauHinhNgay = CauHinhNgay::create($request->all());
+            $cauHinhNgay = CauHinhNgay::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -90,7 +77,7 @@ class CauHinhNgayController extends Controller
     /**
      * Cập nhật cấu hình ngày (Admin)
      */
-    public function update(Request $request, $ma_cau_hinh_ngay)
+    public function update(UpdateCauHinhNgayRequest $request, $ma_cau_hinh_ngay)
     {
         $cauHinhNgay = CauHinhNgay::find($ma_cau_hinh_ngay);
 
@@ -101,22 +88,8 @@ class CauHinhNgayController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'loai_ngay_le' => 'sometimes|required|integer|in:1,2,3',
-            'ten_ngay_le' => 'nullable|string|max:255',
-            'ngay' => 'sometimes|required|date'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật cấu hình ngày thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $cauHinhNgay->update($request->all());
+            $cauHinhNgay->update($request->validated());
 
             return response()->json([
                 'success' => true,

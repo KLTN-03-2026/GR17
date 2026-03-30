@@ -6,6 +6,11 @@ use App\Models\KhachHang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\KhachHangRegisterRequest;
+use App\Http\Requests\KhachHangLoginRequest;
+use App\Http\Requests\KhachHangUpdateProfileRequest;
+use App\Http\Requests\KhachHangChangePasswordRequest;
+use App\Http\Requests\KhachHangStoreByAdminRequest;
 
 class KhachHangController extends Controller
 {
@@ -30,29 +35,9 @@ class KhachHangController extends Controller
     /**
      * Đăng ký tài khoản khách hàng.
      */
-    public function register(Request $request)
+    public function register(KhachHangRegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'Ho_va_ten' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[\pL\s]+$/u'],
-            'Mat_khau' => 'required|string|min:8',
-            'Email' => 'required|email|unique:khach_hang,Email',
-            'Ngay_sinh' => 'required|date_format:d/m/Y',
-            'Gioi_tinh' => 'required|boolean',
-            'so_dien_thoai' => 'required|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai',
-        ], [
-            'Ho_va_ten.regex' => 'Họ và tên chỉ được chứa chữ cái và khoảng trắng.',
-            'Ngay_sinh.date_format' => 'Ngày sinh phải đúng định dạng dd/mm/YYYY.',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dữ liệu đăng ký không hợp lệ',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $validated = $validator->validated();
+        $validated = $request->validated();
         $validated['Mat_khau'] = Hash::make($validated['Mat_khau']);
         $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
 
@@ -68,12 +53,9 @@ class KhachHangController extends Controller
     /**
      * Đăng nhập khách hàng.
      */
-    public function login(Request $request)
+    public function login(KhachHangLoginRequest $request)
     {
-        $credentials = $request->validate([
-            'Email' => 'required|email',
-            'Mat_khau' => 'required|string',
-        ]);
+        $credentials = $request->validated();
 
         $khachHang = KhachHang::where('Email', $credentials['Email'])->first();
 
@@ -126,18 +108,11 @@ class KhachHangController extends Controller
     /**
      * Cập nhật thông tin cá nhân dựa trên Ma_khach_hang.
      */
-    public function updateProfile(Request $request, $maKhachHang)
+    public function updateProfile(KhachHangUpdateProfileRequest $request, $maKhachHang)
     {
         $khachHang = KhachHang::findOrFail($maKhachHang);
 
-        $validated = $request->validate([
-            'Ho_va_ten' => 'nullable|string|min:5|max:40|regex:/^[\\pL\\s]+$/u',
-            'Ngay_sinh' => 'nullable|date_format:d/m/Y',
-            'Gioi_tinh' => 'nullable|boolean',
-            'so_dien_thoai' => 'nullable|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai,' . $maKhachHang . ',Ma_khach_hang',
-            'Email' => 'nullable|email|unique:khach_hang,Email,' . $maKhachHang . ',Ma_khach_hang',
-            'is_block' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['Ngay_sinh'])) {
             $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
@@ -151,14 +126,11 @@ class KhachHangController extends Controller
     /**
      * Đổi mật khẩu dựa trên Ma_khach_hang.
      */
-    public function changePassword(Request $request, $maKhachHang)
+    public function changePassword(KhachHangChangePasswordRequest $request, $maKhachHang)
     {
         $khachHang = KhachHang::findOrFail($maKhachHang);
 
-        $validated = $request->validate([
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8',
-        ]);
+        $validated = $request->validated();
 
         if (!Hash::check($validated['current_password'], $khachHang->Mat_khau)) {
             return response()->json(['message' => 'Mật khẩu hiện tại không chính xác'], 401);
@@ -186,30 +158,9 @@ class KhachHangController extends Controller
     /**
      * Thêm mới khách hàng (Admin)
      */
-    public function storeByAdmin(Request $request)
+    public function storeByAdmin(KhachHangStoreByAdminRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'Ho_va_ten' => ['required', 'string', 'min:5', 'max:40', 'regex:/^[\pL\s]+$/u'],
-            'Mat_khau' => 'required|string|min:8',
-            'Email' => 'required|email|unique:khach_hang,Email',
-            'Ngay_sinh' => 'required|date_format:d/m/Y',
-            'Gioi_tinh' => 'required|boolean',
-            'so_dien_thoai' => 'required|regex:/^0[0-9]{9}$/|unique:khach_hang,so_dien_thoai',
-            'is_block' => 'boolean',
-        ], [
-            'Ho_va_ten.regex' => 'Họ và tên chỉ được chứa chữ cái và khoảng trắng.',
-            'Ngay_sinh.date_format' => 'Ngày sinh phải đúng định dạng dd/mm/YYYY.',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dữ liệu không hợp lệ',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $validated = $validator->validated();
+        $validated = $request->validated();
         $validated['Mat_khau'] = Hash::make($validated['Mat_khau']);
         $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
         

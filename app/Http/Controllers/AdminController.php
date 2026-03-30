@@ -6,6 +6,12 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\AdminLoginRequest;
+use App\Http\Requests\AdminStoreRequest;
+use App\Http\Requests\AdminChangePasswordRequest;
+use App\Http\Requests\AdminUpdateRequest;
+use App\Http\Requests\AdminSearchRequest;
+use App\Http\Requests\AdminChangeStatusRequest;
 
 class AdminController extends Controller
 {
@@ -27,19 +33,8 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function login(Request $request)
+    public function login(AdminLoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'Mat_khau' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dữ liệu không hợp lệ',
-                'errors' => $validator->errors()
-            ], 422);
-        }
         $admin = Admin::where('Email', $request->email)->first();
         if (!$admin || !Hash::check($request->Mat_khau, $admin->Mat_khau)) {
             return response()->json([
@@ -91,28 +86,11 @@ class AdminController extends Controller
             'data' => $admin
         ], 200);
     }
-    public function store(Request $request)
+    public function store(AdminStoreRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            // 'Ma_admin' => 'required|unique:admins|max:10',
-            'Ho_va_ten' => 'required|min:5|max:40',
-            'Mat_khau' => 'required|min:8',
-            'Email' => 'required|email|unique:admins',
-            'Ngay_sinh' => 'required|date_format:Y-m-d',
-            'Gioi_tinh' => 'required|boolean',
-            'ma_chuc_vu' => 'required',
-            'so_dien_thoai' => 'required|unique:admins|regex:/^0[0-9]{9}$/',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm quản trị viên thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
         try {
 
-            $data = $request->all();
+            $data = $request->validated();
             $data['Mat_khau'] = Hash::make($data['Mat_khau']);
 
             $admin = Admin::create($data);
@@ -131,18 +109,14 @@ class AdminController extends Controller
             ], 500);
         }
     }
-    public function update(Request $request, $id)
+    public function update(AdminUpdateRequest $request, $id)
     {
         $admin = Admin::find($id);
-        // if (!$admin) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Không tìm thấy quản trị viên'
-        //     ], 404);
-        // }
+        if (!$admin) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy quản trị viên'], 404);
+        }
         try {
-
-            $admin->update($request->all());
+            $admin->update($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -174,20 +148,21 @@ class AdminController extends Controller
             'message' => 'Xóa quản trị viên thành công'
         ], 200);
     }
-    public function search(Request $request)
+    public function search(AdminSearchRequest $request)
     {
         $query = Admin::query();
+        $validated = $request->validated();
 
-        if ($request->so_dien_thoai) {
-            $query->where('so_dien_thoai', $request->so_dien_thoai);
+        if (isset($validated['so_dien_thoai'])) {
+            $query->where('so_dien_thoai', $validated['so_dien_thoai']);
         }
 
-        if ($request->email) {
-            $query->where('Email', $request->email);
+        if (isset($validated['email'])) {
+            $query->where('Email', $validated['email']);
         }
 
-        if ($request->name) {
-            $query->where('Ho_va_ten', 'like', '%' . $request->name . '%');
+        if (isset($validated['name'])) {
+            $query->where('Ho_va_ten', 'like', '%' . $validated['name'] . '%');
         }
 
         $admins = $query->get();
@@ -204,21 +179,9 @@ class AdminController extends Controller
             'data' => $admins
         ], 200);
     }
-    public function changePassword(Request $request)
+    public function changePassword(AdminChangePasswordRequest $request)
     {
         $admin = $request->user();
-
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required',
-            'new_password' => 'required|min:8'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dữ liệu không hợp lệ',
-                'errors' => $validator->errors()
-            ], 422);
-        }
         if (!Hash::check($request->current_password, $admin->Mat_khau)) {
             return response()->json([
                 'success' => false,
@@ -234,7 +197,7 @@ class AdminController extends Controller
             'message' => 'Đổi mật khẩu thành công'
         ], 200);
     }
-    public function changeStatus(Request $request, $id)
+    public function changeStatus(AdminChangeStatusRequest $request, $id)
     {
         $admin = Admin::find($id);
 
@@ -244,8 +207,7 @@ class AdminController extends Controller
                 'message' => 'Không tìm thấy quản trị viên'
             ], 404);
         }
-        $admin->is_block = $request->is_block;
-        $admin->save();
+        $admin->update($request->validated());
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật trạng thái thành công',

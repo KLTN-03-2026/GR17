@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreTourRequest;
+use App\Http\Requests\UpdateTourRequest;
 
 class TourController extends Controller
 {
@@ -44,29 +46,10 @@ class TourController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreTourRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            // 'ma_tour' => 'required|unique:tours|max:10',
-            'ten_tour' => 'required|string|max:255',
-            'mo_ta' => 'nullable|string',
-            'hinh_anh' => 'nullable|string',
-            'so_tien' => 'nullable|numeric',
-            'so_ngay' => 'nullable|integer',
-            'so_nguoi' => 'nullable|integer',
-            'ma_tag' => 'nullable|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm tour thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $tour = Tour::create($request->all());
+            $tour = Tour::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -82,7 +65,7 @@ class TourController extends Controller
         }
     }
 
-    public function update(Request $request, $ma_tour)
+    public function update(UpdateTourRequest $request, $ma_tour)
     {
         $tour = Tour::find($ma_tour);
 
@@ -93,26 +76,8 @@ class TourController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ten_tour' => 'sometimes|required|string|max:255',
-            'mo_ta' => 'nullable|string',
-            'hinh_anh' => 'nullable|string',
-            'so_tien' => 'nullable|numeric',
-            'so_ngay' => 'nullable|integer',
-            'so_nguoi' => 'nullable|integer',
-            'ma_tag' => 'nullable|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật tour thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $tour->update($request->all());
+            $tour->update($request->validated());
 
             return response()->json([
                 'success' => true,

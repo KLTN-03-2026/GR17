@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\TourKhoiHanh;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreTourKhoiHanhRequest;
+use App\Http\Requests\UpdateTourKhoiHanhRequest;
 
 class TourKhoiHanhController extends Controller
 {
@@ -44,27 +46,10 @@ class TourKhoiHanhController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreTourKhoiHanhRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            // 'ma_thoi_gian_tour' => 'required|unique:tour_khoi_hanhs|max:10',
-            'ma_tour' => 'required|max:10',
-            'ngay_bat_dau' => 'nullable|date',
-            'ngay_ket_thuc' => 'nullable|date|after_or_equal:ngay_bat_dau',
-            'so_cho' => 'nullable|integer',
-            'tinh_trang' => 'nullable|boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm dữ liệu khởi hành thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $tourKhoiHanh = TourKhoiHanh::create($request->all());
+            $tourKhoiHanh = TourKhoiHanh::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -80,7 +65,7 @@ class TourKhoiHanhController extends Controller
         }
     }
 
-    public function update(Request $request, $ma_thoi_gian_tour)
+    public function update(UpdateTourKhoiHanhRequest $request, $ma_thoi_gian_tour)
     {
         $tourKhoiHanh = TourKhoiHanh::find($ma_thoi_gian_tour);
 
@@ -91,24 +76,8 @@ class TourKhoiHanhController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ma_tour' => 'sometimes|required|max:10',
-            'ngay_bat_dau' => 'nullable|date',
-            'ngay_ket_thuc' => 'nullable|date|after_or_equal:ngay_bat_dau',
-            'so_cho' => 'nullable|integer',
-            'tinh_trang' => 'nullable|boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật dữ liệu khởi hành thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $tourKhoiHanh->update($request->all());
+            $tourKhoiHanh->update($request->validated());
 
             return response()->json([
                 'success' => true,

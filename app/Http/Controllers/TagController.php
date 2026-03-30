@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreTagRequest;
+use App\Http\Requests\UpdateTagRequest;
 
 class TagController extends Controller
 {
@@ -46,22 +48,9 @@ class TagController extends Controller
     /**
      * Thêm một tag mới.
      */
-    public function store(Request $request)
+    public function store(StoreTagRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'ma_tag' => 'required|string|unique:tag|max:10',
-            'ten_tag' => 'required|string|min:2|max:100',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm tag thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $tag = Tag::create($validator->validated());
+        $tag = Tag::create($request->validated());
 
         return response()->json([
             'success' => true,
@@ -73,7 +62,7 @@ class TagController extends Controller
     /**
      * Cập nhật một tag.
      */
-    public function update(Request $request, $maTag)
+    public function update(UpdateTagRequest $request, $maTag)
     {
         $tag = Tag::find($maTag);
 
@@ -84,19 +73,7 @@ class TagController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ten_tag' => 'required|string|min:2|max:100',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật tag thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $tag->update($validator->validated());
+        $tag->update($request->validated());
 
         return response()->json([
             'success' => true,

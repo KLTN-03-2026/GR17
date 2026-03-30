@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\DiaDiem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreDiaDiemRequest;
+use App\Http\Requests\UpdateDiaDiemRequest;
 
 class DiaDiemController extends Controller
 {
@@ -65,33 +67,9 @@ class DiaDiemController extends Controller
     /**
      * Thêm một địa điểm mới.
      */
-    public function store(Request $request)
+    public function store(StoreDiaDiemRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'ma_dia_diem' => 'required|string|unique:dia_diem|max:10',
-            'ten_dia_diem' => 'required|string|min:5|max:100',
-            'loai' => 'required|integer|in:1,2,3',
-            'dia_chi' => 'required|string|max:255',
-            'sdt' => 'nullable|regex:/^0[0-9]{9}$/',
-            'kinh_do' => 'required|numeric|between:-180,180',
-            'vi_do' => 'required|numeric|between:-90,90',
-            'gio_mo_cua' => 'nullable|date_format:H:i',
-            'gio_dong_cua' => 'nullable|date_format:H:i',
-            'gia_giao_dong' => 'nullable|numeric|min:0',
-            'hinh_anh' => 'nullable|string|url',
-            'mo_ta' => 'nullable|string',
-            'thoi_gian_tham_quan' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm địa điểm thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $diaDiem = DiaDiem::create($validator->validated());
+        $diaDiem = DiaDiem::create($request->validated());
 
         return response()->json([
             'success' => true,
@@ -103,7 +81,7 @@ class DiaDiemController extends Controller
     /**
      * Cập nhật một địa điểm.
      */
-    public function update(Request $request, $maDiaDiem)
+    public function update(UpdateDiaDiemRequest $request, $maDiaDiem)
     {
         $diaDiem = DiaDiem::find($maDiaDiem);
 
@@ -114,30 +92,7 @@ class DiaDiemController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ten_dia_diem' => 'nullable|string|min:5|max:100',
-            'loai' => 'nullable|integer|in:1,2,3',
-            'dia_chi' => 'nullable|string|max:255',
-            'sdt' => 'nullable|regex:/^0[0-9]{9}$/',
-            'kinh_do' => 'nullable|numeric|between:-180,180',
-            'vi_do' => 'nullable|numeric|between:-90,90',
-            'gio_mo_cua' => 'nullable|date_format:H:i',
-            'gio_dong_cua' => 'nullable|date_format:H:i',
-            'gia_giao_dong' => 'nullable|numeric|min:0',
-            'hinh_anh' => 'nullable|string|url',
-            'mo_ta' => 'nullable|string',
-            'thoi_gian_tham_quan' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật địa điểm thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $diaDiem->update($validator->validated());
+        $diaDiem->update($request->validated());
 
         return response()->json([
             'success' => true,

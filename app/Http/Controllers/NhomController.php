@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Nhom;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreNhomRequest;
+use App\Http\Requests\UpdateNhomRequest;
 
 class NhomController extends Controller
 {
@@ -25,26 +27,19 @@ class NhomController extends Controller
         return response()->json(['success' => true, 'data' => $nhom], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreNhomRequest $request)
     {
-        $validated = $request->validate([
-            // 'Ma_nhom' => 'required|string|unique:nhom|max:20',
-            'ten_nhom' => 'required|string|max:100',
-        ]);
-        $nhom = Nhom::create($validated);
+        $nhom = Nhom::create($request->validated());
         return response()->json(['success' => true, 'message' => 'Thêm nhóm thành công', 'data' => $nhom], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateNhomRequest $request, $id)
     {
         $nhom = Nhom::find($id);
         if (!$nhom) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy nhóm'], 404);
         }
-        $validated = $request->validate([
-            'ten_nhom' => 'sometimes|required|string|max:100',
-        ]);
-        $nhom->update($validated);
+        $nhom->update($request->validated());
         return response()->json(['success' => true, 'message' => 'Cập nhật nhóm thành công', 'data' => $nhom], 200);
     }
 

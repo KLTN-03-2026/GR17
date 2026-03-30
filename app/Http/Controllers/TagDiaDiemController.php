@@ -7,6 +7,8 @@ use App\Models\DiaDiem;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreTagDiaDiemRequest;
+use App\Http\Requests\UpdateTagDiaDiemRequest;
 
 class TagDiaDiemController extends Controller
 {
@@ -48,23 +50,9 @@ class TagDiaDiemController extends Controller
     /**
      * Thêm một tag_dia_diem mới.
      */
-    public function store(Request $request)
+    public function store(StoreTagDiaDiemRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'ma_tag_dia_diem' => 'required|string|unique:tag_dia_diem|max:10',
-            'ma_dia_diem' => 'required|string|exists:dia_diem,ma_dia_diem',
-            'ma_tag' => 'required|string|exists:tag,ma_tag',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm tag địa điểm thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $tagDiaDiem = TagDiaDiem::create($validator->validated());
+        $tagDiaDiem = TagDiaDiem::create($request->validated());
 
         return response()->json([
             'success' => true,
@@ -76,7 +64,7 @@ class TagDiaDiemController extends Controller
     /**
      * Cập nhật một tag_dia_diem.
      */
-    public function update(Request $request, $maTagDiaDiem)
+    public function update(UpdateTagDiaDiemRequest $request, $maTagDiaDiem)
     {
         $tagDiaDiem = TagDiaDiem::find($maTagDiaDiem);
 
@@ -87,20 +75,7 @@ class TagDiaDiemController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ma_dia_diem' => 'nullable|string|exists:dia_diem,ma_dia_diem',
-            'ma_tag' => 'nullable|string|exists:tag,ma_tag',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật tag địa điểm thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $tagDiaDiem->update($validator->validated());
+        $tagDiaDiem->update($request->validated());
 
         return response()->json([
             'success' => true,

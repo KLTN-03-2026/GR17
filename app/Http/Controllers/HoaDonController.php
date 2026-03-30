@@ -7,6 +7,8 @@ use App\Models\HoaDon;
 use App\Models\ThanhVienNhom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateHoaDonStatusRequest;
+use App\Http\Requests\StoreHoaDonCustomerRequest;
 
 class HoaDonController extends Controller
 {
@@ -38,23 +40,15 @@ class HoaDonController extends Controller
         return response()->json(['success' => true, 'message' => 'Lấy hóa đơn thành công', 'data' => $hoaDon], 200);
     }
 
-    public function updateStatusAdmin(Request $request, $ma_hoa_don)
+    public function updateStatusAdmin(UpdateHoaDonStatusRequest $request, $ma_hoa_don)
     {
         $hoaDon = HoaDon::find($ma_hoa_don);
         if (!$hoaDon) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy hóa đơn'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'trang_thai_thanh_toan' => 'required|integer|in:0,1,2',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-
         try {
-            $hoaDon->update(['trang_thai_thanh_toan' => $request->trang_thai_thanh_toan]);
+            $hoaDon->update($request->validated());
             return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thanh toán thành công', 'data' => $hoaDon], 200);
         }
         catch (\Exception $e) {
@@ -112,23 +106,10 @@ class HoaDonController extends Controller
         return response()->json(['success' => true, 'message' => 'Lấy thông tin thành công', 'data' => $hoaDon], 200);
     }
 
-    public function storeCustomer(Request $request)
+    public function storeCustomer(StoreHoaDonCustomerRequest $request)
     {
         $khachHang = clone $request->user();
         $maKhachHang = $request->ma_khach_hang ?? ($khachHang ? $khachHang->Ma_khach_hang : null);
-
-        $validator = Validator::make($request->all(), [
-            'ma_hoa_don' => 'required|unique:hoa_don,ma_hoa_don|max:10',
-            'ma_nhom' => 'required|exists:nhom,Ma_nhom|max:20',
-            'loai_hoa_don' => 'required|integer|in:0,1',
-            'ma_doi_tuong' => 'required|string',
-            'tong_tien' => 'required|numeric|min:0',
-            'ma_giao_dich' => 'nullable|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
 
         if (!$maKhachHang) {
             return response()->json(['success' => false, 'message' => 'Bạn phải xác thực khách hàng (hoặc truyền ma_khach_hang) để thêm mới'], 403);
@@ -143,7 +124,7 @@ class HoaDonController extends Controller
         }
 
         try {
-            $data = $request->except(['ma_khach_hang']); // bỏ đi trường ma_khach_hang truyền hờ 
+            $data = $request->validated();
             $data['trang_thai_thanh_toan'] = 0; // Luôn chờ xử lý lúc mới đặt
             $data['ngay_tao'] = now();
 

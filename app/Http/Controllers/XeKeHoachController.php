@@ -137,13 +137,7 @@ class XeKeHoachController extends Controller
                 ], 409);
             }
 
-            $xeKeHoach = XeKeHoach::create([
-                'ma_ke_hoach' => $request->ma_ke_hoach,
-                'ma_xe' => $request->ma_xe,
-                'so_luong' => $request->so_luong,
-                'so_ngay' => $request->so_ngay,
-                'tong_tien' => $request->tong_tien,
-            ]);
+            $xeKeHoach = XeKeHoach::create($request->validated());
 
             $xeKeHoach = $xeKeHoach->load(['keHoach', 'xe']);
 
@@ -176,27 +170,7 @@ class XeKeHoachController extends Controller
         }
 
         try {
-            if ($request->has('ma_ke_hoach')) {
-                $xeKeHoach->ma_ke_hoach = $request->ma_ke_hoach;
-            }
-
-            if ($request->has('ma_xe')) {
-                $xeKeHoach->ma_xe = $request->ma_xe;
-            }
-
-            if ($request->has('so_luong')) {
-                $xeKeHoach->so_luong = $request->so_luong;
-            }
-
-            if ($request->has('so_ngay')) {
-                $xeKeHoach->so_ngay = $request->so_ngay;
-            }
-
-            if ($request->has('tong_tien')) {
-                $xeKeHoach->tong_tien = $request->tong_tien;
-            }
-
-            $xeKeHoach->save();
+            $xeKeHoach->update($request->validated());
             $xeKeHoach = $xeKeHoach->load(['keHoach', 'xe']);
 
             return response()->json([

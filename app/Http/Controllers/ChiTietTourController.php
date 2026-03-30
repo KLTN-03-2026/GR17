@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ChiTietTour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreChiTietTourRequest;
+use App\Http\Requests\UpdateChiTietTourRequest;
 
 class ChiTietTourController extends Controller
 {
@@ -44,24 +46,10 @@ class ChiTietTourController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreChiTietTourRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            // 'ma_chi_tiet_tour' => 'required|unique:chi_tiet_tours|max:10',
-            'ma_tour' => 'required|max:10',
-            'ma_dia_diem' => 'required|max:10'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Thêm chi tiết tour thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $chiTietTour = ChiTietTour::create($request->all());
+            $chiTietTour = ChiTietTour::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -77,7 +65,7 @@ class ChiTietTourController extends Controller
         }
     }
 
-    public function update(Request $request, $ma_chi_tiet_tour)
+    public function update(UpdateChiTietTourRequest $request, $ma_chi_tiet_tour)
     {
         $chiTietTour = ChiTietTour::find($ma_chi_tiet_tour);
 
@@ -88,21 +76,8 @@ class ChiTietTourController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'ma_tour' => 'sometimes|required|max:10',
-            'ma_dia_diem' => 'sometimes|required|max:10'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật chi tiết tour thất bại',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $chiTietTour->update($request->all());
+            $chiTietTour->update($request->validated());
 
             return response()->json([
                 'success' => true,

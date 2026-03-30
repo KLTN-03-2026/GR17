@@ -6,6 +6,8 @@ use App\Models\DanhSachYeuThich;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\StoreDanhSachYeuThichRequest;
+use App\Http\Requests\UpdateDanhSachYeuThichRequest;
 
 class DanhSachYeuThichController extends Controller
 {
@@ -60,7 +62,7 @@ class DanhSachYeuThichController extends Controller
     /**
      * Add destination to customer favorite list.
      */
-    public function storeCustomer(Request $request)
+    public function storeCustomer(StoreDanhSachYeuThichRequest $request)
     {
         $maKhachHang = $this->resolveCustomerId($request);
 
@@ -69,18 +71,6 @@ class DanhSachYeuThichController extends Controller
                 'success' => false,
                 'message' => 'Vui long cung cap ma khach hang hoac dang nhap de them vao danh sach',
             ], 401);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'ma_dia_diem' => 'required|exists:dia_diem,ma_dia_diem',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Du lieu khong hop le',
-                'errors' => $validator->errors(),
-            ], 422);
         }
 
         $exists = DanhSachYeuThich::query()
@@ -125,7 +115,7 @@ class DanhSachYeuThichController extends Controller
     /**
      * Update a favorite item for current customer.
      */
-    public function updateCustomer(Request $request, $ma_danh_sach_ua_thich)
+    public function updateCustomer(UpdateDanhSachYeuThichRequest $request, $ma_danh_sach_ua_thich)
     {
         $maKhachHang = $this->resolveCustomerId($request);
 
@@ -150,24 +140,6 @@ class DanhSachYeuThichController extends Controller
                 'success' => false,
                 'message' => 'Ban khong the cap nhat danh sach yeu thich cua nguoi khac',
             ], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'ma_dia_diem' => [
-                'required',
-                'exists:dia_diem,ma_dia_diem',
-                Rule::unique('danh_sach_yeu_thich', 'ma_dia_diem')
-                    ->where(fn ($query) => $query->where('ma_khach_hang', $maKhachHang))
-                    ->ignore($danhSach->ma_danh_sach_ua_thich, 'ma_danh_sach_ua_thich'),
-            ],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Du lieu khong hop le',
-                'errors' => $validator->errors(),
-            ], 422);
         }
 
         try {

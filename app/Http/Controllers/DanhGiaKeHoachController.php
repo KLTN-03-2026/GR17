@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DanhGiaKeHoach;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreDanhGiaKeHoachRequest;
+use App\Http\Requests\UpdateDanhGiaKeHoachRequest;
 
 class DanhGiaKeHoachController extends Controller
 {
@@ -36,30 +38,19 @@ class DanhGiaKeHoachController extends Controller
         return response()->json(['success' => true, 'data' => $danhGias], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreDanhGiaKeHoachRequest $request)
     {
-        $validated = $request->validate([
-            // 'Ma_danh_gia'   => 'required|string|unique:danh_gia_ke_hoach|max:20',
-            'Ma_khach_hang' => 'required|string|exists:khach_hang,Ma_khach_hang',
-            'ma_dia_diem' => 'required|string|exists:dia_diem,ma_dia_diem',
-            'so_sao' => 'required|integer|min:1|max:5',
-            'noi_dung' => 'nullable|string|max:1000',
-        ]);
-        $danhGia = DanhGiaKeHoach::create($validated);
+        $danhGia = DanhGiaKeHoach::create($request->validated());
         return response()->json(['success' => true, 'message' => 'Thêm đánh giá thành công', 'data' => $danhGia], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateDanhGiaKeHoachRequest $request, $id)
     {
         $danhGia = DanhGiaKeHoach::find($id);
         if (!$danhGia) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy đánh giá'], 404);
         }
-        $validated = $request->validate([
-            'so_sao' => 'sometimes|required|integer|min:1|max:5',
-            'noi_dung' => 'nullable|string|max:1000',
-        ]);
-        $danhGia->update($validated);
+        $danhGia->update($request->validated());
         return response()->json(['success' => true, 'message' => 'Cập nhật đánh giá thành công', 'data' => $danhGia], 200);
     }
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ThanhVienNhom;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreThanhVienNhomRequest;
+use App\Http\Requests\UpdateThanhVienNhomRequest;
 
 class ThanhVienNhomController extends Controller
 {
@@ -34,14 +36,9 @@ class ThanhVienNhomController extends Controller
         return response()->json(['success' => true, 'data' => $tvn], 200);
     }
     
-    public function store(Request $request)
+    public function store(StoreThanhVienNhomRequest $request)
     {
-        $validated = $request->validate([
-            'Ma_thanh_vien' => 'sometimes|string|unique:thanh_vien_nhom|max:20',
-            'Ma_nhom' => 'required|string|exists:nhom,Ma_nhom',
-            'Ma_khach_hang' => 'required|string|exists:khach_hang,Ma_khach_hang',
-            'vai_tro' => 'nullable|integer|in:0,1',
-        ]);
+        $validated = $request->validated();
 
         $exists = ThanhVienNhom::where('Ma_nhom', $validated['Ma_nhom'])
             ->where('Ma_khach_hang', $validated['Ma_khach_hang'])
@@ -62,16 +59,13 @@ class ThanhVienNhomController extends Controller
         return response()->json(['success' => true, 'message' => 'Thêm thành viên thành công', 'data' => $tvn], 201);
     }
     
-    public function update(Request $request, $id)
+    public function update(UpdateThanhVienNhomRequest $request, $id)
     {
         $tvn = ThanhVienNhom::find($id);
         if (!$tvn) {
              return response()->json(['success' => false, 'message' => 'Không tìm thấy thành viên nhóm'], 404);
         }
-        $validated = $request->validate([
-            'vai_tro' => 'sometimes|required|integer|in:0,1',
-        ]);
-        $tvn->update($validated);
+        $tvn->update($request->validated());
         return response()->json(['success' => true, 'message' => 'Cập nhật thành viên thành công', 'data' => $tvn], 200);
     }
     

@@ -129,16 +129,7 @@ class KeHoachController extends Controller
         }
 
         try {
-            $ke_hoach = KeHoach::create([
-                'ma_ke_hoach' => $request->ma_ke_hoach,
-                'ma_nhom' => $request->ma_nhom,
-                'ten_ke_hoach' => $request->ten_ke_hoach,
-                'so_nguoi' => $request->so_nguoi,
-                'ngay_bat_dau' => $request->ngay_bat_dau,
-                'ngay_ket_thuc' => $request->ngay_ket_thuc,
-                'ngan_sach_du_kien' => $request->ngan_sach_du_kien,
-                'trang_thai' => $request->trang_thai,
-            ]);
+            $ke_hoach = KeHoach::create($request->validated());
 
             return response()->json([
                 'success' => true,
@@ -183,35 +174,7 @@ class KeHoachController extends Controller
         }
 
         try {
-            if ($request->has('ma_nhom')) {
-                $ke_hoach->ma_nhom = $request->ma_nhom;
-            }
-
-            if ($request->has('ten_ke_hoach')) {
-                $ke_hoach->ten_ke_hoach = $request->ten_ke_hoach;
-            }
-
-            if ($request->has('so_nguoi')) {
-                $ke_hoach->so_nguoi = $request->so_nguoi;
-            }
-
-            if ($request->has('ngay_bat_dau')) {
-                $ke_hoach->ngay_bat_dau = $request->ngay_bat_dau;
-            }
-
-            if ($request->has('ngay_ket_thuc')) {
-                $ke_hoach->ngay_ket_thuc = $request->ngay_ket_thuc;
-            }
-
-            if ($request->has('ngan_sach_du_kien')) {
-                $ke_hoach->ngan_sach_du_kien = $request->ngan_sach_du_kien;
-            }
-
-            if ($request->has('trang_thai')) {
-                $ke_hoach->trang_thai = $request->trang_thai;
-            }
-
-            $ke_hoach->save();
+            $ke_hoach->update($request->validated());
 
             return response()->json([
                 'success' => true,

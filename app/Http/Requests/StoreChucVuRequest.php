@@ -1,9 +1,9 @@
-﻿<?php
+<?php
+
 namespace App\Http\Requests;
 
 class StoreChucVuRequest extends BaseRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -12,7 +12,7 @@ class StoreChucVuRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'ten_chuc_vu' => 'required|string|min:3|max:50|unique:chuc_vu,ten_chuc_vu|regex:/^[a-zA-ZÃ€-á»¿\s]+$/',
+            'ten_chuc_vu' => 'required|string|min:3|max:50|unique:chuc_vu,ten_chuc_vu|regex:/^[a-zA-ZÀ-ỹ\s]+$/u',
         ];
     }
 
@@ -22,12 +22,12 @@ class StoreChucVuRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'ten_chuc_vu.required' => 'TÃªn chá»©c vá»¥ khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng',
-            'ten_chuc_vu.string' => 'TÃªn chá»©c vá»¥ pháº£i lÃ  chuá»—i kÃ½ tá»±',
-            'ten_chuc_vu.min' => 'TÃªn chá»©c vá»¥ pháº£i cÃ³ Ã­t nháº¥t 3 kÃ½ tá»±',
-            'ten_chuc_vu.max' => 'TÃªn chá»©c vá»¥ khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 50 kÃ½ tá»±',
-            'ten_chuc_vu.unique' => 'TÃªn chá»©c vá»¥ nÃ y Ä‘Ã£ tá»“n táº¡i',
-            'ten_chuc_vu.regex' => 'TÃªn chá»©c vá»¥ chá»‰ Ä‘Æ°á»£c chá»©a chá»¯ cÃ¡i',
+            'ten_chuc_vu.required' => 'Tên chức vụ không được để trống',
+            'ten_chuc_vu.string' => 'Tên chức vụ phải là chuỗi ký tự',
+            'ten_chuc_vu.min' => 'Tên chức vụ phải có ít nhất 3 ký tự',
+            'ten_chuc_vu.max' => 'Tên chức vụ không được vượt quá 50 ký tự',
+            'ten_chuc_vu.unique' => 'Tên chức vụ này đã tồn tại',
+            'ten_chuc_vu.regex' => 'Tên chức vụ chỉ được chứa chữ cái',
         ];
     }
 }

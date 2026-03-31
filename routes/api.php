@@ -78,7 +78,7 @@ Route::put('/tag-dia-diem/{maTagDiaDiem}', [TagDiaDiemController::class, 'update
 Route::delete('/tag-dia-diem/{maTagDiaDiem}', [TagDiaDiemController::class, 'destroy']);
 Route::put('/admins', [AdminController::class, 'updateAll']);
 Route::get('/admins/search', [AdminController::class, 'search']);
-Route::put('/admin/password', [AdminController::class, 'changePassword']);
+Route::middleware('auth:sanctum')->put('/admin/password', [AdminController::class, 'changePassword']);
 Route::post('/admin/store', [AdminController::class, 'store']);
 // }
 // );
@@ -110,6 +110,10 @@ Route::patch('/chuc-vu/{ma_chuc_vu}/status', [ChucVuController::class, 'changeSt
 
 // Public routes for PhanQuyenAdmin
 Route::get('/phan-quyen-admin', [PhanQuyenAdminController::class, 'index']);
+Route::get('/phan-quyen-admin/{ma_phan_quyen}', [PhanQuyenAdminController::class, 'show']);
+Route::post('/phan-quyen-admin', [PhanQuyenAdminController::class, 'store']);
+Route::put('/phan-quyen-admin/{ma_phan_quyen}', [PhanQuyenAdminController::class, 'update']);
+Route::delete('/phan-quyen-admin/{ma_phan_quyen}', [PhanQuyenAdminController::class, 'destroy']);
 
 // Public routes for Xe
 // Route::get('/xe', [XeController::class, 'index']);

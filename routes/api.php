@@ -24,12 +24,16 @@ use App\Http\Controllers\ChiTietTourController;
 use App\Http\Controllers\TourKhoiHanhController;
 use App\Http\Controllers\CauHinhNgayController;
 use App\Http\Controllers\DanhSachYeuThichController;
+use App\Http\Controllers\AIPlannerController;
+use App\Http\Controllers\AIConfigController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
 // Public routes
+Route::post('/khach-hang/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
+Route::post('/khach-hang/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
 Route::post('/admin/login', [AdminController::class, 'login']);
 Route::get('/khach-hang', [KhachHangController::class, 'index']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);
@@ -190,6 +194,12 @@ Route::delete('/khach-hang/danh-sach-yeu-thich/{ma_danh_sach_ua_thich}', [DanhSa
 Route::get('/admin/hoa-don', [HoaDonController::class, 'indexAdmin']);
 Route::get('/admin/hoa-don/{ma_hoa_don}', [HoaDonController::class, 'showAdmin']);
 Route::patch('/admin/hoa-don/{ma_hoa_don}/status', [HoaDonController::class, 'updateStatusAdmin']);
+
+// Admin AI Configuration
+Route::get('/admin/cau-hinh-ai', [AIConfigController::class, 'getPrompt']);
+Route::post('/admin/cau-hinh-ai', [AIConfigController::class, 'updatePrompt']);
+Route::get('/admin/cau-hinh-ai/api-config', [AIConfigController::class, 'getApiConfig']);
+Route::post('/admin/cau-hinh-ai/api-config', [AIConfigController::class, 'updateApiConfig']);
 // Admin routes for Xe
 Route::get('/xe/all', [XeController::class, 'indexAll']);
 Route::get('/xe/search', [XeController::class, 'search']);

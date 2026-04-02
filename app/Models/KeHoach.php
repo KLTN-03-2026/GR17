@@ -29,6 +29,8 @@ class KeHoach extends Model
         'ngan_sach_du_kien',
         'tong_chi_phi',
         'trang_thai',
+        'nguon_tao',
+        'du_lieu_ai',
     ];
 
     protected $casts = [
@@ -38,6 +40,7 @@ class KeHoach extends Model
         'tong_chi_phi' => 'decimal:2',
         'so_nguoi' => 'integer',
         'trang_thai' => 'boolean',
+        'du_lieu_ai' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

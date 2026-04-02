@@ -14,6 +14,7 @@ class UpdateKeHoachRequest extends BaseRequest
             'ngay_bat_dau' => 'sometimes|date_format:Y-m-d',
             'ngay_ket_thuc' => 'sometimes|date_format:Y-m-d|after_or_equal:ngay_bat_dau',
             'ngan_sach_du_kien' => 'sometimes|numeric|min:0',
+            'mo_ta' => 'nullable|string',
             'trang_thai' => 'sometimes|boolean',
         ];
     }

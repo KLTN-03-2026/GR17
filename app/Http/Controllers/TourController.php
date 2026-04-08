@@ -30,7 +30,7 @@ class TourController extends Controller
 
     public function show($ma_tour)
     {
-        $tour = Tour::find($ma_tour);
+        $tour = Tour::with('chiTietTours.diaDiem')->find($ma_tour);
 
         if (!$tour) {
             return response()->json([

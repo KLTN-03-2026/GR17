@@ -7,7 +7,6 @@ class StoreHoatDongChiTietRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'ma_hoat_dong_chi_tiet' => 'required|unique:hoat_dong_chi_tiet|max:10',
             'ma_ke_hoach' => 'required|exists:ke_hoach,ma_ke_hoach',
             'ma_nhom' => 'required|exists:nhom,Ma_nhom',
             'ma_dia_diem' => 'required|exists:dia_diem,ma_dia_diem',

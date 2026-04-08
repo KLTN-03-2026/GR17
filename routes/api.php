@@ -148,6 +148,7 @@ Route::patch('/dich-vu-dia-diem/{maDichVu}/status', [DichVuDiaDiemController::cl
 // Public routes for KeHoach
 Route::get('/ke-hoach', [KeHoachController::class, 'index']);
 Route::get('/ke-hoach/{maKeHoach}', [KeHoachController::class, 'show']);
+Route::get('/ke-hoach/{maKeHoach}/goi-y-lan-can', [KeHoachController::class, 'suggestNearby']);
 Route::get('/ke-hoach/search', [KeHoachController::class, 'search']);
 Route::get('/ke-hoach/group/{maNhom}', [KeHoachController::class, 'getByGroup']);
 

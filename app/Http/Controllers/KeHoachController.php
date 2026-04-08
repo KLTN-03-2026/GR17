@@ -94,7 +94,7 @@ class KeHoachController extends Controller
      */
     public function show($ma_ke_hoach): JsonResponse
     {
-        $ke_hoach = KeHoach::with('nhom')->find($ma_ke_hoach);
+        $ke_hoach = KeHoach::with(['nhom', 'hoatDongChiTiets.diaDiem.dichVuDiaDiems'])->find($ma_ke_hoach);
 
         if (!$ke_hoach) {
             return response()->json([
@@ -271,5 +271,125 @@ class KeHoachController extends Controller
             'data' => $ke_hoach,
             'total' => count($ke_hoach),
         ]);
+    }
+
+    /**
+     * Gợi ý địa điểm lân cận và cùng tỉnh
+     */
+    public function suggestNearby(Request $request, $ma_ke_hoach): JsonResponse
+    {
+        $radius = $request->input('radius', 10); // Bán kính mặc định 10km
+
+        // Lấy chi tiết kế hoạch
+        $ke_hoach = KeHoach::with(['hoatDongChiTiets.diaDiem'])->find($ma_ke_hoach);
+
+        if (!$ke_hoach) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kế hoạch không tồn tại',
+            ], 404);
+        }
+
+        $diaDiemsInPlan = collect();
+        $provinces = collect();
+
+        // Thu thập các địa điểm và tỉnh thành đã có trong kế hoạch
+        foreach ($ke_hoach->hoatDongChiTiets as $hoatDong) {
+            if ($hoatDong->diaDiem) {
+                $diaDiemsInPlan->push($hoatDong->diaDiem);
+                
+                // Trích xuất tên tỉnh từ địa chỉ (giả định định dạng "... , Tên Tỉnh/Thành phố")
+                $addressParts = explode(',', $hoatDong->diaDiem->dia_chi);
+                $province = trim(end($addressParts));
+                if ($province) {
+                    $provinces->push($province);
+                }
+            }
+        }
+
+        if ($diaDiemsInPlan->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kế hoạch chưa có địa điểm nào để làm gốc gợi ý',
+            ], 400);
+        }
+
+        $diaDiemsInPlanIds = $diaDiemsInPlan->pluck('ma_dia_diem')->toArray();
+        $provinces = $provinces->unique()->toArray();
+
+        // Lấy tất cả các địa điểm khác CHƯA có trong kế hoạch
+        $allOtherLocations = \App\Models\DiaDiem::whereNotIn('ma_dia_diem', $diaDiemsInPlanIds)
+            ->with(['dichVuDiaDiems', 'tags'])
+            ->get();
+
+        $suggestedLocations = collect();
+
+        foreach ($allOtherLocations as $location) {
+            $isNearby = false;
+            $inSameProvince = false;
+            $minDistance = null;
+
+            // 1. Kiểm tra cùng tỉnh
+            foreach ($provinces as $prov) {
+                if (stripos($location->dia_chi, $prov) !== false) {
+                    $inSameProvince = true;
+                    break;
+                }
+            }
+
+            // 2. Tính khoảng cách tới các địa điểm trong kế hoạch (Haversine)
+            foreach ($diaDiemsInPlan as $planLocation) {
+                $distance = $this->calculateDistance(
+                    $planLocation->vi_do, $planLocation->kinh_do,
+                    $location->vi_do, $location->kinh_do
+                );
+                
+                if (is_null($minDistance) || $distance < $minDistance) {
+                    $minDistance = $distance;
+                }
+
+                if ($distance <= $radius) {
+                    $isNearby = true;
+                }
+            }
+
+            // Nếu thuộc bán kính hoặc cùng tỉnh thì thêm vào danh sách gợi ý
+            if ($isNearby || $inSameProvince) {
+                $location->distance_km = round($minDistance, 2);
+                $location->reason = $isNearby ? "Trong bán kính {$radius}km" : "Cùng khu vực/tỉnh thành";
+                
+                $suggestedLocations->push($location);
+            }
+        }
+
+        // Sắp xếp theo khoảng cách gần nhất
+        $suggestedLocations = $suggestedLocations->sortBy('distance_km')->values();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lấy danh sách địa điểm gợi ý lân cận thành công',
+            'radius_applied' => $radius,
+            'total' => count($suggestedLocations),
+            'data' => $suggestedLocations,
+        ]);
+    }
+
+    /**
+     * Tính khoảng cách Haversine giữa 2 tọa độ (kilometers)
+     */
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // Bán kính Trái Đất (km)
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c;
     }
 }

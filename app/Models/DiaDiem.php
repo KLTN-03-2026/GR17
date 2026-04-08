@@ -53,4 +53,9 @@ class DiaDiem extends Model
     {
         return $this->hasManyThrough(Tag::class, TagDiaDiem::class, 'ma_dia_diem', 'ma_tag', 'ma_dia_diem', 'ma_tag');
     }
+
+    public function dichVuDiaDiems(): HasMany
+    {
+        return $this->hasMany(DichVuDiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
+    }
 }

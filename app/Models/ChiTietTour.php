@@ -18,6 +18,10 @@ class ChiTietTour extends Model
     protected $fillable = [
         'ma_chi_tiet_tour',
         'ma_tour',
-        'ma_dia_diem'
     ];
+
+    public function diaDiem()
+    {
+        return $this->belongsTo(DiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
+    }
 }

@@ -57,4 +57,9 @@ class KeHoach extends Model
     {
         return $this->hasMany(XeKeHoach::class, 'ma_ke_hoach');
     }
+
+    public function hoatDongChiTiets(): HasMany
+    {
+        return $this->hasMany(HoatDongChiTiet::class, 'ma_ke_hoach', 'ma_ke_hoach');
+    }
 }

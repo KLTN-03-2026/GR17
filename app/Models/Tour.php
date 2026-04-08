@@ -23,6 +23,10 @@ class Tour extends Model
         'so_tien',
         'so_ngay',
         'so_nguoi',
-        'ma_tag'
     ];
+
+    public function chiTietTours()
+    {
+        return $this->hasMany(ChiTietTour::class, 'ma_tour', 'ma_tour');
+    }
 }

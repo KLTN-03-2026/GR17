@@ -7,7 +7,6 @@ class StoreDiaDiemRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'ma_dia_diem' => 'required|string|unique:dia_diem|max:10',
             'ten_dia_diem' => 'required|string|min:5|max:100',
             'loai' => 'required|integer|in:1,2,3',
             'dia_chi' => 'required|string|max:255',

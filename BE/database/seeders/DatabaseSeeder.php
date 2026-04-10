@@ -1,15 +1,12 @@
 <?php
 
 namespace Database\Seeders;
-
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\AdminSeeder;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
@@ -17,9 +14,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+
+$this->call([
+            AdminSeeder::class,
+            KhachHangSeeder::class,
+            ChucVuSeeder::class,
+            ChucNangSeeder::class,
+            DiaDiemSeeder::class,
+            TagSeeder::class,
+            TagDiaDiemSeeder::class,
+            PhanQuyenAdminSeeder::class,
+            XeSeeder::class,
+            KeHoachSeeder::class,
+            XeKeHoachSeeder::class,
+            NhomSeeder::class,
+            ThanhVienNhomSeeder::class,
+            DanhGiaKeHoachSeeder::class,
+            HoaDonSeeder::class,
+            HoatDongChiTietSeeder::class,
+            TourSeeder::class,
+            ChiTietTourSeeder::class,
+            TourKhoiHanhSeeder::class,
+            CauHinhNgaySeeder::class,
         ]);
     }
 }

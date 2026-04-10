@@ -6,7 +6,7 @@
 								<img src="assets/images/logo-icon.png" class="logo-icon" alt="logo icon">
 							</div>
 							<div class="">
-								<h4 class="logo-text">Rocker</h4>
+								<h4 class="logo-text">Son</h4>
 							</div>
 						</div>
 						<div class="mobile-toggle-menu"><i class="bx bx-menu"></i></div>

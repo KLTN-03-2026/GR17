@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use App\Models\HoaDon;
 use App\Models\ThanhVienNhom;
+use App\Models\Tour;
+use App\Models\DoiSoatHoaHong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UpdateHoaDonStatusRequest;
@@ -48,7 +50,37 @@ class HoaDonController extends Controller
         }
 
         try {
-            $hoaDon->update($request->validated());
+            $oldStatus = $hoaDon->trang_thai_thanh_toan;
+            $newStatus = $request->validated()['trang_thai_thanh_toan'];
+
+            $hoaDon->update(['trang_thai_thanh_toan' => $newStatus]);
+
+            // Sinh Đối soát hoa hồng nếu là thanh toán cho Tour của Đối tác
+            if ($oldStatus != 1 && $newStatus == 1 && $hoaDon->loai_hoa_don == 0) {
+                $tour = Tour::find($hoaDon->ma_doi_tuong);
+                if ($tour && $tour->ma_doi_tac) {
+                    $hasDoiSoat = DoiSoatHoaHong::where('ma_hoa_don', $hoaDon->ma_hoa_don)->exists();
+                    if (!$hasDoiSoat) {
+                        $phanTramAdmin = 10.00; // 10%
+                        $tongTien = $hoaDon->tong_tien;
+                        $tienAdmin = $tongTien * ($phanTramAdmin / 100);
+                        $tienDoiTac = $tongTien - $tienAdmin;
+
+                        DoiSoatHoaHong::create([
+                            'ma_hoa_don' => $hoaDon->ma_hoa_don,
+                            'ma_doi_tac' => $tour->ma_doi_tac,
+                            'loai_giao_dich' => 'tour',
+                            'tong_tien_giao_dich' => $tongTien,
+                            'phan_tram_hoa_hong' => $phanTramAdmin,
+                            'tien_hoa_hong_admin' => $tienAdmin,
+                            'tien_doi_tac_thuc_nhan' => $tienDoiTac,
+                            'trang_thai_thanh_toan' => 'chua_doi_soat',
+                            'mo_ta' => 'Thu tiền 10% hoa hồng từ việc bán Tour ' . $tour->ma_tour,
+                        ]);
+                    }
+                }
+            }
+
             return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thanh toán thành công', 'data' => $hoaDon], 200);
         }
         catch (\Exception $e) {

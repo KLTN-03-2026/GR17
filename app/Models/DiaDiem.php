@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DiaDiem extends Model
@@ -16,9 +17,12 @@ class DiaDiem extends Model
 
     protected $fillable = [
         'ma_dia_diem',
+        'ma_doi_tac_tao',
         'ten_dia_diem',
+        'ten_dia_diem_normalized',
         'loai',
         'dia_chi',
+        'dia_chi_normalized',
         'sdt',
         'kinh_do',
         'vi_do',
@@ -28,6 +32,9 @@ class DiaDiem extends Model
         'hinh_anh',
         'mo_ta',
         'thoi_gian_tham_quan',
+        'nguon_tao',
+        'trang_thai_duyet',
+        'ly_do_tu_choi',
     ];
 
     protected $casts = [
@@ -44,6 +51,21 @@ class DiaDiem extends Model
     public function tagDiaDiems(): HasMany
     {
         return $this->hasMany(TagDiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
+    }
+
+    public function doiTac(): BelongsTo
+    {
+        return $this->belongsTo(DoiTac::class, 'ma_doi_tac_tao', 'ma_doi_tac');
+    }
+
+    public function chiTietTours(): HasMany
+    {
+        return $this->hasMany(ChiTietTour::class, 'ma_dia_diem', 'ma_dia_diem');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('trang_thai_duyet', 'approved');
     }
 
     /**

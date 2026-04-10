@@ -42,7 +42,7 @@ class DanhSachYeuThichController extends Controller
         if (!$maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vui long cung cap ma khach hang hoac dang nhap',
+                'message' => 'Vui lòng cung cấp mã khách hàng hoặc đăng nhập',
             ], 401);
         }
 
@@ -54,7 +54,7 @@ class DanhSachYeuThichController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Lay danh sach yeu thich thanh cong',
+            'message' => 'Lấy danh sách yêu thích thành công',
             'data' => $danhSach,
         ], 200);
     }
@@ -69,7 +69,7 @@ class DanhSachYeuThichController extends Controller
         if (!$maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vui long cung cap ma khach hang hoac dang nhap de them vao danh sach',
+                'message' => 'Vui lòng cung cấp mã khách hàng hoặc đăng nhập để thêm vào danh sách',
             ], 401);
         }
 
@@ -81,7 +81,7 @@ class DanhSachYeuThichController extends Controller
         if ($exists) {
             return response()->json([
                 'success' => false,
-                'message' => 'Dia diem nay da co trong danh sach yeu thich cua ban',
+                'message' => 'Địa điểm này đã có trong danh sách yêu thích của bạn',
             ], 409);
         }
 
@@ -100,13 +100,13 @@ class DanhSachYeuThichController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Them vao danh sach yeu thich thanh cong',
+                'message' => 'Thêm vào danh sách yêu thích thành công',
                 'data' => $danhSach,
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Co loi xay ra khi them vao danh sach yeu thich',
+                'message' => 'Có lỗi xảy ra khi thêm vào danh sách yêu thích',
                 'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
@@ -122,7 +122,7 @@ class DanhSachYeuThichController extends Controller
         if (!$maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vui long cung cap ma khach hang hoac dang nhap',
+                'message' => 'Vui lòng cung cấp mã khách hàng hoặc đăng nhập',
             ], 401);
         }
 
@@ -131,14 +131,14 @@ class DanhSachYeuThichController extends Controller
         if (!$danhSach) {
             return response()->json([
                 'success' => false,
-                'message' => 'Khong tim thay muc trong danh sach yeu thich',
+                'message' => 'Không tìm thấy mục trong danh sách yêu thích',
             ], 404);
         }
 
         if ((string) $danhSach->ma_khach_hang !== (string) $maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ban khong the cap nhat danh sach yeu thich cua nguoi khac',
+                'message' => 'Bạn không thể cập nhật danh sách yêu thích của người khác',
             ], 403);
         }
 
@@ -149,13 +149,13 @@ class DanhSachYeuThichController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cap nhat danh sach yeu thich thanh cong',
+                'message' => 'Cập nhật danh sách yêu thích thành công',
                 'data' => $danhSach,
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cap nhat that bai',
+                'message' => 'Cập nhật thất bại',
                 'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
@@ -171,7 +171,7 @@ class DanhSachYeuThichController extends Controller
         if (!$maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Vui long cung cap ma khach hang hoac dang nhap',
+                'message' => 'Vui lòng cung cấp mã khách hàng hoặc đăng nhập',
             ], 401);
         }
 
@@ -180,14 +180,14 @@ class DanhSachYeuThichController extends Controller
         if (!$danhSach) {
             return response()->json([
                 'success' => false,
-                'message' => 'Khong tim thay muc trong danh sach yeu thich',
+                'message' => 'Không tìm thấy mục trong danh sách yêu thích',
             ], 404);
         }
 
         if ((string) $danhSach->ma_khach_hang !== (string) $maKhachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ban khong the xoa danh sach yeu thich cua nguoi khac',
+                'message' => 'Bạn không thể xóa danh sách yêu thích của người khác',
             ], 403);
         }
 
@@ -196,12 +196,12 @@ class DanhSachYeuThichController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Xoa khoi danh sach yeu thich thanh cong',
+                'message' => 'Xóa khỏi danh sách yêu thích thành công',
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Xoa that bai',
+                'message' => 'Xóa thất bại',
                 'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }

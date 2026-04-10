@@ -11,42 +11,42 @@ class AIConfigController extends Controller
     private const TYPE_GEMINI_API_KEY = 'gemini_api_key';
     private const TYPE_PEXELS_API_KEY = 'pexels_api_key';
     private const TYPE_GEMINI_MODEL_FALLBACKS = 'gemini_model_fallbacks';
-    private const DEFAULT_GEMINI_MODELS = 'gemini-2.0-flash,gemini-flash-latest,gemini-2.5-flash';
+    private const DEFAULT_GEMINI_MODELS = 'gemini-3.0-flash,gemini-3.1-pro,gemini-3.0-pro';
 
     private string $defaultPrompt = <<<'PROMPT'
-Ban la chuyen gia thiet ke lich trinh du lich tai Viet Nam.
+Bạn là chuyên gia thiết kế lịch trình du lịch tại Việt Nam.
 
-Yeu cau:
-- Diem den: {diemDen}
-- So ngay: {soNgay}
-- Ngan sach: {nganSach}
-- So thich bo sung: {soThich}
+Yêu cầu:
+- Điểm đến: {diemDen}
+- Số ngày: {soNgay}
+- Ngân sách: {nganSach}
+- Sở thích bổ sung: {soThich}
 
-Toi dang co danh sach dia diem trong he thong:
+Tôi đang có danh sách địa điểm trong hệ thống:
 {dbJson}
 
-Nhiem vu:
-- Lap lich trinh {soNgay} ngay, moi ngay gom 3 hoat dong: BUOI SANG, BUOI CHIEU, BUOI TOI.
-- Uu tien dung dia diem trong he thong.
-- Neu tu them dia diem ngoai he thong thi dat co_trong_db = false va hinhanh de trong.
-- Neu dia diem nam ngoai Viet Nam thi tra ve JSON: {"error":"Diem den khong ho tro"}.
+Nhiệm vụ:
+- Lập lịch trình {soNgay} ngày, mỗi ngày gồm 3 hoạt động: BUỔI SÁNG, BUỔI CHIỀU, BUỔI TỐI.
+- Ưu tiên dùng địa điểm trong hệ thống.
+- Nếu tự thêm địa điểm ngoài hệ thống thì đặt co_trong_db = false và hinhanh để trống.
+- Nếu địa điểm nằm ngoài Việt Nam thì trả về JSON: {"error":"Điểm đến không hỗ trợ"}.
 
-Bat buoc tra ve dung mot JSON array theo mau:
+Bắt buộc trả về đúng một JSON array theo mẫu:
 [
   {
-    "tieuDe": "Ngay 1: ...",
-    "thoiGian": "Thu hai",
+    "tieuDe": "Ngày 1: ...",
+    "thoiGian": "Thứ hai",
     "danhSachHoatDong": [
       {
-        "buoi": "BUOI SANG",
+        "buoi": "BUỔI SÁNG",
         "iconClass": "icon--morning",
         "icon": "fas fa-sun",
         "tieuDe": "...",
         "moTa": "...",
         "hinhanh": "",
         "co_trong_db": false,
-        "gia": "Mien phi",
-        "thoiLuong": "3 gio"
+        "gia": "Miễn phí",
+        "thoiLuong": "3 giờ"
       }
     ]
   }
@@ -84,7 +84,7 @@ PROMPT;
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Cap nhat cau hinh AI thanh cong.',
+            'message' => 'Cập nhật cấu hình AI thành công.',
             'data' => $config,
         ]);
     }
@@ -163,7 +163,7 @@ PROMPT;
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Cap nhat cau hinh API thanh cong.',
+            'message' => 'Cập nhật cấu hình API thành công.',
             'data' => [
                 'hasGeminiApiKey' => ($geminiApiKeyCurrent = $this->getConfigValue(
                     self::TYPE_GEMINI_API_KEY,

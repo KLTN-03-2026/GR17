@@ -26,6 +26,17 @@ use App\Http\Controllers\CauHinhNgayController;
 use App\Http\Controllers\DanhSachYeuThichController;
 use App\Http\Controllers\AIPlannerController;
 use App\Http\Controllers\AIConfigController;
+use App\Http\Controllers\DoiTacAuthController;
+use App\Http\Controllers\DoiTacAdminController;
+use App\Http\Controllers\DoiTacDiaDiemController;
+use App\Http\Controllers\DoiTacDiaDiemModerationController;
+use App\Http\Controllers\DoiTacTourController;
+use App\Http\Controllers\DoiTacTourModerationController;
+use App\Http\Controllers\DoiTacTourDiaDiemController;
+use App\Http\Controllers\DoiTacDichVuDiaDiemController;
+use App\Http\Controllers\AdminDoiSoatController;
+use App\Http\Controllers\DoiTacDoiSoatController;
+use App\Http\Controllers\DoiTacOrderController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -38,8 +49,69 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 Route::get('/khach-hang', [KhachHangController::class, 'index']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);
 Route::post('/khach-hang/login', [KhachHangController::class, 'login']);
+Route::post('/doi-tac/register', [DoiTacAuthController::class, 'register']);
+Route::post('/doi-tac/login', [DoiTacAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->get('/admin/check-login', [AdminController::class, 'checkLogin']);
 Route::middleware('auth:sanctum')->get('/khach-hang/check-login', [KhachHangController::class, 'checkLogin']);
+Route::middleware('auth:sanctum')->get('/doi-tac/check-login', [DoiTacAuthController::class, 'checkLogin']);
+
+Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
+    Route::get('/admin/doi-tac', [DoiTacAdminController::class, 'index']);
+    Route::post('/admin/doi-tac', [DoiTacAdminController::class, 'store']);
+    Route::get('/admin/doi-tac/pending', [DoiTacAdminController::class, 'pending']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/approve', [DoiTacAdminController::class, 'approve']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/reject', [DoiTacAdminController::class, 'reject']);
+
+    Route::get('/admin/doi-tac/dia-diem', [DoiTacDiaDiemModerationController::class, 'index']);
+    Route::get('/admin/doi-tac/dia-diem/pending', [DoiTacDiaDiemModerationController::class, 'pending']);
+    Route::patch('/admin/doi-tac/dia-diem/{ma_dia_diem}/approve', [DoiTacDiaDiemModerationController::class, 'approve']);
+    Route::patch('/admin/doi-tac/dia-diem/{ma_dia_diem}/reject', [DoiTacDiaDiemModerationController::class, 'reject']);
+
+    Route::get('/admin/doi-tac/tour/pending', [DoiTacTourModerationController::class, 'pending']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/approve', [DoiTacTourModerationController::class, 'approve']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/reject', [DoiTacTourModerationController::class, 'reject']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/visibility', [DoiTacTourModerationController::class, 'visibility']);
+
+    Route::get('/admin/doi-tac/{ma_doi_tac}', [DoiTacAdminController::class, 'show']);
+    Route::put('/admin/doi-tac/{ma_doi_tac}', [DoiTacAdminController::class, 'update']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/status', [DoiTacAdminController::class, 'changeStatus']);
+
+    // API Admin thống kê & thanh toán (Đối soát tài chính)
+    Route::get('/admin/doi-soat', [AdminDoiSoatController::class, 'index']);
+    Route::patch('/admin/doi-soat/{ma_doi_soat}/pay', [AdminDoiSoatController::class, 'markAsPaid']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doi-tac/dia-diem', [DoiTacDiaDiemController::class, 'index']);
+    Route::get('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'show']);
+    Route::post('/doi-tac/dia-diem', [DoiTacDiaDiemController::class, 'store']);
+    Route::put('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'destroy']);
+
+    Route::get('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu', [DoiTacDichVuDiaDiemController::class, 'index']);
+    Route::post('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu', [DoiTacDichVuDiaDiemController::class, 'store']);
+    Route::put('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu/{ma_dich_vu}', [DoiTacDichVuDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu/{ma_dich_vu}', [DoiTacDichVuDiaDiemController::class, 'destroy']);
+
+    Route::get('/doi-tac/tour', [DoiTacTourController::class, 'index']);
+    Route::get('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'show']);
+    Route::post('/doi-tac/tour', [DoiTacTourController::class, 'store']);
+    Route::put('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'update']);
+    Route::delete('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'destroy']);
+    Route::post('/doi-tac/tour/{ma_tour}/submit', [DoiTacTourController::class, 'submit']);
+
+    Route::get('/doi-tac/tour/{ma_tour}/dia-diem', [DoiTacTourDiaDiemController::class, 'index']);
+    Route::post('/doi-tac/tour/{ma_tour}/dia-diem/existing', [DoiTacTourDiaDiemController::class, 'attachExisting']);
+    Route::post('/doi-tac/tour/{ma_tour}/dia-diem/create-and-attach', [DoiTacTourDiaDiemController::class, 'createAndAttach']);
+    Route::put('/doi-tac/tour/{ma_tour}/dia-diem/{ma_chi_tiet_tour}', [DoiTacTourDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/tour/{ma_tour}/dia-diem/{ma_chi_tiet_tour}', [DoiTacTourDiaDiemController::class, 'destroy']);
+
+    // API Doanh thu Đối tác
+    Route::get('/doi-tac/doanh-thu', [DoiTacDoiSoatController::class, 'index']);
+    
+    // API Quản lý Đơn hàng (Khách mua tour của đối tác)
+    Route::get('/doi-tac/don-hang', [DoiTacOrderController::class, 'index']);
+});
 
 // Public routes for DiaDiem
 Route::get('/dia-diem', [DiaDiemController::class, 'index']);

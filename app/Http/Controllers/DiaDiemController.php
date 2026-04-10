@@ -15,7 +15,7 @@ class DiaDiemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DiaDiem::query();
+        $query = DiaDiem::query()->approved();
 
         // Lọc theo loại
         if ($request->has('loai')) {
@@ -48,7 +48,9 @@ class DiaDiemController extends Controller
      */
     public function show($maDiaDiem)
     {
-        $diaDiem = DiaDiem::with('tagDiaDiems.tag')->find($maDiaDiem);
+        $diaDiem = DiaDiem::approved()
+            ->with('tagDiaDiems.tag')
+            ->find($maDiaDiem);
 
         if (!$diaDiem) {
             return response()->json([
@@ -140,7 +142,10 @@ class DiaDiemController extends Controller
             ], 422);
         }
 
-        $diaDiems = DiaDiem::where('loai', $loai)->with('tagDiaDiems.tag')->get();
+        $diaDiems = DiaDiem::approved()
+            ->where('loai', $loai)
+            ->with('tagDiaDiems.tag')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -154,9 +159,12 @@ class DiaDiemController extends Controller
      */
     public function filterByTag($maTag)
     {
-        $diaDiems = DiaDiem::whereHas('tagDiaDiems', function ($query) use ($maTag) {
-            $query->where('ma_tag', $maTag);
-        })->with('tagDiaDiems.tag')->get();
+        $diaDiems = DiaDiem::approved()
+            ->whereHas('tagDiaDiems', function ($query) use ($maTag) {
+                $query->where('ma_tag', $maTag);
+            })
+            ->with('tagDiaDiems.tag')
+            ->get();
 
         if ($diaDiems->isEmpty()) {
             return response()->json([

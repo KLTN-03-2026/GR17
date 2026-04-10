@@ -18,7 +18,7 @@ class AIPlannerController extends Controller
     private const TYPE_GEMINI_API_KEY = 'gemini_api_key';
     private const TYPE_PEXELS_API_KEY = 'pexels_api_key';
     private const TYPE_GEMINI_MODEL_FALLBACKS = 'gemini_model_fallbacks';
-    private const DEFAULT_GEMINI_MODELS = 'gemini-2.0-flash,gemini-flash-latest,gemini-2.5-flash';
+    private const DEFAULT_GEMINI_MODELS = 'gemini-3.0-flash,gemini-3.1-pro,gemini-3.0-pro';
 
     public function generateItinerary(Request $request)
     {
@@ -43,7 +43,7 @@ class AIPlannerController extends Controller
         $promptTemplate = $this->loadPromptTemplate();
         if ($promptTemplate === '') {
             return $this->failureResponse(
-                'Loi cau hinh AI khong hop le.',
+                'Lỗi cấu hình AI không hợp lệ.',
                 'AI_UNAVAILABLE',
                 false,
                 500
@@ -82,7 +82,7 @@ class AIPlannerController extends Controller
         $candidateModels = $this->resolveGeminiModels();
         $lastFailure = [
             'code' => 'AI_UNAVAILABLE',
-            'message' => 'Khong the nhan du lieu tu AI.',
+            'message' => 'Không thể nhận dữ liệu từ AI.',
             'retryable' => true,
             'status' => null,
         ];
@@ -188,7 +188,7 @@ class AIPlannerController extends Controller
 
             $lastFailure = [
                 'code' => 'AI_UNAVAILABLE',
-                'message' => 'Khong the ket noi den AI luc nay.',
+                'message' => 'Không thể kết nối đến AI lúc này.',
                 'retryable' => true,
                 'status' => null,
             ];
@@ -374,14 +374,14 @@ class AIPlannerController extends Controller
         ));
 
         $defaultModels = [
-            'gemini-2.0-flash',
-            'gemini-flash-latest',
-            'gemini-2.5-flash',
+            'gemini-3.0-flash',
+            'gemini-3.1-pro',
+            'gemini-3.0-pro',
         ];
 
         $models = array_values(array_unique(array_merge($modelsFromEnv, $defaultModels)));
 
-        return $models === [] ? ['gemini-2.0-flash'] : $models;
+        return $models === [] ? ['gemini-3.0-flash'] : $models;
     }
 
     private function decodeItineraryJson(string $rawText): ?array
@@ -414,7 +414,7 @@ class AIPlannerController extends Controller
         if ($statusCode === 429) {
             return [
                 'code' => 'AI_QUOTA',
-                'message' => 'Vuot han muc quota AI. Vui long thu lai sau.',
+                'message' => 'Vượt hạn mức quota AI. Vui lòng thử lại sau.',
                 'retryable' => true,
                 'status' => 429,
             ];
@@ -538,9 +538,9 @@ class AIPlannerController extends Controller
             $activityPool = [
                 [
                     'title' => 'Trung tam ' . mb_strtoupper($diemDen, 'UTF-8'),
-                    'description' => 'Khong co du lieu chi tiet trong he thong, de xuat tham quan khu vuc trung tam.',
+                    'description' => 'Không có dữ liệu chi tiết trong hệ thống, đề xuất tham quan khu vực trung tâm.',
                     'image' => 'https://picsum.photos/400/300?random=' . time(),
-                    'price' => 'Lien he',
+                    'price' => 'Liên hệ',
                     'from_db' => false,
                 ],
             ];
@@ -615,18 +615,18 @@ class AIPlannerController extends Controller
     private function formatPrice($value): string
     {
         if ($value === null || $value === '') {
-            return 'Lien he';
+            return 'Liên hệ';
         }
 
         if (is_numeric($value) && (float) $value <= 0) {
-            return 'Mien phi';
+            return 'Miễn phí';
         }
 
         if (is_numeric($value)) {
             return number_format((float) $value, 0, ',', '.') . ' VND';
         }
 
-        return 'Lien he';
+        return 'Liên hệ';
     }
 
     private function pickCoverImage(array $pexelsPhotos, array $itineraryData): string

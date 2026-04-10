@@ -1,21 +1,19 @@
-import { createRouter, createWebHistory } from "vue-router"; // cài vue-router: npm install vue-router@next --save
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
-    {
-        path : '/aaa',
-        component: ()=>import('../layout/components/test.vue')
-        // component: ()=>import('../layout/components/test.vue')
-    },
-    {
-        path : '/aaa',
-        component: ()=>import('../layout/components/test.vue')
-        // component: ()=>import('../layout/components/test.vue')
-    },
-]
+  {
+    path: "/aaa",
+    component: () => import("../layout/components/test.vue"),
+  },
+  {
+    path: "/khach-hang/nhom-hanh-trinh",
+    component: () => import("../components/KhachHang/NhomHanhTrinh/DanhSachNhom.vue"),
+  },
+];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes: routes
-})
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+export default router;

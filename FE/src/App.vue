@@ -1,18 +1,28 @@
 <template>
-  <component :is="layout">
-      <router-view></router-view>
-  </component>
+  <router-view></router-view>
 </template>
 
 <script>
-const default_layout = "default";
 export default {
-  computed: {
-    layout() {
-      return (this.$route.meta.layout || default_layout) + "-layout";
-    },
-  },
+  name: 'App',
 };
 </script>
+
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
 </style>

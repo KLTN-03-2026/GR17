@@ -23,6 +23,7 @@ class Tour extends Model
         'so_tien',
         'so_ngay',
         'so_nguoi',
+        'ma_tag',
     ];
 
     public function chiTietTours()

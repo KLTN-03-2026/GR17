@@ -10,7 +10,7 @@ class HoaDonSeeder extends Seeder
 {
     public function run(): void
     {
-        $hoaDonData = [
+                $hoaDonData = [
             [
                 'ma_hoa_don' => '001',
                 'ma_nhom' => '001',
@@ -42,6 +42,20 @@ class HoaDonSeeder extends Seeder
                 'ngay_tao' => now()->subDays(3),
             ]
         ];
+
+        $faker = \Faker\Factory::create('vi_VN');
+        for ($i = 4; $i <= 10; $i++) {
+            $hoaDonData[] = [
+                'ma_hoa_don' => str_pad($i, 3, '0', STR_PAD_LEFT),
+                'ma_nhom' => str_pad($faker->numberBetween(1, 10), 3, '0', STR_PAD_LEFT),
+                'loai_hoa_don' => $faker->numberBetween(0, 1),
+                'ma_doi_tuong' => str_pad($faker->numberBetween(1, 10), 3, '0', STR_PAD_LEFT),
+                'tong_tien' => $faker->numberBetween(5, 50) * 100000,
+                'trang_thai_thanh_toan' => $faker->numberBetween(0, 1),
+                'ma_giao_dich' => 'TX' . $faker->numberBetween(10000, 99999),
+                'ngay_tao' => now()->subDays($faker->numberBetween(1, 10)),
+            ];
+        };
 
         foreach ($hoaDonData as $data) {
             HoaDon::firstOrCreate(

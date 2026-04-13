@@ -31,9 +31,16 @@ use App\Http\Controllers\AIConfigController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-// Public routes
-Route::post('/khach-hang/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
-Route::post('/khach-hang/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
+// Group lộ trình cho khách hàng
+Route::prefix('khach-hang')->group(function () {
+    Route::post('/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
+    Route::post('/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
+    Route::post('/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
+});
+
+// Route dùng để Test Gemini & OpenAI
+Route::get('/debug/gemini', [AIPlannerController::class, 'testGemini']);
+Route::get('/debug/openai', [AIPlannerController::class, 'testOpenAI']);
 Route::post('/admin/login', [AdminController::class, 'login']);
 Route::get('/khach-hang', [KhachHangController::class, 'index']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);

@@ -12,32 +12,27 @@ class NhomSeeder extends Seeder
      */
     public function run(): void
     {
-        $nhomData = [
+                $nhomData = [
             [
                 'Ma_nhom' => '001',
-                'ten_nhom' => 'Nhóm du lịch Hà Nội - Hạ Long',
+                'ten_nhom' => 'Gia đình chị Hoa',
+                'mo_ta' => 'Du lịch hè 2026',
             ],
             [
                 'Ma_nhom' => '002',
-                'ten_nhom' => 'Nhóm du lịch Sapa - Lào Cai',
-            ],
-            [
-                'Ma_nhom' => '003',
-                'ten_nhom' => 'Nhóm du lịch Mekong Delta',
-            ],
-            [
-                'Ma_nhom' => '004',
-                'ten_nhom' => 'Nhóm du lịch núi Fansipan',
-            ],
-            [
-                'Ma_nhom' => '005',
-                'ten_nhom' => 'Nhóm khám phá thành phố Hồ Chí Minh',
-            ],
-            [
-                'Ma_nhom' => '006',
-                'ten_nhom' => 'Nhóm tham quan di tích lịch sử',
-            ],
+                'ten_nhom' => 'Công ty ABC',
+                'mo_ta' => 'Team building thường niên',
+            ]
         ];
+
+        $faker = \Faker\Factory::create('vi_VN');
+        for ($i = 3; $i <= 10; $i++) {
+            $nhomData[] = [
+                'Ma_nhom' => str_pad($i, 3, '0', STR_PAD_LEFT),
+                'ten_nhom' => 'Nhóm ' . $faker->lastName . ' ' . $faker->firstName,
+                'mo_ta' => 'Nhóm du lịch ' . $faker->realText(20),
+            ];
+        };
 
         foreach ($nhomData as $data) {
             Nhom::firstOrCreate(

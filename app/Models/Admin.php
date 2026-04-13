@@ -29,5 +29,6 @@ class Admin extends Authenticatable
         'is_block',
         'hash_reset',
         'so_dien_thoai',
+        'IsAdmin',
     ];
 }

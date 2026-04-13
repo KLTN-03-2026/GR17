@@ -12,7 +12,6 @@ use App\Services\AITourGuideService;
 use App\Services\MapLocationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Requests\AIPlannerRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -30,9 +29,32 @@ class AIPlannerController extends Controller
     /**
      * Đề xuất các địa điểm dựa trên thông tin form nhập vào
      */
-    public function suggestLocations(AIPlannerRequest $request)
+    public function suggestLocations(Request $request)
     {
         set_time_limit(180);
+
+        try {
+            $request->validate([
+                'diem_den' => 'required|string',
+                'so_ngay' => 'required|integer|min:1|max:7',
+                'ngan_sach' => 'nullable|numeric',
+            ], [
+                'diem_den.required' => 'Vui lòng nhập điểm đến cho chuyến đi.',
+                'diem_den.string' => 'Điểm đến không hợp lệ.',
+                'so_ngay.required' => 'Vui lòng nhập số ngày.',
+                'so_ngay.integer' => 'Số ngày phải là một số nguyên.',
+                'so_ngay.min' => 'Thời gian đi tối thiểu là 1 ngày.',
+                'so_ngay.max' => 'Hệ thống AI hiện giới hạn lên lịch trình tối đa 7 ngày.',
+                'ngan_sach.numeric' => 'Ngân sách phải là một số hợp lệ.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->validator->errors()->first(),
+                'code' => 'VALIDATION_ERROR',
+                'errors' => $e->validator->errors()
+            ], 422);
+        }
 
         $diemDen = $request->input('diem_den');
         $soNgay = $request->input('so_ngay');
@@ -68,9 +90,32 @@ class AIPlannerController extends Controller
     /**
      * Gọi luồng AI sinh lịch trình
      */
-    public function generateItinerary(AIPlannerRequest $request)
+    public function generateItinerary(Request $request)
     {
         set_time_limit(180);
+
+        try {
+            $request->validate([
+                'diem_den' => 'required|string',
+                'so_ngay' => 'required|integer|min:1|max:7',
+                'ngan_sach' => 'nullable|numeric',
+            ], [
+                'diem_den.required' => 'Vui lòng nhập điểm đến cho chuyến đi.',
+                'diem_den.string' => 'Điểm đến không hợp lệ.',
+                'so_ngay.required' => 'Vui lòng nhập số ngày.',
+                'so_ngay.integer' => 'Số ngày phải là một số nguyên.',
+                'so_ngay.min' => 'Thời gian đi tối thiểu là 1 ngày.',
+                'so_ngay.max' => 'Hệ thống AI hiện giới hạn lên lịch trình tối đa 7 ngày.',
+                'ngan_sach.numeric' => 'Ngân sách phải là một số hợp lệ.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->validator->errors()->first(),
+                'code' => 'VALIDATION_ERROR',
+                'errors' => $e->validator->errors()
+            ], 422);
+        }
 
         $diemDen = $request->input('diem_den');
         $soNgay = $request->input('so_ngay');

@@ -12,3 +12,4 @@ class UpdateChiTietTourRequest extends BaseRequest
         ];
     }
 }
+>>>>>>> f18e65568abb7ef9897b859e68d91f1b38eb1e05

@@ -29,5 +29,46 @@ class DichVuDiaDiemController extends Controller
         }
     }
 
+    public function show($ma_dich_vu)
+    {
+        $dich_vu = DichVuDiaDiem::find($ma_dich_vu);
 
+        if (!$dich_vu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dịch vụ không tồn tại'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $dich_vu
+        ]);
+    }
+    public function update(UpdateDichVuDiaDiemRequest $request, $ma_dich_vu)
+    {
+        $dich_vu = DichVuDiaDiem::find($ma_dich_vu);
+
+        if (!$dich_vu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tồn tại'
+            ], 404);
+        }
+
+        try {
+            $dich_vu->update($request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thành công',
+                'data' => $dich_vu
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

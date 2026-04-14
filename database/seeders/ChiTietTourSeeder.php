@@ -12,7 +12,8 @@ class ChiTietTourSeeder extends Seeder
      */
     public function run(): void
     {
-                $faker = \Faker\Factory::create('vi_VN');
+        $faker = \Faker\Factory::create('vi_VN');
+
         $data = [
             [
                 'ma_chi_tiet_tour' => '001',
@@ -34,24 +35,29 @@ class ChiTietTourSeeder extends Seeder
                 'ma_dia_diem' => '003',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ];
 
-        $ma_chi_tiet = 4;
+        $maChiTiet = 4;
         for ($i = 3; $i <= 17; $i++) {
-            // Mỗi tour thêm 2-4 địa điểm ngẫu nhiên
+            // Mỗi tour thêm 2-4 địa điểm ngẫu nhiên và không trùng trong cùng tour
             $numLocations = $faker->numberBetween(2, 4);
-            $tour_id = str_pad($i, 3, '0', STR_PAD_LEFT);
-            for ($j = 0; $j < $numLocations; $j++) {
+            $tourId = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $availableLocations = range(1, 45);
+            shuffle($availableLocations);
+            $selectedLocations = array_slice($availableLocations, 0, $numLocations);
+
+            foreach ($selectedLocations as $locationId) {
                 $data[] = [
-                    'ma_chi_tiet_tour' => str_pad($ma_chi_tiet++, 3, '0', STR_PAD_LEFT),
-                    'ma_tour' => $tour_id,
-                    'ma_dia_diem' => str_pad($faker->numberBetween(1, 45), 3, '0', STR_PAD_LEFT),
+                    'ma_chi_tiet_tour' => str_pad($maChiTiet++, 3, '0', STR_PAD_LEFT),
+                    'ma_tour' => $tourId,
+                    'ma_dia_diem' => str_pad($locationId, 3, '0', STR_PAD_LEFT),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
         }
+
         DB::table('chi_tiet_tours')->insert($data);
     }
 }

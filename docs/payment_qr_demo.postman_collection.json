@@ -1,0 +1,240 @@
+{
+  "info": {
+    "name": "Payment QR Demo",
+    "description": "Bo request demo rieng cho luong QR payment customer -> admin -> doi tac.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "customer_token", "value": "" },
+    { "key": "partner_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "tour_id", "value": "DMT001" },
+    { "key": "schedule_id", "value": "DMS002" },
+    { "key": "invoice_code", "value": "HD99010001" },
+    { "key": "invoice_amount", "value": "1890000" },
+    { "key": "retry_invoice_code", "value": "HD99010003" },
+    { "key": "sepay_api_key", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Login",
+      "item": [
+        {
+          "name": "Customer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('customer_token', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Email\": \"customer.qr.demo@example.com\",\n  \"Mat_khau\": \"demo123\"\n}"
+            },
+            "url": "{{base_url}}/api/khach-hang/login"
+          }
+        },
+        {
+          "name": "Partner Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.token) {",
+                  "  pm.collectionVariables.set('partner_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"partner.qr.demo@example.com\",\n  \"mat_khau\": \"demo123\"\n}"
+            },
+            "url": "{{base_url}}/api/doi-tac/login"
+          }
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.token) {",
+                  "  pm.collectionVariables.set('admin_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin.qr.demo@example.com\",\n  \"Mat_khau\": \"demo123\"\n}"
+            },
+            "url": "{{base_url}}/api/admin/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Customer QR Flow",
+      "item": [
+        {
+          "name": "Get Customer Invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/khach-hang/hoa-don"
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/khach-hang/hoa-don/{{invoice_code}}/payment-status"
+          }
+        },
+        {
+          "name": "Create QR Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.ma_hoa_don) {",
+                  "  pm.collectionVariables.set('invoice_code', json.data.ma_hoa_don);",
+                  "}",
+                  "if (json?.data?.so_tien) {",
+                  "  pm.collectionVariables.set('invoice_amount', String(json.data.so_tien));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ma_thoi_gian_tour\": \"{{schedule_id}}\",\n  \"thong_tin_nguoi_dat\": {\n    \"ho_ten\": \"Demo Customer QR\",\n    \"so_dien_thoai\": \"0901234567\",\n    \"email\": \"customer.qr.demo@example.com\",\n    \"dia_chi\": \"12 Nguyen Hue, Quan 1, TP.HCM\"\n  }\n}"
+            },
+            "url": "{{base_url}}/api/khach-hang/tour/{{tour_id}}/thanh-toan/qr"
+          }
+        },
+        {
+          "name": "Retry Expired QR",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/khach-hang/hoa-don/{{retry_invoice_code}}/retry-payment"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. SePay Webhook Demo",
+      "item": [
+        {
+          "name": "Simulate SePay Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Apikey {{sepay_api_key}}" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"DEMO-SEPAY-NEW-01\",\n  \"gateway\": \"VietinBank\",\n  \"transactionDate\": \"2026-04-13 14:02:37\",\n  \"content\": \"{{invoice_code}}\",\n  \"transferType\": \"in\",\n  \"transferAmount\": {{invoice_amount}},\n  \"referenceCode\": \"DEMO-PAID-NEW-01\"\n}"
+            },
+            "url": "{{base_url}}/api/payments/sepay/webhook"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Partner And Admin Verification",
+      "item": [
+        {
+          "name": "Get Partner Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{partner_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/doi-tac/don-hang"
+          }
+        },
+        {
+          "name": "Get Admin Invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/admin/hoa-don"
+          }
+        },
+        {
+          "name": "Get Admin Invoice Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/api/admin/hoa-don/{{invoice_code}}"
+          }
+        }
+      ]
+    }
+  ]
+}

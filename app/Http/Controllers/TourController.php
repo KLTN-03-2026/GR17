@@ -12,7 +12,7 @@ class TourController extends Controller
 {
     public function index()
     {
-        $tours = Tour::all();
+        $tours = Tour::publiclyVisible()->get();
 
         if ($tours->isEmpty()) {
             return response()->json([
@@ -30,7 +30,10 @@ class TourController extends Controller
 
     public function show($ma_tour)
     {
-        $tour = Tour::with('chiTietTours.diaDiem')->find($ma_tour);
+        $tour = Tour::publiclyVisible()
+            ->with('chiTietTours.diaDiem')
+            ->where('ma_tour', $ma_tour)
+            ->first();
 
         if (!$tour) {
             return response()->json([

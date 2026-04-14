@@ -22,6 +22,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'doi_tac' => [
+            'driver' => 'session',
+            'provider' => 'doi_tacs',
+        ],
     ],
 
 
@@ -34,6 +38,10 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => \App\Models\Admin::class,
+        ],
+        'doi_tacs' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\DoiTac::class,
         ],
 
 
@@ -50,6 +58,12 @@ return [
         ],
         'admins' => [
             'provider' => 'admins',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'doi_tacs' => [
+            'provider' => 'doi_tacs',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

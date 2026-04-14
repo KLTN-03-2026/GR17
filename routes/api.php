@@ -26,27 +26,113 @@ use App\Http\Controllers\CauHinhNgayController;
 use App\Http\Controllers\DanhSachYeuThichController;
 use App\Http\Controllers\AIPlannerController;
 use App\Http\Controllers\AIConfigController;
+use App\Http\Controllers\DoiTacAuthController;
+use App\Http\Controllers\DoiTacAdminController;
+use App\Http\Controllers\DoiTacDiaDiemController;
+use App\Http\Controllers\DoiTacDiaDiemModerationController;
+use App\Http\Controllers\DoiTacTourController;
+use App\Http\Controllers\DoiTacTourModerationController;
+use App\Http\Controllers\DoiTacTourDiaDiemController;
+use App\Http\Controllers\DoiTacDichVuDiaDiemController;
+use App\Http\Controllers\AdminDoiSoatController;
+use App\Http\Controllers\DoiTacDoiSoatController;
+use App\Http\Controllers\DoiTacOrderController;
+use App\Http\Controllers\CustomerTourPaymentController;
+use App\Http\Controllers\SepayWebhookController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-// Group lộ trình cho khách hàng
-Route::prefix('khach-hang')->group(function () {
-    Route::post('/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
-    Route::post('/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
-    Route::post('/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
-});
-
-// Route dùng để Test Gemini & OpenAI
-Route::get('/debug/gemini', [AIPlannerController::class, 'testGemini']);
-Route::get('/debug/openai', [AIPlannerController::class, 'testOpenAI']);
+// Public routes
+Route::post('/khach-hang/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
+Route::post('/khach-hang/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
+Route::post('/khach-hang/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
 Route::post('/admin/login', [AdminController::class, 'login']);
-Route::get('/khach-hang', [KhachHangController::class, 'index']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);
 Route::post('/khach-hang/login', [KhachHangController::class, 'login']);
+Route::post('/doi-tac/register', [DoiTacAuthController::class, 'register']);
+Route::post('/doi-tac/login', [DoiTacAuthController::class, 'login']);
+Route::post('/payments/sepay/webhook', [SepayWebhookController::class, 'handle']);
 Route::middleware('auth:sanctum')->get('/admin/check-login', [AdminController::class, 'checkLogin']);
 Route::middleware('auth:sanctum')->get('/khach-hang/check-login', [KhachHangController::class, 'checkLogin']);
+Route::middleware('auth:sanctum')->get('/doi-tac/check-login', [DoiTacAuthController::class, 'checkLogin']);
+
+Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
+    Route::get('/admin/doi-tac', [DoiTacAdminController::class, 'index']);
+    Route::post('/admin/doi-tac', [DoiTacAdminController::class, 'store']);
+    Route::get('/admin/doi-tac/pending', [DoiTacAdminController::class, 'pending']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/approve', [DoiTacAdminController::class, 'approve']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/reject', [DoiTacAdminController::class, 'reject']);
+
+    Route::get('/admin/doi-tac/dia-diem', [DoiTacDiaDiemModerationController::class, 'index']);
+    Route::get('/admin/doi-tac/dia-diem/pending', [DoiTacDiaDiemModerationController::class, 'pending']);
+    Route::patch('/admin/doi-tac/dia-diem/{ma_dia_diem}/approve', [DoiTacDiaDiemModerationController::class, 'approve']);
+    Route::patch('/admin/doi-tac/dia-diem/{ma_dia_diem}/reject', [DoiTacDiaDiemModerationController::class, 'reject']);
+
+    Route::get('/admin/doi-tac/tour/pending', [DoiTacTourModerationController::class, 'pending']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/approve', [DoiTacTourModerationController::class, 'approve']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/reject', [DoiTacTourModerationController::class, 'reject']);
+    Route::patch('/admin/doi-tac/tour/{ma_tour}/visibility', [DoiTacTourModerationController::class, 'visibility']);
+
+    Route::get('/admin/doi-tac/{ma_doi_tac}', [DoiTacAdminController::class, 'show']);
+    Route::put('/admin/doi-tac/{ma_doi_tac}', [DoiTacAdminController::class, 'update']);
+    Route::patch('/admin/doi-tac/{ma_doi_tac}/status', [DoiTacAdminController::class, 'changeStatus']);
+    Route::post('/admin/khach-hang', [KhachHangController::class, 'storeByAdmin']);
+    Route::delete('/admin/khach-hang/{maKhachHang}', [KhachHangController::class, 'destroy']);
+    Route::get('/admin/hoa-don', [HoaDonController::class, 'indexAdmin']);
+    Route::get('/admin/hoa-don/{ma_hoa_don}', [HoaDonController::class, 'showAdmin']);
+    Route::patch('/admin/hoa-don/{ma_hoa_don}/status', [HoaDonController::class, 'updateStatusAdmin']);
+
+    // API Admin thống kê & thanh toán (Đối soát tài chính)
+    Route::get('/admin/doi-soat', [AdminDoiSoatController::class, 'index']);
+    Route::patch('/admin/doi-soat/{ma_doi_soat}/pay', [AdminDoiSoatController::class, 'markAsPaid']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/khach-hang', [KhachHangController::class, 'index']);
+    Route::get('/khach-hang/profile', [KhachHangController::class, 'profile']);
+    Route::get('/khach-hang/profile/{maKhachHang}', [KhachHangController::class, 'profile']);
+    Route::put('/khach-hang/profile/{maKhachHang}', [KhachHangController::class, 'updateProfile']);
+    Route::put('/khach-hang/change-password/{maKhachHang}', [KhachHangController::class, 'changePassword']);
+    Route::get('/khach-hang/hoa-don', [HoaDonController::class, 'indexCustomer']);
+    Route::get('/khach-hang/hoa-don/{ma_hoa_don}', [HoaDonController::class, 'showCustomer']);
+    Route::get('/khach-hang/hoa-don/{ma_hoa_don}/payment-status', [HoaDonController::class, 'paymentStatus']);
+    Route::post('/khach-hang/hoa-don/{ma_hoa_don}/retry-payment', [HoaDonController::class, 'retryPayment']);
+    Route::post('/khach-hang/hoa-don/{ma_hoa_don}/cancel-payment', [HoaDonController::class, 'cancelPayment']);
+    Route::post('/khach-hang/hoa-don', [HoaDonController::class, 'storeCustomer']);
+    Route::post('/khach-hang/tour/{ma_tour}/thanh-toan/qr', [CustomerTourPaymentController::class, 'store']);
+
+    Route::get('/doi-tac/dia-diem', [DoiTacDiaDiemController::class, 'index']);
+    Route::get('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'show']);
+    Route::post('/doi-tac/dia-diem', [DoiTacDiaDiemController::class, 'store']);
+    Route::put('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/dia-diem/{ma_dia_diem}', [DoiTacDiaDiemController::class, 'destroy']);
+
+    Route::get('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu', [DoiTacDichVuDiaDiemController::class, 'index']);
+    Route::post('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu', [DoiTacDichVuDiaDiemController::class, 'store']);
+    Route::put('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu/{ma_dich_vu}', [DoiTacDichVuDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/dia-diem/{ma_dia_diem}/dich-vu/{ma_dich_vu}', [DoiTacDichVuDiaDiemController::class, 'destroy']);
+
+    Route::get('/doi-tac/tour', [DoiTacTourController::class, 'index']);
+    Route::get('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'show']);
+    Route::post('/doi-tac/tour', [DoiTacTourController::class, 'store']);
+    Route::put('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'update']);
+    Route::delete('/doi-tac/tour/{ma_tour}', [DoiTacTourController::class, 'destroy']);
+    Route::post('/doi-tac/tour/{ma_tour}/submit', [DoiTacTourController::class, 'submit']);
+
+    Route::get('/doi-tac/tour/{ma_tour}/dia-diem', [DoiTacTourDiaDiemController::class, 'index']);
+    Route::post('/doi-tac/tour/{ma_tour}/dia-diem/existing', [DoiTacTourDiaDiemController::class, 'attachExisting']);
+    Route::post('/doi-tac/tour/{ma_tour}/dia-diem/create-and-attach', [DoiTacTourDiaDiemController::class, 'createAndAttach']);
+    Route::put('/doi-tac/tour/{ma_tour}/dia-diem/{ma_chi_tiet_tour}', [DoiTacTourDiaDiemController::class, 'update']);
+    Route::delete('/doi-tac/tour/{ma_tour}/dia-diem/{ma_chi_tiet_tour}', [DoiTacTourDiaDiemController::class, 'destroy']);
+
+    // API Doanh thu Đối tác
+    Route::get('/doi-tac/doanh-thu', [DoiTacDoiSoatController::class, 'index']);
+    
+    // API Quản lý Đơn hàng (Khách mua tour của đối tác)
+    Route::get('/doi-tac/don-hang', [DoiTacOrderController::class, 'index']);
+});
 
 // Public routes for DiaDiem
 Route::get('/dia-diem', [DiaDiemController::class, 'index']);
@@ -68,10 +154,6 @@ Route::get('/tag-dia-diem/tag/{maTag}', [TagDiaDiemController::class, 'getLocati
 // Route::middleware(['auth:sanctum'])->group(function () {
 // Route::post('/admin/login', [AdminController::class, 'login']);
 Route::get('/admins', [AdminController::class, 'index']); //
-
-// Admin routes for KhachHang
-Route::post('/admin/khach-hang', [KhachHangController::class, 'storeByAdmin']);
-Route::delete('/admin/khach-hang/{maKhachHang}', [KhachHangController::class, 'destroy']);
 
 // Admin routes for DiaDiem
 Route::post('/dia-diem', [DiaDiemController::class, 'store']);
@@ -95,11 +177,6 @@ Route::post('/admin/store', [AdminController::class, 'store']);
 // );
 // // Routes cho khách hàng
 // Route::middleware('auth:sanctum')->group(function () {
-Route::get('/khach-hang/profile', [KhachHangController::class, 'profile']);
-Route::get('/khach-hang/profile/{maKhachHang}', [KhachHangController::class, 'profile']);
-Route::put('/khach-hang/change-password', [KhachHangController::class, 'changePassword']);
-Route::put('/khach-hang/profile/{maKhachHang}', [KhachHangController::class, 'updateProfile']);
-Route::put('/khach-hang/change-password/{maKhachHang}', [KhachHangController::class, 'changePassword']);
 // });
 // Public routes for ChucVu
 Route::get('/chuc-vu', [ChucVuController::class, 'index']);
@@ -186,22 +263,11 @@ Route::post('/danh-gia-ke-hoach', [DanhGiaKeHoachController::class, 'store']);
 Route::put('/danh-gia-ke-hoach/{id}', [DanhGiaKeHoachController::class, 'update']);
 Route::delete('/danh-gia-ke-hoach/{id}', [DanhGiaKeHoachController::class, 'destroy']);
 
-// Routes HoaDon
-// Khach hang
-Route::get('/khach-hang/hoa-don', [HoaDonController::class, 'indexCustomer']);
-Route::get('/khach-hang/hoa-don/{ma_hoa_don}', [HoaDonController::class, 'showCustomer']);
-Route::post('/khach-hang/hoa-don', [HoaDonController::class, 'storeCustomer']);
-
 // Routes DanhSachYeuThich cho khach hang
 Route::get('/khach-hang/danh-sach-yeu-thich', [DanhSachYeuThichController::class, 'indexCustomer']);
 Route::post('/khach-hang/danh-sach-yeu-thich', [DanhSachYeuThichController::class, 'storeCustomer']);
 Route::put('/khach-hang/danh-sach-yeu-thich/{ma_danh_sach_ua_thich}', [DanhSachYeuThichController::class, 'updateCustomer']);
 Route::delete('/khach-hang/danh-sach-yeu-thich/{ma_danh_sach_ua_thich}', [DanhSachYeuThichController::class, 'destroyCustomer']);
-
-// Admin
-Route::get('/admin/hoa-don', [HoaDonController::class, 'indexAdmin']);
-Route::get('/admin/hoa-don/{ma_hoa_don}', [HoaDonController::class, 'showAdmin']);
-Route::patch('/admin/hoa-don/{ma_hoa_don}/status', [HoaDonController::class, 'updateStatusAdmin']);
 
 // Admin AI Configuration
 Route::get('/admin/cau-hinh-ai', [AIConfigController::class, 'getPrompt']);

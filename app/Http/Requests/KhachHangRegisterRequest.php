@@ -24,7 +24,7 @@ class KhachHangRegisterRequest extends BaseRequest
         ];
     }
 
-    protected function getErrorMessage()
+    protected function getErrorMessage(): ?string
     {
         return 'Dữ liệu đăng ký không hợp lệ';
     }

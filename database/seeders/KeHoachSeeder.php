@@ -50,7 +50,7 @@ class KeHoachSeeder extends Seeder
                 'ma_ke_hoach' => '004',
                 'ma_nhom' => '004',
                 'ten_ke_hoach' => 'Chuyen tham quan mien Bac',
-                'mo_ta' => 'Tham quan cac dia diem lich su va canh quan',
+                'mo_ta' => 'Tham quan các địa điểm lịch sử và cảnh quan',
                 'so_nguoi' => 2,
                 'ngay_bat_dau' => '2026-05-01',
                 'ngay_ket_thuc' => '2026-05-05',

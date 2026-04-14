@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             PhanQuyenAdminSeeder::class,
             KhachHangSeeder::class,
+            DoiTacSeeder::class,
             SoThichSeeder::class,
 
                 // Core Data
@@ -40,11 +41,13 @@ class DatabaseSeeder extends Seeder
             ThanhVienNhomSeeder::class,
             KeHoachSeeder::class,
             ChiTietTourSeeder::class,
+            DoiTacSampleDataSeeder::class,
             TourKhoiHanhSeeder::class,
             XeKeHoachSeeder::class,
             HoatDongChiTietSeeder::class,
             DanhGiaKeHoachSeeder::class,
             HoaDonSeeder::class,
+            PartnerRevenueDemoSeeder::class,
             DanhSachYeuThichSeeder::class,
         ]);
     }

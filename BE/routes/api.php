@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\HoaDonController;
 use App\Http\Controllers\ChiTietTourController;
+use App\Http\Controllers\NhomController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -17,3 +18,9 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::apiResource('chi-tiet-tour', ChiTietTourController::class);
+
+Route::prefix('nhom')->group(function () {
+    Route::get('/', [NhomController::class, 'index']);
+    Route::get('/{id}', [NhomController::class, 'show']);
+    Route::post('/', [NhomController::class, 'store']);
+});

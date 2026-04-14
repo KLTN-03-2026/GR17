@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('ma_ke_hoach', 10);
             $table->string('ma_nhom', 20);
             $table->string('ma_dia_diem');
+            $table->string('ma_thoi_gian_tour', 10)->nullable();
+            $table->text('ghi_chu')->nullable();
             $table->time('gio_bat_dau');
             $table->time('gio_ket_thuc');
             $table->date('ngay_cu_the');

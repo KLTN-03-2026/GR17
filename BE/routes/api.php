@@ -7,4 +7,5 @@ use App\Http\Controllers\NhomController;
 Route::prefix('nhom')->group(function () {
     Route::get('/', [NhomController::class, 'index']);
     Route::get('/{id}', [NhomController::class, 'show']);
+    Route::post('/', [NhomController::class, 'store']);
 });

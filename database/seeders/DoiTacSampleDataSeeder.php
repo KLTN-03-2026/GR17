@@ -49,7 +49,7 @@ class DoiTacSampleDataSeeder extends Seeder
                     'gio_mo_cua' => '08:00',
                     'gio_dong_cua' => '21:00',
                     'gia_giao_dong' => 70000 + ($stt * 10000),
-                    'hinh_anh' => "https://picsum.photos/seed/partner-location-{$maDiaDiem}/900/600",
+                    'hinh_anh' => $this->partnerLocationImage($stt),
                     'mo_ta' => "Địa điểm mẫu số {$stt} của đối tác {$maDoiTac}.",
                     'thoi_gian_tham_quan' => (($stt % 4) + 1) . ' giờ',
                     'nguon_tao' => 'doi_tac',
@@ -76,8 +76,8 @@ class DoiTacSampleDataSeeder extends Seeder
                     'ma_doi_tac' => $maDoiTac,
                     'ten_tour' => "Tour mẫu đối tác {$maDoiTac} - {$stt}",
                     'mo_ta' => "Lịch trình mẫu {$stt} dành cho đối tác {$maDoiTac}.",
-                    'hinh_anh' => "https://picsum.photos/seed/partner-tour-{$maTour}/900/600",
-                    'so_tien' => 1500000 + ($stt * 350000),
+                    'hinh_anh' => $this->partnerTourImage($stt),
+                    'so_tien' => 10000,
                     'so_ngay' => (($stt - 1) % 4) + 2,
                     'so_nguoi' => 10 + ($stt * 2),
                     'ma_tag' => 'TAG0' . (($stt % 5) + 1),
@@ -185,5 +185,33 @@ class DoiTacSampleDataSeeder extends Seeder
         $value = preg_replace('/\s+/', ' ', $value) ?? '';
 
         return trim($value);
+    }
+
+    private function partnerLocationImage(int $index): string
+    {
+        $images = [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/H%E1%BA%A1_Long_Bay_viewed_from_Ti_T%E1%BB%91p_Island.jpg/800px-H%E1%BA%A1_Long_Bay_viewed_from_Ti_T%E1%BB%91p_Island.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Golden_Bridge_in_Ba_Na_Hills_2.jpg/800px-Golden_Bridge_in_Ba_Na_Hills_2.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Hoi_An_lanterns_at_night.jpg/800px-Hoi_An_lanterns_at_night.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Tam_Coc%2C_Ninh_Binh.jpg/800px-Tam_Coc%2C_Ninh_Binh.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/View_of_Da_Lat_from_Lang_Biang.jpg/800px-View_of_Da_Lat_from_Lang_Biang.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Phu_Quoc_Island_Beach.jpg/800px-Phu_Quoc_Island_Beach.jpg',
+        ];
+
+        return $images[($index - 1) % count($images)];
+    }
+
+    private function partnerTourImage(int $index): string
+    {
+        $images = [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Phu_Quoc_Island_Beach.jpg/800px-Phu_Quoc_Island_Beach.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Golden_Bridge_in_Ba_Na_Hills_2.jpg/800px-Golden_Bridge_in_Ba_Na_Hills_2.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Nha_Trang_beach.jpg/800px-Nha_Trang_beach.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/HoanKiemLake.jpg/800px-HoanKiemLake.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/H%E1%BA%A1_Long_Bay_viewed_from_Ti_T%E1%BB%91p_Island.jpg/800px-H%E1%BA%A1_Long_Bay_viewed_from_Ti_T%E1%BB%91p_Island.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/View_of_Da_Lat_from_Lang_Biang.jpg/800px-View_of_Da_Lat_from_Lang_Biang.jpg',
+        ];
+
+        return $images[($index - 1) % count($images)];
     }
 }

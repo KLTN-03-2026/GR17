@@ -29,7 +29,7 @@ class SendPartnerMonthlyReportCommand extends Command
             ->get(['ma_doi_tac', 'email', 'ten_doi_tac']);
 
         if ($partners->isEmpty()) {
-            $this->info('Khong co doi tac hop le de gui bao cao.');
+            $this->info('Không có đối tác hợp lệ để gửi báo cáo.');
             return self::SUCCESS;
         }
 

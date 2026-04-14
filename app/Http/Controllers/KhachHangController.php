@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\KhachHangChangePasswordRequest;
+use App\Http\Requests\KhachHangLoginRequest;
+use App\Http\Requests\KhachHangRegisterRequest;
+use App\Http\Requests\KhachHangStoreByAdminRequest;
+use App\Http\Requests\KhachHangUpdateProfileRequest;
+use App\Models\Admin;
 use App\Models\KhachHang;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\KhachHangRegisterRequest;
-use App\Http\Requests\KhachHangLoginRequest;
-use App\Http\Requests\KhachHangUpdateProfileRequest;
-use App\Http\Requests\KhachHangChangePasswordRequest;
-use App\Http\Requests\KhachHangStoreByAdminRequest;
 
 class KhachHangController extends Controller
 {
-    public function checkLogin(Request $request)
+    public function checkLogin(Request $request): JsonResponse
     {
         $khachHang = $request->user();
 
@@ -32,10 +33,7 @@ class KhachHangController extends Controller
         ], 200);
     }
 
-    /**
-     * Đăng ký tài khoản khách hàng.
-     */
-    public function register(KhachHangRegisterRequest $request)
+    public function register(KhachHangRegisterRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $validated['Mat_khau'] = Hash::make($validated['Mat_khau']);
@@ -50,13 +48,9 @@ class KhachHangController extends Controller
         ], 201);
     }
 
-    /**
-     * Đăng nhập khách hàng.
-     */
-    public function login(KhachHangLoginRequest $request)
+    public function login(KhachHangLoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-
         $khachHang = KhachHang::where('Email', $credentials['Email'])->first();
 
         if (!$khachHang || !Hash::check($credentials['Mat_khau'], $khachHang->Mat_khau)) {
@@ -69,33 +63,18 @@ class KhachHangController extends Controller
 
         $token = $khachHang->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['message' => 'Đăng nhập thành công', 'token' => $token], 200);
+        return response()->json([
+            'message' => 'Đăng nhập thành công',
+            'token' => $token,
+            'user' => $khachHang,
+        ], 200);
     }
 
-    /**
-     * Xem thông tin cá nhân dựa trên Ma_khach_hang.
-     */
-    public function profile(Request $request, $maKhachHang)
+    public function profile(Request $request, ?string $maKhachHang = null): JsonResponse
     {
-        $validator = Validator::make(['Ma_khach_hang' => $maKhachHang], [
-            'Ma_khach_hang' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Lấy thông tin cá nhân thất bại',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $khachHang = KhachHang::where('Ma_khach_hang', $maKhachHang)->first();
-
-        if (!$khachHang) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Khách hàng không tồn tại',
-            ], 404);
+        $khachHang = $this->resolveAuthorizedCustomer($request, $maKhachHang, true);
+        if ($khachHang instanceof JsonResponse) {
+            return $khachHang;
         }
 
         return response()->json([
@@ -105,33 +84,34 @@ class KhachHangController extends Controller
         ], 200);
     }
 
-    /**
-     * Cập nhật thông tin cá nhân dựa trên Ma_khach_hang.
-     */
-    public function updateProfile(KhachHangUpdateProfileRequest $request, $maKhachHang)
+    public function updateProfile(KhachHangUpdateProfileRequest $request, string $maKhachHang): JsonResponse
     {
-        $khachHang = KhachHang::findOrFail($maKhachHang);
+        $khachHang = $this->resolveAuthorizedCustomer($request, $maKhachHang, true);
+        if ($khachHang instanceof JsonResponse) {
+            return $khachHang;
+        }
 
         $validated = $request->validated();
-
         if (isset($validated['Ngay_sinh'])) {
             $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
         }
 
         $khachHang->update($validated);
 
-        return response()->json(['message' => 'Cập nhật thông tin thành công', 'data' => $khachHang]);
+        return response()->json([
+            'message' => 'Cập nhật thông tin thành công',
+            'data' => $khachHang->fresh(),
+        ]);
     }
 
-    /**
-     * Đổi mật khẩu dựa trên Ma_khach_hang.
-     */
-    public function changePassword(KhachHangChangePasswordRequest $request, $maKhachHang)
+    public function changePassword(KhachHangChangePasswordRequest $request, string $maKhachHang): JsonResponse
     {
-        $khachHang = KhachHang::findOrFail($maKhachHang);
+        $khachHang = $this->resolveAuthorizedCustomer($request, $maKhachHang, false);
+        if ($khachHang instanceof JsonResponse) {
+            return $khachHang;
+        }
 
         $validated = $request->validated();
-
         if (!Hash::check($validated['current_password'], $khachHang->Mat_khau)) {
             return response()->json(['message' => 'Mật khẩu hiện tại không chính xác'], 401);
         }
@@ -141,11 +121,16 @@ class KhachHangController extends Controller
         return response()->json(['message' => 'Đổi mật khẩu thành công']);
     }
 
-    /**
-     * Lấy danh sách tất cả khách hàng
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
+        $user = $request->user();
+        if (!$user instanceof KhachHang && !$user instanceof Admin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền truy cập danh sách khách hàng',
+            ], 403);
+        }
+
         $khachHang = KhachHang::all();
 
         return response()->json([
@@ -155,17 +140,14 @@ class KhachHangController extends Controller
         ], 200);
     }
 
-    /**
-     * Thêm mới khách hàng (Admin)
-     */
-    public function storeByAdmin(KhachHangStoreByAdminRequest $request)
+    public function storeByAdmin(KhachHangStoreByAdminRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $validated['Mat_khau'] = Hash::make($validated['Mat_khau']);
         $validated['Ngay_sinh'] = date('Y-m-d', strtotime(str_replace('/', '-', $validated['Ngay_sinh'])));
-        
+
         if ($request->has('is_block')) {
-             $validated['is_block'] = $request->is_block;
+            $validated['is_block'] = $request->is_block;
         }
 
         $khachHang = KhachHang::create($validated);
@@ -177,24 +159,65 @@ class KhachHangController extends Controller
         ], 201);
     }
 
-    /**
-     * Xóa khách hàng (Admin)
-     */
-    public function destroy($maKhachHang)
+    public function destroy(string $maKhachHang): JsonResponse
     {
         $khachHang = KhachHang::find($maKhachHang);
         if (!$khachHang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Khách hàng không tồn tại'
+                'message' => 'Khách hàng không tồn tại',
             ], 404);
         }
-        
+
         $khachHang->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Xóa khách hàng thành công'
+            'message' => 'Xóa khách hàng thành công',
         ], 200);
+    }
+
+    private function resolveAuthorizedCustomer(Request $request, ?string $maKhachHang, bool $allowAdmin): KhachHang|JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa đăng nhập',
+            ], 401);
+        }
+
+        if ($maKhachHang === null) {
+            if ($user instanceof KhachHang) {
+                $maKhachHang = $user->Ma_khach_hang;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thiếu mã khách hàng cần truy cập',
+                ], 422);
+            }
+        }
+
+        $khachHang = KhachHang::where('Ma_khach_hang', $maKhachHang)->first();
+        if (!$khachHang) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khách hàng không tồn tại',
+            ], 404);
+        }
+
+        if ($allowAdmin && $user instanceof Admin) {
+            return $khachHang;
+        }
+
+        if (!$user instanceof KhachHang || $user->Ma_khach_hang !== $maKhachHang) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền truy cập tài nguyên này',
+            ], 403);
+        }
+
+        return $khachHang;
     }
 }

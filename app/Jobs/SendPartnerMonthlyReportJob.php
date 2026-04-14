@@ -82,7 +82,7 @@ class SendPartnerMonthlyReportJob implements ShouldQueue, ShouldBeUnique
 
         $doiTac = DoiTac::query()->where('ma_doi_tac', $this->maDoiTac)->first();
         if (! $doiTac || empty($doiTac->email)) {
-            throw new \RuntimeException('Khong tim thay email doi tac de gui bao cao.');
+            throw new \RuntimeException('Không tìm thấy email đối tác để gửi báo cáo.');
         }
 
         $reportData = $reportService->buildForMonth($this->maDoiTac, $this->reportMonth);

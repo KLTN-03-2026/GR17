@@ -53,7 +53,7 @@ class AIPlannerController extends Controller
         $apiKey = $this->resolveGeminiApiKey();
         if ($apiKey === '') {
             return $this->failureResponse(
-                'Chua cau hinh GEMINI_API_KEY.',
+                'Chưa cấu hình GEMINI_API_KEY.',
                 'AI_AUTH',
                 false,
                 500
@@ -592,7 +592,7 @@ class AIPlannerController extends Controller
 
             $description = trim((string) ($diaDiem->mo_ta ?? ''));
             if ($description === '') {
-                $description = 'Dia diem noi bat tai ' . $diemDen . '.';
+                $description = 'Địa điểm nổi bật tại ' . $diemDen . '.';
             }
 
             $image = trim((string) ($diaDiem->hinh_anh ?? ''));

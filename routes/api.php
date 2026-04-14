@@ -46,6 +46,7 @@ use App\Http\Controllers\SepayWebhookController;
 
 // Public routes
 Route::post('/khach-hang/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
+Route::post('/khach-hang/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
 Route::post('/khach-hang/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
 Route::post('/admin/login', [AdminController::class, 'login']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);

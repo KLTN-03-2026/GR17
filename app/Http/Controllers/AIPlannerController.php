@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AIPlannerRequest;
 use App\Models\CauHinhAi;
 use App\Models\DiaDiem;
 use App\Models\KeHoach;
 use App\Models\ThanhVienNhom;
+use App\Services\AITourGuideService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -20,19 +22,21 @@ class AIPlannerController extends Controller
     private const TYPE_GEMINI_MODEL_FALLBACKS = 'gemini_model_fallbacks';
     private const DEFAULT_GEMINI_MODELS = 'gemini-3.0-flash,gemini-3.1-pro,gemini-3.0-pro';
 
-    public function generateItinerary(Request $request)
+    public function generateItinerary(AIPlannerRequest $request)
     {
-        $request->validate([
-            'diemDen' => 'required|string',
-            'soNgay' => 'required|integer|min:1|max:7',
-            'nganSach' => 'required|string',
-            'soThich' => 'array',
-        ]);
-
-        $diemDen = trim((string) $request->input('diemDen'));
-        $soNgay = (int) $request->input('soNgay');
-        $nganSach = (string) $request->input('nganSach');
-        $soThich = implode(', ', $request->input('soThich', []));
+        $diemDen = trim((string) $request->input('diem_den', $request->input('diemDen')));
+        $soNgay = (int) $request->input('so_ngay', $request->input('soNgay'));
+        $nganSach = (string) $request->input('ngan_sach', $request->input('nganSach'));
+        $soThichList = $this->normalizeStringList($request->input('so_thich', $request->input('soThich', [])));
+        $soThich = implode(', ', $soThichList);
+        $selectedLocations = $this->normalizeStringList(
+            $request->input('selected_locations', $request->input('selectedLocations', []))
+        );
+        $moTaChuyenDi = trim((string) $request->input(
+            'mo_ta_chuyen_di',
+            $request->input('moTaChuyenDi', $request->input('moTa', ''))
+        ));
+        $soNguoi = max(1, (int) $request->input('so_nguoi', $request->input('soNguoi', 1)));
 
         $diaDiemsDB = DiaDiem::query()
             ->where('dia_chi', 'LIKE', '%' . $diemDen . '%')
@@ -65,6 +69,7 @@ class AIPlannerController extends Controller
             [$diemDen, $soNgay, $nganSach, $soThich, $diaDiemsDB->toJson(JSON_UNESCAPED_UNICODE)],
             $promptTemplate
         );
+        $prompt .= $this->buildAdditionalPromptContext($selectedLocations, $moTaChuyenDi, $soNguoi);
 
         $payload = [
             'contents' => [
@@ -217,6 +222,73 @@ class AIPlannerController extends Controller
             (string) $lastFailure['code'],
             (bool) $lastFailure['retryable'],
             $this->statusForErrorCode((string) $lastFailure['code'])
+        );
+    }
+
+    public function suggestLocations(AIPlannerRequest $request)
+    {
+        $diemDen = trim((string) $request->input('diem_den', $request->input('diemDen')));
+        $soNgay = (int) $request->input('so_ngay', $request->input('soNgay'));
+        $nganSach = (string) $request->input('ngan_sach', $request->input('nganSach'));
+        $soThichList = $this->normalizeStringList($request->input('so_thich', $request->input('soThich', [])));
+        $moTaChuyenDi = trim((string) $request->input(
+            'mo_ta_chuyen_di',
+            $request->input('moTaChuyenDi', $request->input('moTa', ''))
+        ));
+
+        $diaDiemsDB = DiaDiem::query()
+            ->where('dia_chi', 'LIKE', '%' . $diemDen . '%')
+            ->orWhere('ten_dia_diem', 'LIKE', '%' . $diemDen . '%')
+            ->limit(20)
+            ->get(['ma_dia_diem', 'ten_dia_diem', 'mo_ta', 'hinh_anh', 'dia_chi']);
+
+        $fallbackSuggestions = $this->buildFallbackLocationSuggestions($diaDiemsDB);
+
+        try {
+            $aiService = new AITourGuideService();
+            $suggestions = $aiService->suggestLocations(
+                $diemDen,
+                $soNgay,
+                $nganSach,
+                $soThichList,
+                $diaDiemsDB,
+                $moTaChuyenDi
+            );
+
+            $normalized = $this->normalizeSuggestedLocations($suggestions);
+            $normalized = $this->enrichSuggestedLocationImages($normalized, $diaDiemsDB, $diemDen);
+            if ($normalized !== []) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $normalized,
+                    'meta' => [
+                        'planSource' => 'ai',
+                    ],
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('AI suggest locations failed', [
+                'message' => $e->getMessage(),
+                'destination' => $diemDen,
+            ]);
+        }
+
+        if ($fallbackSuggestions !== []) {
+            return response()->json([
+                'success' => true,
+                'data' => $fallbackSuggestions,
+                'meta' => [
+                    'planSource' => 'fallback',
+                    'notice' => 'Đang dùng gợi ý địa điểm dự phòng từ dữ liệu hệ thống.',
+                ],
+            ]);
+        }
+
+        return $this->failureResponse(
+            'Không thể lấy gợi ý địa điểm lúc này.',
+            'AI_UNAVAILABLE',
+            true,
+            503
         );
     }
 
@@ -644,6 +716,194 @@ class AIPlannerController extends Controller
         }
 
         return 'https://images.unsplash.com/photo-1596347958988-cb942eb22eb7?w=1000';
+    }
+
+    private function buildAdditionalPromptContext(array $selectedLocations, string $moTaChuyenDi, int $soNguoi): string
+    {
+        $instructions = [];
+
+        if ($selectedLocations !== []) {
+            $instructions[] = 'Ưu tiên đưa các địa điểm sau vào lịch trình: ' . implode(', ', $selectedLocations) . '.';
+        }
+
+        if ($moTaChuyenDi !== '') {
+            $instructions[] = 'Mô tả mong muốn bổ sung của chuyến đi: ' . $moTaChuyenDi . '.';
+        }
+
+        if ($soNguoi > 1) {
+            $instructions[] = 'Số người tham gia: ' . $soNguoi . '.';
+        }
+
+        if ($instructions === []) {
+            return '';
+        }
+
+        return "\n\nYÊU CẦU BỔ SUNG:\n- " . implode("\n- ", $instructions);
+    }
+
+    private function normalizeStringList($value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn ($item) => trim((string) $item),
+            $value
+        )));
+    }
+
+    private function normalizeSuggestedLocations($suggestions): array
+    {
+        if (! is_array($suggestions)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($suggestions as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $tenDiaDiem = trim((string) ($item['ten_dia_diem'] ?? ''));
+            if ($tenDiaDiem === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'ten_dia_diem' => $tenDiaDiem,
+                'mo_ta_ngan' => trim((string) ($item['mo_ta_ngan'] ?? $item['moTa'] ?? $item['mo_ta'] ?? '')),
+                'dia_chi' => trim((string) ($item['dia_chi'] ?? '')),
+                'hinhanh' => trim((string) ($item['hinhanh'] ?? $item['hinh_anh'] ?? '')),
+            ];
+        }
+
+        return array_slice($normalized, 0, 10);
+    }
+
+    private function enrichSuggestedLocationImages(array $suggestions, Collection $diaDiemsDB, string $diemDen): array
+    {
+        if ($suggestions === []) {
+            return [];
+        }
+
+        foreach ($suggestions as &$item) {
+            $currentImage = trim((string) ($item['hinhanh'] ?? ''));
+            if ($currentImage !== '') {
+                continue;
+            }
+
+            $existingImage = $this->findExistingLocationImage(
+                (string) ($item['ten_dia_diem'] ?? ''),
+                (string) ($item['dia_chi'] ?? ''),
+                $diaDiemsDB
+            );
+
+            if ($existingImage !== '') {
+                $item['hinhanh'] = $existingImage;
+                continue;
+            }
+
+            $item['hinhanh'] = $this->fetchPexelsImageForLocation(
+                (string) ($item['ten_dia_diem'] ?? ''),
+                (string) ($item['dia_chi'] ?? ''),
+                $diemDen
+            );
+        }
+        unset($item);
+
+        return $suggestions;
+    }
+
+    private function findExistingLocationImage(string $tenDiaDiem, string $diaChi, Collection $diaDiemsDB): string
+    {
+        $tenDiaDiem = trim(mb_strtolower($tenDiaDiem, 'UTF-8'));
+        $diaChi = trim(mb_strtolower($diaChi, 'UTF-8'));
+
+        if ($tenDiaDiem === '' && $diaChi === '') {
+            return '';
+        }
+
+        foreach ($diaDiemsDB as $diaDiem) {
+            $dbName = trim(mb_strtolower((string) ($diaDiem->ten_dia_diem ?? ''), 'UTF-8'));
+            $dbAddress = trim(mb_strtolower((string) ($diaDiem->dia_chi ?? ''), 'UTF-8'));
+            $dbImage = trim((string) ($diaDiem->hinh_anh ?? ''));
+
+            if ($dbImage === '') {
+                continue;
+            }
+
+            if ($tenDiaDiem !== '' && ($dbName === $tenDiaDiem || str_contains($dbName, $tenDiaDiem) || str_contains($tenDiaDiem, $dbName))) {
+                return $dbImage;
+            }
+
+            if ($diaChi !== '' && $dbAddress !== '' && (str_contains($dbAddress, $diaChi) || str_contains($diaChi, $dbAddress))) {
+                return $dbImage;
+            }
+        }
+
+        return '';
+    }
+
+    private function fetchPexelsImageForLocation(string $tenDiaDiem, string $diaChi, string $diemDen): string
+    {
+        $pexelsKey = $this->resolvePexelsApiKey();
+        if ($pexelsKey === '') {
+            return '';
+        }
+
+        $queries = array_values(array_filter([
+            trim($tenDiaDiem . ' ' . $diemDen . ' Vietnam'),
+            trim($tenDiaDiem . ' Vietnam'),
+            trim($diaChi . ' Vietnam'),
+            trim($diemDen . ' Vietnam'),
+        ]));
+
+        foreach ($queries as $query) {
+            try {
+                $response = Http::withoutVerifying()
+                    ->timeout(20)
+                    ->withHeaders(['Authorization' => $pexelsKey])
+                    ->get('https://api.pexels.com/v1/search', [
+                        'query' => $query,
+                        'per_page' => 1,
+                        'orientation' => 'landscape',
+                    ]);
+
+                if (! $response->successful()) {
+                    continue;
+                }
+
+                $image = trim((string) ($response->json('photos.0.src.landscape') ?? ''));
+                if ($image !== '') {
+                    return $image;
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Pexels image lookup failed', [
+                    'message' => $e->getMessage(),
+                    'query' => $query,
+                ]);
+            }
+        }
+
+        return '';
+    }
+
+    private function buildFallbackLocationSuggestions(Collection $diaDiemsDB): array
+    {
+        return $diaDiemsDB
+            ->take(10)
+            ->map(static function ($diaDiem) {
+                return [
+                    'ten_dia_diem' => (string) $diaDiem->ten_dia_diem,
+                    'mo_ta_ngan' => trim((string) ($diaDiem->mo_ta ?? '')),
+                    'dia_chi' => trim((string) ($diaDiem->dia_chi ?? '')),
+                    'hinhanh' => trim((string) ($diaDiem->hinh_anh ?? '')),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     private function estimateBudget(string $nganSach, int $soNgay): int

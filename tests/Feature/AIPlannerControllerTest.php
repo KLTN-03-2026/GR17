@@ -183,6 +183,156 @@ class AIPlannerControllerTest extends TestCase
         $this->assertStringContainsString('application/json', (string) $response->headers->get('content-type'));
     }
 
+    public function test_ai_generate_accepts_selected_locations_and_trip_description(): void
+    {
+        Http::fake([
+            'https://generativelanguage.googleapis.com/*' => function ($request) {
+                $payload = $request->data();
+                $prompt = data_get($payload, 'contents.0.parts.0.text', '');
+
+                $this->assertStringContainsString('Hon Thom', $prompt);
+                $this->assertStringContainsString('Muon di an nhieu do bien', $prompt);
+
+                return Http::response([
+                    'candidates' => [
+                        [
+                            'content' => [
+                                'parts' => [
+                                    [
+                                        'text' => json_encode([
+                                            [
+                                                'tieuDe' => 'Ngay 1: Phu Quoc',
+                                                'thoiGian' => 'Thu hai',
+                                                'danhSachHoatDong' => [
+                                                    [
+                                                        'buoi' => 'BUOI SANG',
+                                                        'iconClass' => 'icon--morning',
+                                                        'icon' => 'fas fa-sun',
+                                                        'tieuDe' => 'Hon Thom',
+                                                        'moTa' => 'Tam bien',
+                                                        'hinhanh' => '',
+                                                        'co_trong_db' => false,
+                                                        'gia' => '100.000 VND',
+                                                        'thoiLuong' => '3 gio',
+                                                    ],
+                                                ],
+                                            ],
+                                        ], JSON_UNESCAPED_UNICODE),
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ], 200);
+            },
+            'https://api.pexels.com/*' => Http::response(['photos' => []], 200),
+        ]);
+
+        $response = $this->postJson('/api/khach-hang/ke-hoach-ai', [
+            'diemDen' => 'Phu Quoc',
+            'soNgay' => 1,
+            'nganSach' => 'Tieu chuan',
+            'soThich' => ['am thuc'],
+            'selectedLocations' => ['Hon Thom'],
+            'moTaChuyenDi' => 'Muon di an nhieu do bien',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.meta.planSource', 'ai');
+    }
+
+    public function test_ai_suggest_locations_returns_suggested_places(): void
+    {
+        $this->seedDiaDiem('10', 'Cho dem Phu Quoc', 'Phu Quoc', 0, 'https://images.example.com/phu-quoc.jpg');
+
+        Http::fake([
+            'https://generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => json_encode([
+                                        [
+                                            'ten_dia_diem' => 'Hon Thom',
+                                            'mo_ta_ngan' => 'Cap treo va bien dep',
+                                            'dia_chi' => 'Nam dao Phu Quoc',
+                                            'hinhanh' => 'https://images.example.com/hon-thom.jpg',
+                                        ],
+                                    ], JSON_UNESCAPED_UNICODE),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $response = $this->postJson('/api/khach-hang/ke-hoach-ai/de-xuat-dia-diem', [
+            'diem_den' => 'Phu Quoc',
+            'so_ngay' => 2,
+            'ngan_sach' => 'Tieu chuan',
+            'so_thich' => ['bien dao'],
+            'mo_ta_chuyen_di' => 'Muon di bien va an hai san',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.ten_dia_diem', 'Hon Thom')
+            ->assertJsonPath('data.0.hinhanh', 'https://images.example.com/hon-thom.jpg');
+    }
+
+    public function test_ai_suggest_locations_enriches_missing_images_with_pexels(): void
+    {
+        Http::fake([
+            'https://generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => json_encode([
+                                        [
+                                            'ten_dia_diem' => 'Hồ Hoàn Kiếm',
+                                            'mo_ta_ngan' => 'Đi dạo và ngắm cảnh trung tâm Hà Nội',
+                                            'dia_chi' => 'Quận Hoàn Kiếm, Hà Nội',
+                                            'hinhanh' => '',
+                                        ],
+                                    ], JSON_UNESCAPED_UNICODE),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
+            'https://api.pexels.com/*' => function ($request) {
+                $this->assertStringContainsString('Hồ Hoàn Kiếm', (string) $request['query']);
+
+                return Http::response([
+                    'photos' => [
+                        ['src' => ['landscape' => 'https://images.example.com/ho-hoan-kiem.jpg']],
+                    ],
+                ], 200);
+            },
+        ]);
+
+        $response = $this->postJson('/api/khach-hang/ke-hoach-ai/de-xuat-dia-diem', [
+            'diem_den' => 'Hà Nội',
+            'so_ngay' => 2,
+            'ngan_sach' => 'Tiêu chuẩn',
+            'so_thich' => ['văn hóa'],
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.ten_dia_diem', 'Hồ Hoàn Kiếm')
+            ->assertJsonPath('data.0.hinhanh', 'https://images.example.com/ho-hoan-kiem.jpg');
+    }
+
     private function seedPrompt(): void
     {
         DB::table('cau_hinh_ais')->insert([

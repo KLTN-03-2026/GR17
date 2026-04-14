@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreNhomRequest;
 use App\Models\Nhom;
 use Illuminate\Http\JsonResponse;
 
@@ -32,5 +33,17 @@ class NhomController extends Controller
             'success' => true,
             'data' => $group,
         ]);
+    }
+
+    public function store(StoreNhomRequest $request): JsonResponse
+    {
+        $group = Nhom::query()->create([
+            'ten_nhom' => $request->input('ten_nhom'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $group,
+        ], 201);
     }
 }

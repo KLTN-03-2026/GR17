@@ -115,6 +115,9 @@ class AdminController extends Controller
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy quản trị viên'], 404);
         }
+        if ($admin->IsAdmin == 1) {
+            return response()->json(['success' => false, 'message' => 'Không được phép cập nhật tài khoản Admin hệ thống'], 403);
+        }
         try {
             $admin->update($request->validated());
 
@@ -141,6 +144,12 @@ class AdminController extends Controller
         //         'message' => 'Không tìm thấy quản trị viên'
         //     ], 404);
         // }
+        if ($admin && $admin->IsAdmin == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không được phép xóa tài khoản Admin hệ thống'
+            ], 403);
+        }
         $admin->delete();
 
         return response()->json([
@@ -206,6 +215,12 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Không tìm thấy quản trị viên'
             ], 404);
+        }
+        if ($admin->IsAdmin == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không được phép thay đổi trạng thái tài khoản Admin hệ thống'
+            ], 403);
         }
         $admin->update($request->validated());
         return response()->json([

@@ -20,6 +20,8 @@ class HoatDongChiTiet extends Model
         'ma_ke_hoach',
         'ma_nhom',
         'ma_dia_diem',
+        'ma_tour',
+        'ghi_chu',
         'gio_bat_dau',
         'gio_ket_thuc',
         'ngay_cu_the',

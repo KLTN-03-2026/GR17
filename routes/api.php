@@ -45,9 +45,16 @@ use App\Http\Controllers\SepayWebhookController;
 // })->middleware('auth:sanctum');
 
 // Public routes
-Route::post('/khach-hang/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
-Route::post('/khach-hang/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
-Route::post('/khach-hang/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
+Route::prefix('khach-hang')->group(function () {
+    Route::post('/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
+    Route::post('/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
+    Route::post('/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
+});
+
+// Debug routes for AI
+Route::get('/debug/gemini', [AIPlannerController::class, 'testGemini']);
+Route::get('/debug/openai', [AIPlannerController::class, 'testOpenAI']);
+
 Route::post('/admin/login', [AdminController::class, 'login']);
 Route::post('/khach-hang/register', [KhachHangController::class, 'register']);
 Route::post('/khach-hang/login', [KhachHangController::class, 'login']);
@@ -129,7 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // API Doanh thu Đối tác
     Route::get('/doi-tac/doanh-thu', [DoiTacDoiSoatController::class, 'index']);
-    
+
     // API Quản lý Đơn hàng (Khách mua tour của đối tác)
     Route::get('/doi-tac/don-hang', [DoiTacOrderController::class, 'index']);
 });

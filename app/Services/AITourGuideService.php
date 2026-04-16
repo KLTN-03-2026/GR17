@@ -44,7 +44,7 @@ class AITourGuideService
             ],
         ];
 
-        $model = 'gemini-3.1-flash-lite-preview'; 
+        $model = 'gemini-2.5-flash'; 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent";
         
         // Thử Key 1, nếu lỗi thử sang Key 2
@@ -198,7 +198,7 @@ PROMPT;
             ],
         ];
 
-        $model = 'gemini-3.1-flash-lite-preview'; 
+        $model = 'gemini-2.5-flash'; 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent";
         
         $keys = [env('GEMINI_API_KEY'), env('GEMINI_API_KEY_2')];

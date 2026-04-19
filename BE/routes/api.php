@@ -28,7 +28,10 @@ Route::prefix('nhom')->group(function () {
 
 Route::prefix('thanh-vien-nhom')->group(function () {
     Route::get('/', [ThanhVienNhomController::class, 'index']);
+    Route::get('/search', [ThanhVienNhomController::class, 'search']);
     Route::get('/nhom/{maNhom}', [ThanhVienNhomController::class, 'getByNhom']);
     Route::get('/{id}', [ThanhVienNhomController::class, 'show']);
     Route::post('/', [ThanhVienNhomController::class, 'store']);
+    Route::put('/{id}', [ThanhVienNhomController::class, 'update']);
+    Route::delete('/{id}', [ThanhVienNhomController::class, 'destroy']);
 });

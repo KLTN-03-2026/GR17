@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -40,4 +41,9 @@ class KhachHang extends Authenticatable
         'Gioi_tinh' => 'boolean',
         'is_block' => 'boolean',
     ];
+
+    public function thanhVienNhom(): HasMany
+    {
+        return $this->hasMany(ThanhVienNhom::class, 'Ma_khach_hang', 'Ma_khach_hang');
+    }
 }

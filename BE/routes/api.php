@@ -30,4 +30,5 @@ Route::prefix('thanh-vien-nhom')->group(function () {
     Route::get('/', [ThanhVienNhomController::class, 'index']);
     Route::get('/nhom/{maNhom}', [ThanhVienNhomController::class, 'getByNhom']);
     Route::get('/{id}', [ThanhVienNhomController::class, 'show']);
+    Route::post('/', [ThanhVienNhomController::class, 'store']);
 });

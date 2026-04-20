@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ThanhVienNhom extends Model
 {
@@ -26,12 +27,12 @@ class ThanhVienNhom extends Model
         'vai_tro' => 'integer',
     ];
 
-    public function nhom()
+    public function nhom(): BelongsTo
     {
         return $this->belongsTo(Nhom::class, 'Ma_nhom', 'Ma_nhom');
     }
 
-    public function khachHang()
+    public function khachHang(): BelongsTo
     {
         return $this->belongsTo(KhachHang::class, 'Ma_khach_hang', 'Ma_khach_hang');
     }

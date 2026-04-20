@@ -62,6 +62,11 @@ const routes = [
         name: 'user-lich-su-thanh-toan',
         component: () => import('../pages/UserLichSuHoaDon.vue'),
     },
+    {
+        path: '/khach-hang/nhom-hanh-trinh',
+        name: 'customer-groups',
+        component: () => import('../components/KhachHang/NhomHanhTrinh/DanhSachNhom.vue'),
+    },
 
 ];
 

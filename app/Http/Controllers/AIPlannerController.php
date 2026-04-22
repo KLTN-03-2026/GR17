@@ -39,7 +39,7 @@ class AIPlannerController extends Controller
         $soNgay = $request->input('so_ngay');
         $nganSach = $request->input('ngan_sach') ?: 0;
         $soThich = $request->input('so_thich', []);
-        $moTa = $request->input('mo_ta_chuyen_di', '');
+        $moTa = (string) $request->input('mo_ta_chuyen_di', '');
 
         try {
             // Lấy danh sách địa điểm liên quan từ CSDL
@@ -77,7 +77,7 @@ class AIPlannerController extends Controller
         $soNgay = $request->input('so_ngay');
         $nganSach = $request->input('ngan_sach') ?: 0;
         $soThich = $request->input('so_thich', []);
-        $moTa = $request->input('mo_ta_chuyen_di', '');
+        $moTa = (string) $request->input('mo_ta_chuyen_di', '');
         $selectedLocations = $request->input('selectedLocations', []);
 
         try {
@@ -274,7 +274,7 @@ class AIPlannerController extends Controller
     public function testGemini()
     {
         $keys = [env('GEMINI_API_KEY'), env('GEMINI_API_KEY_2')];
-        $modelsToTest = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+        $modelsToTest = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash-exp', 'gemini-2.0-pro-exp'];
         $results = [];
 
         foreach ($keys as $index => $key) {

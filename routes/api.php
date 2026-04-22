@@ -39,6 +39,8 @@ use App\Http\Controllers\DoiTacDoiSoatController;
 use App\Http\Controllers\DoiTacOrderController;
 use App\Http\Controllers\CustomerTourPaymentController;
 use App\Http\Controllers\SepayWebhookController;
+use App\Http\Controllers\AdminStatisticController;
+use App\Http\Controllers\PartnerStatisticController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -94,6 +96,12 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     // API Admin thống kê & thanh toán (Đối soát tài chính)
     Route::get('/admin/doi-soat', [AdminDoiSoatController::class, 'index']);
     Route::patch('/admin/doi-soat/{ma_doi_soat}/pay', [AdminDoiSoatController::class, 'markAsPaid']);
+
+    // API Admin Thống kê Báo cáo
+    Route::get('/admin/statistics/revenue', [AdminStatisticController::class, 'getPlatformRevenue']);
+    Route::get('/admin/statistics/users', [AdminStatisticController::class, 'getUserStatistics']);
+    Route::get('/admin/statistics/locations-tours', [AdminStatisticController::class, 'getLocationAndTourStatistics']);
+    Route::get('/admin/statistics/reconciliation', [AdminStatisticController::class, 'getReconciliationStatistics']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -139,6 +147,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // API Quản lý Đơn hàng (Khách mua tour của đối tác)
     Route::get('/doi-tac/don-hang', [DoiTacOrderController::class, 'index']);
+
+    // API Đối tác Thống kê báo cáo
+    Route::get('/doi-tac/statistics/revenue', [PartnerStatisticController::class, 'getPartnerRevenue']);
+    Route::get('/doi-tac/statistics/ratings', [PartnerStatisticController::class, 'getFeedbackAndRatings']);
+    Route::get('/doi-tac/statistics/tours', [PartnerStatisticController::class, 'getTourPerformance']);
 });
 
 // Public routes for DiaDiem

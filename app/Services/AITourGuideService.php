@@ -55,7 +55,7 @@ class AITourGuideService
             if (!$key) continue;
 
             $fullUrl = "{$url}?key={$key}";
-            $response = Http::withoutVerifying()->timeout(60)->post($fullUrl, $payload);
+            $response = Http::withoutVerifying()->timeout(90)->post($fullUrl, $payload);
             
             if ($response->successful()) {
                 $text = data_get($response->json(), 'candidates.0.content.parts.0.text');
@@ -208,7 +208,7 @@ PROMPT;
             if (!$key) continue;
 
             $fullUrl = "{$url}?key={$key}";
-            $response = Http::withoutVerifying()->timeout(60)->post($fullUrl, $payload);
+            $response = Http::withoutVerifying()->timeout(90)->post($fullUrl, $payload);
             
             if ($response->successful()) {
                 $text = data_get($response->json(), 'candidates.0.content.parts.0.text');

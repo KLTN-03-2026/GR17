@@ -56,7 +56,7 @@ class AIConfigController extends Controller
                 'hasPexelsApiKey' => false,
                 'geminiApiKeyMasked' => env('GEMINI_API_KEY') ? '********' : '',
                 'pexelsApiKeyMasked' => '',
-                'geminiModelFallbacks' => 'gemini-1.5-flash',
+                'geminiModelFallbacks' => 'gemini-2.5-flash',
             ],
         ]);
     }

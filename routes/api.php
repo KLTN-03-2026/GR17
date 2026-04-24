@@ -49,6 +49,7 @@ use App\Http\Controllers\PartnerStatisticController;
 // Public routes
 Route::prefix('khach-hang')->group(function () {
     Route::post('/ke-hoach-ai/de-xuat-dia-diem', [AIPlannerController::class, 'suggestLocations']);
+    Route::post('/ke-hoach-ai/goi-y-tour-phu-hop', [AIPlannerController::class, 'suggestRefinedTours']);
     Route::post('/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
     Route::post('/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
 });
@@ -66,6 +67,10 @@ Route::post('/payments/sepay/webhook', [SepayWebhookController::class, 'handle']
 Route::middleware('auth:sanctum')->get('/admin/check-login', [AdminController::class, 'checkLogin']);
 Route::middleware('auth:sanctum')->get('/khach-hang/check-login', [KhachHangController::class, 'checkLogin']);
 Route::middleware('auth:sanctum')->get('/doi-tac/check-login', [DoiTacAuthController::class, 'checkLogin']);
+
+Route::middleware('auth:sanctum')->post('/admin/logout', [AdminController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('/khach-hang/logout', [KhachHangController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('/doi-tac/logout', [DoiTacAuthController::class, 'logout']);
 
 Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::get('/admin/doi-tac', [DoiTacAdminController::class, 'index']);

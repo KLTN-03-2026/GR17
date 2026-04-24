@@ -45,15 +45,24 @@ class AIPlannerController extends Controller
             // Lấy danh sách địa điểm liên quan từ CSDL
             $diaDiemsDB = DiaDiem::where('dia_chi', 'LIKE', '%' . $diemDen . '%')
                 ->orWhere('ten_dia_diem', 'LIKE', '%' . $diemDen . '%')
-                ->limit(20)->get();
+                ->limit(50)->get();
 
-            // Xin đề xuất từ AI
+            // Xin đề xuất từ AI (Khách sạn, Tham quan, Nhà hàng)
             $aiResponse = $this->aiTourGuideService->suggestLocations($diemDen, $soNgay, $nganSach, $soThich, $diaDiemsDB, $moTa);
+
+            // Lấy danh sách Tour phù hợp từ CSDL để giới thiệu kèm theo
+            $toursDB = Tour::with('chiTietTours.diaDiem')
+                ->where('ten_tour', 'LIKE', '%' . $diemDen . '%')
+                ->orWhere('mo_ta', 'LIKE', '%' . $diemDen . '%')
+                ->limit(6)->get();
 
             return response()->json([
                 'success' => true,
-                'data' => $aiResponse,
-                'message' => 'Lấy danh sách địa điểm gợi ý thành công'
+                'data' => [
+                    'ai_suggestions' => $aiResponse,
+                    'tours' => $toursDB
+                ],
+                'message' => 'Lấy danh sách địa điểm và tour gợi ý thành công'
             ]);
 
         } catch (\Exception $e) {
@@ -62,6 +71,59 @@ class AIPlannerController extends Controller
                 'success' => false,
                 'message' => 'Đã có lỗi xảy ra khi lấy danh sách gợi ý: ' . $e->getMessage(),
                 'code' => 'AI_ERROR'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Lấy danh sách tour được tinh chỉnh dựa trên các địa điểm khách hàng đã chọn
+     */
+    public function suggestRefinedTours(Request $request)
+    {
+        $diemDen = $request->input('diem_den');
+        $selectedLocations = $request->input('selected_locations', []);
+
+        try {
+            // 1. Lấy tất cả tour tại điểm đến (hoặc liên quan)
+            $tours = Tour::with('chiTietTours.diaDiem')
+                ->where('ten_tour', 'LIKE', '%' . $diemDen . '%')
+                ->orWhere('mo_ta', 'LIKE', '%' . $diemDen . '%')
+                ->get();
+
+            // 2. Tính toán độ phù hợp (Match Score)
+            // Điểm số dựa trên số lượng địa điểm khách chọn trùng với địa điểm trong tour
+            $refinedTours = $tours->map(function ($tour) use ($selectedLocations) {
+                $tourLocationNames = $tour->chiTietTours->pluck('diaDiem.ten_dia_diem')->filter()->toArray();
+                
+                $matchCount = 0;
+                foreach ($selectedLocations as $selected) {
+                    // Kiểm tra khớp chính xác hoặc khớp tương đối (chứa trong tên)
+                    foreach ($tourLocationNames as $tLoc) {
+                        if (mb_stripos($tLoc, $selected) !== false || mb_stripos($selected, $tLoc) !== false) {
+                            $matchCount++;
+                            break; 
+                        }
+                    }
+                }
+                
+                $tour->match_score = $matchCount;
+                return $tour;
+            });
+
+            // 3. Sắp xếp theo điểm số giảm dần và lấy top kết quả
+            $data = $refinedTours->sortByDesc('match_score')->values()->take(6);
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'message' => 'Lọc tour phù hợp thành công'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Refined Tours Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi lọc tour: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -78,7 +140,10 @@ class AIPlannerController extends Controller
         $nganSach = $request->input('ngan_sach') ?: 0;
         $soThich = $request->input('so_thich', []);
         $moTa = (string) $request->input('mo_ta_chuyen_di', '');
+        $ngayBatDau = $request->input('ngay_bat_dau', now()->toDateString());
+        $ngayKetThuc = $request->input('ngay_ket_thuc', Carbon::parse($ngayBatDau)->addDays($soNgay - 1)->toDateString());
         $selectedLocations = $request->input('selectedLocations', []);
+        $selectedTour = $request->input('selected_tour');
 
         try {
             $newSyncLocs = [];
@@ -110,7 +175,7 @@ class AIPlannerController extends Controller
             // Lấy các điểm ở vùng lân cận điểm đến
             $diaDiemsDB = DiaDiem::where('dia_chi', 'LIKE', '%' . $diemDen . '%')
                 ->orWhere('ten_dia_diem', 'LIKE', '%' . $diemDen . '%')
-                ->limit(15)->get();
+                ->limit(40)->get();
 
             // Đảm bảo các điểm khách đã chọn cũng có trong danh sách gửi cho AI
             $selectedLocsDB = DiaDiem::whereIn('ten_dia_diem', $selectedLocations)->get();
@@ -123,7 +188,7 @@ class AIPlannerController extends Controller
                 ->get();
 
             // 4. Sinh kịch bản qua AI
-            $aiResponse = $this->aiTourGuideService->generatePlan($diemDen, $soNgay, $nganSach, $soThich, $diaDiemsDB, $toursDB, $selectedLocations, $moTa);
+            $aiResponse = $this->aiTourGuideService->generatePlan($diemDen, $soNgay, $nganSach, $soThich, $diaDiemsDB, $toursDB, $selectedLocations, $moTa, $selectedTour);
 
             return response()->json([
                 'success' => true,
@@ -132,6 +197,8 @@ class AIPlannerController extends Controller
                     'diemDen' => $diemDen,
                     'soNgay' => $soNgay,
                     'nganSach' => $nganSach,
+                    'ngayBatDau' => $ngayBatDau,
+                    'ngayKetThuc' => $ngayKetThuc,
                 ]
             ]);
 
@@ -169,13 +236,15 @@ class AIPlannerController extends Controller
 
             // 2. Tạo Kế hoạch tổng
             $soNgay = $itineraryData['soNgay'] ?? 1;
+            $ngayBatDau = $itineraryData['ngayBatDau'] ?? now()->toDateString();
+            $ngayKetThuc = $itineraryData['ngayKetThuc'] ?? Carbon::parse($ngayBatDau)->addDays($soNgay - 1)->toDateString();
             $keHoach = KeHoach::create([
                 'ma_nhom' => $nhom->Ma_nhom,
                 'ten_ke_hoach' => $aiData['tieuDe'] ?? 'Kế hoạch AI',
                 'mo_ta' => 'Tạo bởi AI cho điểm đến ' . ($itineraryData['diemDen'] ?? ''),
                 'so_nguoi' => 1,
-                'ngay_bat_dau' => now()->toDateString(),
-                'ngay_ket_thuc' => now()->addDays($soNgay - 1)->toDateString(),
+                'ngay_bat_dau' => $ngayBatDau,
+                'ngay_ket_thuc' => $ngayKetThuc,
                 'ngan_sach_du_kien' => preg_replace('/\D/', '', $aiData['tongChiPhi'] ?? 0) ?? 0,
                 'tong_chi_phi' => 0,
                 'trang_thai' => 0,
@@ -187,7 +256,7 @@ class AIPlannerController extends Controller
             if (isset($aiData['lichTrinh']) && is_array($aiData['lichTrinh'])) {
                 $dayCount = 0;
                 foreach ($aiData['lichTrinh'] as $day) {
-                    $ngayCuThe = now()->addDays($dayCount)->toDateString();
+                    $ngayCuThe = Carbon::parse($ngayBatDau)->addDays($dayCount)->toDateString();
                     if (isset($day['danhSachHoatDong']) && is_array($day['danhSachHoatDong'])) {
                         foreach ($day['danhSachHoatDong'] as $act) {
                             $gioBatDau = match ($act['buoi'] ?? 'BUOI SANG') {
@@ -198,10 +267,22 @@ class AIPlannerController extends Controller
                             };
 
                             $maTourHanhDong = $act['ma_tour'] ?? null;
+                            $maThoiGianTour = $act['ma_thoi_gian_tour'] ?? null;
                             $ghiChu = null;
                             if ($maTourHanhDong) {
-                                $tourInfo = Tour::find($maTourHanhDong);
+                                $tourInfo = \App\Models\Tour::find($maTourHanhDong);
                                 $ghiChu = "Thuộc tour: " . ($tourInfo->ten_tour ?? $maTourHanhDong);
+                                
+                                // Nếu chưa có chuyến đi cụ thể, tự động tìm một TourKhoiHanh phù hợp với ngày này
+                                if (empty($maThoiGianTour)) {
+                                    $chuyenDi = \App\Models\TourKhoiHanh::where('ma_tour', $maTourHanhDong)
+                                        ->whereDate('ngay_bat_dau', '<=', $ngayCuThe)
+                                        ->whereDate('ngay_ket_thuc', '>=', $ngayCuThe)
+                                        ->first();
+                                    if ($chuyenDi) {
+                                        $maThoiGianTour = $chuyenDi->ma_thoi_gian_tour;
+                                    }
+                                }
                             }
 
                             $maDiaDiem = $act['ma_dia_diem'] ?? null;
@@ -239,6 +320,7 @@ class AIPlannerController extends Controller
                                 'ma_nhom' => $nhom->Ma_nhom,
                                 'ma_dia_diem' => $maDiaDiem,
                                 'ma_tour' => $maTourHanhDong,
+                                'ma_thoi_gian_tour' => $maThoiGianTour,
                                 'ghi_chu' => $ghiChu,
                                 'gio_bat_dau' => $gioBatDau,
                                 'gio_ket_thuc' => Carbon::parse($gioBatDau)->addHours(2)->toTimeString(),

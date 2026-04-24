@@ -33,6 +33,19 @@ class AdminController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request)
+    {
+        $admin = $request->user();
+        if ($admin) {
+            $admin->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng xuất thành công'
+        ], 200);
+    }
+
     public function login(AdminLoginRequest $request)
     {
         $admin = Admin::where('Email', $request->email)->first();

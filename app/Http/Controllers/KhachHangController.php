@@ -33,6 +33,19 @@ class KhachHangController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request): JsonResponse
+    {
+        $khachHang = $request->user();
+        if ($khachHang) {
+            $khachHang->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng xuất thành công',
+        ], 200);
+    }
+
     public function register(KhachHangRegisterRequest $request): JsonResponse
     {
         $validated = $request->validated();

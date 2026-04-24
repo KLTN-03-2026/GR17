@@ -11,7 +11,7 @@ class AITourGuideService
     /**
      * Gọi Gemini API để lập kế hoạch.
      */
-    public function generatePlan(string $diemDen, int $soNgay, string $nganSach, array $soThich, $diaDiems, $tours, array $selectedLocations = [], string $moTa = '')
+    public function generatePlan(string $diemDen, int $soNgay, string $nganSach, array $soThich, $diaDiems, $tours, array $selectedLocations = [], string $moTa = '', $selectedTour = null)
     {
         $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey) {
@@ -25,13 +25,14 @@ class AITourGuideService
 
         $strSoThich = implode(', ', $soThich);
         $strSelectedLocs = empty($selectedLocations) ? "Không có chỉ định đặc biệt." : "CÁC ĐỊA ĐIỂM BẮT BUỘC PHẢI CÓ TRONG LỊCH TRÌNH: " . implode(', ', $selectedLocations);
+        $strSelectedTour = $selectedTour ? "KHÁCH HÀNG ĐÃ CHỌN TOUR NÀY: " . $selectedTour['ten_tour'] . " (Mã: " . $selectedTour['ma_tour'] . "). Hãy đưa trọn vẹn các hoạt động của tour này vào lịch trình." : "";
         
         $dbDiaDiemJson = json_encode($diaDiems, JSON_UNESCAPED_UNICODE);
         $dbTourJson = json_encode($tours, JSON_UNESCAPED_UNICODE);
 
         $prompt = str_replace(
-            ['{diemDen}', '{soNgay}', '{nganSach}', '{soThich}', '{dbDiaDiemJson}', '{dbTourJson}', '{selectedLocs}', '{moTa}'],
-            [$diemDen, $soNgay, $nganSach, $strSoThich, $dbDiaDiemJson, $dbTourJson, $strSelectedLocs, $moTa],
+            ['{diemDen}', '{soNgay}', '{nganSach}', '{soThich}', '{dbDiaDiemJson}', '{dbTourJson}', '{selectedLocs}', '{moTa}', '{selectedTour}'],
+            [$diemDen, $soNgay, $nganSach, $strSoThich, $dbDiaDiemJson, $dbTourJson, $strSelectedLocs, $moTa, $strSelectedTour],
             $promptTemplate
         );
 
@@ -84,6 +85,7 @@ Khách hàng muốn đi:
 - Sở thích: {soThich}
 - Mô tả mong muốn của chuyến đi: {moTa}
 - LƯU Ý ĐẶC BIỆT: {selectedLocs}
+- TOUR ĐÃ CHỌN: {selectedTour}
 
 Dưới đây là một số Tour gợi ý từ hệ thống (nếu phù hợp):
 {dbTourJson}
@@ -91,17 +93,18 @@ Dưới đây là một số Tour gợi ý từ hệ thống (nếu phù hợp):
 Và các Địa điểm tại điểm đến (để lấy mã và thông tin):
 {dbDiaDiemJson}
 
-YÊU CẦU ĐẶC BIỆT CHÚ Ý: BẠN BẮT BUỘC PHẢI THIẾT KẾ CÓ ĐỊA ĐIỂM HOẶC LỊCH TRÌNH KHÁCH SẠN/CHỖ NGHỈ VÀ NHÀ HÀNG ĂN UỐNG ĐẦY ĐỦ CHO KHÁCH HÀNG MỖI NGÀY.
-Cụ thể, phải có ăn sáng/trưa/tối và ngủ tại khách sạn nào trong chuỗi "danhSachHoatDong".
+YÊU CẦU ĐẶC BIỆT CHÚ Ý: 
+1. BẠN BẮT BUỘC PHẢI THIẾT KẾ CÓ ĐỊA ĐIỂM HOẶC LỊCH TRÌNH KHÁCH SẠN/CHỖ NGHỈ VÀ NHÀ HÀNG ĂN UỐNG ĐẦY ĐỦ CHO KHÁCH HÀNG MỖI NGÀY.
+2. ƯU TIÊN TUYỆT ĐỐI các địa điểm có sẵn trong danh sách "Địa điểm tại điểm đến" được cung cấp phía trên. Chỉ khi nào không tìm thấy địa điểm phù hợp trong danh sách đó mới đề xuất địa điểm bên ngoài.
 
 YÊU CẦU:
-1. Đánh giá xem có Tour nào trong danh sách Tour (dựa trên giá tiền, và các điểm đến) phù hợp với ngân sách và sở thích của khách hàng không.
-2. Trả về một danh sách các Tour gợi ý (propossedTours) mà khách hàng có thể chọn.
+1. Đánh giá xem có Tour nào trong danh sách "Tour gợi ý từ hệ thống" (dựa trên giá tiền, và các điểm đến) phù hợp với ngân sách và sở thích của khách hàng không. NẾU KHÔNG CÓ TOUR NÀO, BẮT BUỘC để mảng `propossedTours` rỗng.
+2. Trả về một danh sách các Tour gợi ý (propossedTours) mà khách hàng có thể chọn. BẮT BUỘC CHỈ SỬ DỤNG CÁC TOUR ĐƯỢC CUNG CẤP TRONG DANH SÁCH, TUYỆT ĐỐI KHÔNG TỰ BỊA RA HOẶC TẠO RA TOUR MỚI VÀ MÃ TOUR MỚI (như CENT001...).
 3. Tạo một lịch trình mẫu tối ưu:
-   - NẾU CÓ ĐỊA ĐIỂM BẮT BUỘC (tham khảo phần LƯU Ý ĐẶC BIỆT): BẠN CHẮC CHẮN PHẢI THÊM CÁC ĐỊA ĐIỂM NÀY VÀO TRONG LỊCH TRÌNH CÁC NGÀY.
+   - NẾU CÓ TOUR ĐÃ CHỌN (tham khảo phần TOUR ĐÃ CHỌN): BẠN CHẮC CHẮN PHẢI ĐƯA TOUR NÀY VÀO LỊCH TRÌNH. Các hoạt động của tour này phải được giữ nguyên thứ tự và thông tin.
+   - NẾU CÓ ĐỊA ĐIỂM BẮT BUỘC (tham khảo phần LƯU Ý ĐẶC BIỆT): BẠN CHẮC CHẮN PHẢI THÊM CÁC ĐỊA ĐIỂM NÀY VÀO TRONG LỊCH TRÌNH CÁC NGÀY (có thể đan xen với tour nếu hợp lý).
    - BẮT BUỘC BỔ SUNG LỊCH NGHỈ NGƠI, KHÁCH SẠN, ĂN UỐNG MỖI NGÀY. 
-   - Nếu có Tour phù hợp nhất: Ưu tiên đưa Tour đó vào lịch trình. Sắp xếp các hoạt động trong Tour theo đúng thứ tự của Tour đó.
-   - Các hoạt động tự túc (không thuộc Tour): Sắp xếp thứ tự BUOI SANG, BUOI CHIEU, BUOI TOI sao cho tối ưu đường đi nhất.
+   - Ưu tiên đưa Tour đã chọn vào lịch trình trước, sau đó sắp xếp các địa điểm bổ sung khác xung quanh để tạo thành một hành trình hoàn chỉnh.
 4. BẮT BUỘC chỉ trả về 1 chuỗi JSON duy nhất, dạng Object.
 
 MẪU KẾT QUẢ ĐẦU RA (JSON):
@@ -124,7 +127,7 @@ MẪU KẾT QUẢ ĐẦU RA (JSON):
         {
           "buoi": "BUOI SANG",
           "tieuDe": "Tên địa điểm",
-          "ma_dia_diem": "Mã địa điểm từ DB nếu có",
+          "ma_dia_diem": "Mã địa điểm từ DB nếu có, nếu không có để null",
           "ma_tour": "Điền mã tour nếu hoạt động này thuộc tour, ngược lại null",
           "moTa": "Mô tả hoạt động",
           "gia": "Giá vé",
@@ -135,7 +138,7 @@ MẪU KẾT QUẢ ĐẦU RA (JSON):
   ]
 }
 PROMPT;
-}
+    }
 
     /**
      * Gọi Gemini API để đề xuất địa điểm.
@@ -160,27 +163,61 @@ Khách hàng muốn đi du lịch và đang tìm kiếm địa điểm với cá
 - Sở thích/Yêu cầu: {soThich}
 - Mô tả mong muốn của chuyến đi: {moTa}
 
-Dưới đây là một số Địa điểm có sẵn trong cơ sở dữ liệu:
+Dưới đây là một số Địa điểm có sẵn trong cơ sở dữ liệu hệ thống (LÀM GỐC ĐỂ ĐỀ XUẤT):
 {dbDiaDiemJson}
 
-YÊU CẦU:
-Dựa vào các tiêu chí trên, hãy đề xuất một danh sách các địa điểm (tối đa 10 địa điểm) nên đi nhất tại điểm đến này.
-BẮT BUỘC trả về 1 chuỗi JSON duy nhất dạng Array chứa các Object.
-Mỗi Object gồm các thuộc tính:
+YÊU CẦU QUAN TRỌNG:
+1. Bạn phải ƯU TIÊN TUYỆT ĐỐI việc lựa chọn các địa điểm từ danh sách "Địa điểm có sẵn" được cung cấp phía trên để đề xuất cho khách hàng.
+2. Chỉ khi nào các địa điểm trong database không đủ số lượng hoặc không phù hợp với sở thích của khách hàng, bạn mới được phép tự đề xuất các địa điểm nổi tiếng khác bên ngoài.
+3. Nếu địa điểm lấy từ database, bạn BẮT BUỘC phải giữ nguyên "ma_dia_diem" của địa điểm đó trong kết quả trả về.
+
+BẮT BUỘC chia thành 3 phân loại sau:
+1. Khách sạn / Chỗ nghỉ cho khách hàng (Tối đa 3 khách sạn)
+2. Địa điểm tham quan (Tối đa 5 địa điểm)
+3. Nhà hàng - Quán ăn (Tối đa 4 nhà hàng/quán ăn)
+
+BẮT BUỘC trả về 1 chuỗi JSON duy nhất dạng Object chứa 3 mảng (khach_san, dia_diem_tham_quan, nha_hang_quan_an).
+Mỗi Object trong mảng gồm các thuộc tính:
+- "ma_dia_diem": Mã địa điểm từ database (nếu có), nếu không có (địa điểm ngoài) thì để null.
 - "ten_dia_diem": Tên địa điểm
 - "mo_ta_ngan": Mô tả rất ngắn gọn lý do tại sao nên đi hoặc điểm đặc sắc (tối đa 15 chữ)
-- "dia_chi": Địa chỉ ước lượng hoặc khu vực
-- "hinhanh": BẮT BUỘC cung cấp URL hình ảnh THỰC TẾ của địa điểm này lấy từ Nguồn Wikipedia/Wikimedia Commons (Ví dụ: https://upload.wikimedia.org/wikipedia/commons/...). Nếu không tìm được link thực thế, hãy để chuỗi rỗng "". TUYỆT ĐỐI KHÔNG tự chế/bịa link ảnh.
+- "dia_chi": Địa chỉ thực tế từ database hoặc địa chỉ ước lượng
+- "la_dia_diem_he_thong": true nếu lấy từ database, false nếu đề xuất ngoài.
+- "hinhanh": URL hình ảnh thực tế (ưu tiên lấy từ database nếu có, nếu không lấy từ Wikimedia Commons).
 
 MẪU KẾT QUẢ ĐẦU RA (JSON):
-[
-  {
-    "ten_dia_diem": "Chợ Đà Lạt",
-    "mo_ta_ngan": "Trung tâm mua sắm sầm uất",
-    "dia_chi": "Phường 1, Đà Lạt",
-    "hinhanh": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Ch%E1%BB%A3_%C4%90%C3%A0_L%E1%BA%A1t.jpg/800px-Ch%E1%BB%A3_%C4%90%C3%A0_L%E1%BA%A1t.jpg"
-  }
-]
+{
+  "khach_san": [
+    {
+      "ma_dia_diem": "ID001",
+      "ten_dia_diem": "Khách sạn Mường Thanh",
+      "mo_ta_ngan": "Tiện nghi 4 sao",
+      "dia_chi": "Trung tâm",
+      "la_dia_diem_he_thong": true,
+      "hinhanh": "..."
+    }
+  ],
+  "dia_diem_tham_quan": [
+    {
+      "ma_dia_diem": null,
+      "ten_dia_diem": "Chợ Đà Lạt",
+      "mo_ta_ngan": "Trung tâm mua sắm sầm uất",
+      "dia_chi": "Phường 1, Đà Lạt",
+      "la_dia_diem_he_thong": false,
+      "hinhanh": "..."
+    }
+  ],
+  "nha_hang_quan_an": [
+    {
+      "ma_dia_diem": "ID002",
+      "ten_dia_diem": "Lẩu bò Ba Toa",
+      "mo_ta_ngan": "Nổi tiếng thơm ngon",
+      "dia_chi": "Hoàng Diệu, Đà Lạt",
+      "la_dia_diem_he_thong": true,
+      "hinhanh": "..."
+    }
+  ]
+}
 PROMPT;
 
         $prompt = str_replace(

@@ -34,6 +34,21 @@ class DiaDiemSeeder extends Seeder
             $this->location('022', 'Quán ăn phố cổ Hội An', 3, 'Bạch Đằng, Hội An, Quảng Nam', '0911444111', 108.3279, 15.8783, '09:00', '22:00', 180000, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Hoi_An_lanterns_at_night.jpg/800px-Hoi_An_lanterns_at_night.jpg', 'Điểm dừng chân phù hợp để trải nghiệm ẩm thực Hội An sau khi dạo phố cổ.', '1.5 giờ'),
             $this->location('023', 'Homestay Sa Pa view núi', 2, 'Tả Van, Sa Pa, Lào Cai', '0911444222', 103.8221, 22.2997, '00:00', '23:59', 850000, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Terraced_rice_fields_in_Mu_Cang_Chai%2C_Yen_Bai%2C_Vietnam.jpg/800px-Terraced_rice_fields_in_Mu_Cang_Chai%2C_Yen_Bai%2C_Vietnam.jpg', 'Lưu trú phong cách bản địa với góc nhìn ruộng bậc thang và thung lũng.', 'Lưu trú'),
             $this->location('024', 'Khu du lịch Buôn Đôn', 1, 'Buôn Đôn, Đắk Lắk', '0911444333', 107.7547, 12.8967, '08:00', '17:00', 120000, 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/View_of_Da_Lat_from_Lang_Biang.jpg/800px-View_of_Da_Lat_from_Lang_Biang.jpg', 'Khu sinh thái phù hợp cho trải nghiệm thiên nhiên và văn hóa Tây Nguyên.', '3 giờ'),
+            
+            // Đà Nẵng
+            $this->location('DN001', 'Bán đảo Sơn Trà', 1, 'Thọ Quang, Sơn Trà, Đà Nẵng', '02363111222', 108.2772, 16.1214, '00:00', '23:59', 0, 'https://danangfantasticity.com/wp-content/uploads/2019/07/ban-dao-son-tra-danang-1.jpg', 'Lá phổi xanh của thành phố Đà Nẵng với chùa Linh Ứng nổi tiếng.', '2 giờ'),
+            $this->location('DN002', 'Ngũ Hành Sơn', 1, 'Hòa Hải, Ngũ Hành Sơn, Đà Nẵng', '02363111333', 108.2636, 16.0048, '07:00', '17:30', 40000, 'https://vcdn1-dulich.vnecdn.net/2022/06/03/ngu-hanh-son-1-1654247443.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Zt0U9y-9U4iN3r3uR_7L2A', 'Quần thể 5 ngọn núi đá vôi với hệ thống hang động và chùa chiền kỳ vĩ.', '2.5 giờ'),
+            $this->location('DN003', 'Biển Mỹ Khê', 1, 'Sơn Trà, Đà Nẵng', '02363111444', 108.2464, 16.0600, '00:00', '23:59', 0, 'https://cdn.vntrip.vn/yuan/production/blog/wp-content/uploads/2017/10/bien-my-khe-da-nang-vntrip-1.jpg', 'Một trong những bãi biển đẹp nhất hành tinh.', '3 giờ'),
+            $this->location('DN004', 'Cầu Rồng', 1, 'An Hải Tây, Sơn Trà, Đà Nẵng', '02363111555', 108.2275, 16.0611, '00:00', '23:59', 0, 'https://statics.vinpearl.com/cau-rong-da-nang_1629255799.jpg', 'Biểu tượng hiện đại của Đà Nẵng, phun lửa và nước vào cuối tuần.', '1 giờ'),
+            
+            // Huế
+            $this->location('HU001', 'Lăng Khải Định', 1, 'Thủy Bằng, Hương Thủy, Thừa Thiên Huế', '02343111222', 107.5931, 16.3989, '07:30', '17:00', 150000, 'https://khamphahue.com.vn/Portals/0/Images/HinhAnhDiemDen/Hue/CacLangTam/LangKhaiDinh/LangKhaiDinh-01.jpg', 'Lăng tẩm có kiến trúc độc đáo kết hợp Á - Âu cực kỳ tinh xảo.', '1.5 giờ'),
+            $this->location('HU002', 'Chùa Thiên Mụ', 1, 'Hương Hòa, TP Huế', '02343111333', 107.5532, 16.4533, '06:00', '18:00', 0, 'https://vcdn1-dulich.vnecdn.net/2021/04/14/chua-thien-mu-1618386347-16183-4903-1579-1618386419.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=P_L3_K9m_v_j_Z_W_Y_G_X_w', 'Ngôi chùa cổ kính và linh thiêng nhất cố đô Huế.', '1 giờ'),
+            $this->location('HU003', 'Chợ Đông Ba', 3, 'Phú Hòa, TP Huế', '02343111444', 107.5851, 16.4678, '06:00', '20:00', 0, 'https://khamphahue.com.vn/Portals/0/Images/HinhAnhDiemDen/Hue/CacCho/ChoDongBa/ChoDongBa-01.jpg', 'Khu chợ sầm uất nhất Huế, nơi hội tụ tinh hoa ẩm thực cố đô.', '2 giờ'),
+
+            // Hội An
+            $this->location('HA001', 'Rừng dừa Bảy Mẫu', 1, 'Cẩm Thanh, Hội An, Quảng Nam', '02353111222', 108.3683, 15.8753, '07:00', '17:30', 150000, 'https://statics.vinpearl.com/rung-dua-bay-mau-hoi-an-1_1629452044.jpg', 'Trải nghiệm chèo thúng chai thú vị giữa rừng dừa nước.', '2 giờ'),
+            $this->location('HA002', 'Đảo Cù Lao Chàm', 1, 'Tân Hiệp, Hội An', '02353111333', 108.5167, 15.9167, '08:00', '16:00', 450000, 'https://vcdn1-dulich.vnecdn.net/2022/04/27/cu-lao-cham-1-1651048689.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Bq1Y5_P6_Z_Y_G_X_w', 'Khu dự trữ sinh quyển thế giới với những bãi biển hoang sơ.', '6 giờ'),
         ];
 
         DB::table('dia_diem')->upsert(

@@ -71,6 +71,19 @@ class DoiTacAuthController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request)
+    {
+        $doiTac = $request->user();
+        if ($doiTac) {
+            $doiTac->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng xuất thành công',
+        ], 200);
+    }
+
     public function register(Request $request)
     {
         $request->validate([

@@ -17,7 +17,7 @@ class AdminStoreRequest extends BaseRequest
         ];
     }
 
-    protected function getErrorMessage()
+    protected function getErrorMessage(): ?string
     {
         return 'Thêm quản trị viên thất bại';
     }

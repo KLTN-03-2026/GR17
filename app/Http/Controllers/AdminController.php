@@ -99,29 +99,49 @@ class AdminController extends Controller
             'data' => $admin
         ], 200);
     }
+    // public function store(AdminStoreRequest $request)
+    // {
+    //     try {
+
+    //         $data = $request->validated();
+    //         $data['Mat_khau'] = Hash::make($data['Mat_khau']);
+
+    //         $admin = Admin::create($data);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Thêm quản trị viên thành công',
+    //             'data' => $admin
+    //         ], 201);
+    //     }
+    //     catch (\Exception $e) {
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Có lỗi xảy ra khi thêm quản trị viên'
+    //         ], 500);
+    //     }
+    // }
     public function store(AdminStoreRequest $request)
     {
         try {
-
             $data = $request->validated();
             $data['Mat_khau'] = Hash::make($data['Mat_khau']);
-
             $admin = Admin::create($data);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Thêm quản trị viên thành công',
                 'data' => $admin
             ], 201);
-        }
-        catch (\Exception $e) {
-
+        } catch (\Exception $e) {
+            // Hiển thị chi tiết lỗi ($e->getMessage()) để biết lý do thất bại
             return response()->json([
                 'success' => false,
-                'message' => 'Có lỗi xảy ra khi thêm quản trị viên'
+                'message' => 'Lỗi: ' . $e->getMessage()
             ], 500);
         }
     }
+
     public function update(AdminUpdateRequest $request, $id)
     {
         $admin = Admin::find($id);
@@ -139,8 +159,7 @@ class AdminController extends Controller
                 'message' => 'Cập nhật quản trị viên thành công',
                 'data' => $admin
             ], 200);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             return response()->json([
                 'success' => false,

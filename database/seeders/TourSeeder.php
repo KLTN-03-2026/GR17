@@ -9,85 +9,76 @@ class TourSeeder extends Seeder
 {
     public function run(): void
     {
-        $destinations = [
+        $tours = [
             [
-                'ma_tour' => 'CENT001',
-                'ten' => 'Hành trình Di sản Miền Trung (Đà Nẵng - Hội An - Huế)',
-                'mo_ta' => 'Hành trình 4 ngày 3 đêm khám phá những vẻ đẹp tinh túy nhất của miền Trung Việt Nam. Từ sự hiện đại của Đà Nẵng, vẻ hoài cổ của Hội An đến nét trầm mặc của cố đô Huế.',
+                'ma_tour' => 'TDNHA01',
+                'ma_doi_tac' => '1',
+                'ten' => 'Đà Nẵng - Hội An: Thành phố đáng sống và Phố cổ rêu phong (2 Ngày 1 Đêm)',
+                'mo_ta' => 'Khám phá Đà Nẵng với Bán đảo Sơn Trà, Ngũ Hành Sơn, thưởng thức hải sản và dạo bước trong Phố cổ Hội An lung linh đèn lồng.',
                 'hinh_anh' => 'https://vcdn1-dulich.vnecdn.net/2022/06/03/ngu-hanh-son-1-1654247443.jpg',
-                'so_tien' => 4500000,
-                'so_ngay' => 4,
-                'so_nguoi' => 20,
-                'ma_tag' => 'TAG01'
-            ],
-            [
-                'ma_tour' => 'CENT002',
-                'ten' => 'Đà Nẵng - Thành phố của những cây cầu',
-                'mo_ta' => 'Trải nghiệm trọn vẹn vẻ đẹp của Đà Nẵng trong 3 ngày 2 đêm. Tham quan Bà Nà Hills, Bán đảo Sơn Trà và thưởng thức màn trình diễn Cầu Rồng phun lửa.',
-                'hinh_anh' => 'https://statics.vinpearl.com/cau-rong-da-nang_1629255799.jpg',
-                'so_tien' => 3200000,
-                'so_ngay' => 3,
+                'so_tien' => 2500000,
+                'so_ngay' => 2,
                 'so_nguoi' => 15,
-                'ma_tag' => 'TAG02'
+                'ma_tag' => 'TAG01' // Du lịch văn hóa
             ],
             [
-                'ma_tour' => 'CENT003',
-                'ten' => 'Khám phá Cố đô Huế - Vang bóng một thời',
-                'mo_ta' => 'Chuyến đi 1 ngày tìm về lịch sử triều Nguyễn với Đại Nội, các lăng tẩm uy nghi và ngôi chùa Thiên Mụ cổ kính.',
-                'hinh_anh' => 'https://khamphahue.com.vn/Portals/0/Images/HinhAnhDiemDen/Hue/CacLangTam/LangKhaiDinh/LangKhaiDinh-01.jpg',
+                'ma_tour' => 'THUE01',
+                'ma_doi_tac' => '2',
+                'ten' => 'Huế Mộng Mơ: Hành trình Tìm Về Di Sản (1 Ngày)',
+                'mo_ta' => 'Trải nghiệm 1 ngày sống trong không gian cung đình triều Nguyễn với Đại Nội, Lăng Khải Định và thưởng thức Bún Bò Huế nức tiếng.',
+                'hinh_anh' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Hue_Imperial_City_6.jpg/800px-Hue_Imperial_City_6.jpg',
                 'so_tien' => 850000,
                 'so_ngay' => 1,
-                'so_nguoi' => 30,
+                'so_nguoi' => 25,
                 'ma_tag' => 'TAG01'
             ],
             [
-                'ma_tour' => 'CENT004',
-                'ten' => 'Hội An Hoài Cổ & Rừng Dừa Bảy Mẫu',
-                'mo_ta' => 'Hành trình 2 ngày 1 đêm đắm mình trong không gian yên bình của phố cổ Hội An và trải nghiệm văn hóa sông nước tại rừng dừa Bảy Mẫu.',
-                'hinh_anh' => 'https://statics.vinpearl.com/rung-dua-bay-mau-hoi-an-1_1629452044.jpg',
-                'so_tien' => 1950000,
+                'ma_tour' => 'TCENTRAL01',
+                'ma_doi_tac' => '1',
+                'ten' => 'Hành Trình Di Sản Miền Trung: Đà Nẵng - Huế - Hội An (4 Ngày 3 Đêm)',
+                'mo_ta' => 'Chuyến đi hoàn hảo kết nối 3 miền di sản. Từ Bà Nà Hills sương mù, Cố đô Huế cổ kính đến nét lãng mạn của Rừng Dừa Bảy Mẫu.',
+                'hinh_anh' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Golden_Bridge_in_Ba_Na_Hills_2.jpg/800px-Golden_Bridge_in_Ba_Na_Hills_2.jpg',
+                'so_tien' => 5500000,
+                'so_ngay' => 4,
+                'so_nguoi' => 20,
+                'ma_tag' => 'TAG02' // Du lịch nghỉ dưỡng
+            ],
+            [
+                'ma_tour' => 'THA01',
+                'ma_doi_tac' => '2',
+                'ten' => 'Khám Phá Hội An - Đảo Ngọc Cù Lao Chàm (2 Ngày 1 Đêm)',
+                'mo_ta' => 'Lặn ngắm san hô tại Cù Lao Chàm, trải nghiệm thuyền thúng Rừng Dừa và thưởng thức ẩm thực Cơm Gà Hội An.',
+                'hinh_anh' => 'https://vcdn1-dulich.vnecdn.net/2022/04/27/cu-lao-cham-1.jpg',
+                'so_tien' => 2200000,
                 'so_ngay' => 2,
                 'so_nguoi' => 12,
-                'ma_tag' => 'TAG05'
+                'ma_tag' => 'TAG03' // Du lịch sinh thái
             ],
         ];
 
         $data = array_map(function (array $tour): array {
             return [
                 'ma_tour' => $tour['ma_tour'],
+                'ma_doi_tac' => $tour['ma_doi_tac'],
                 'ten_tour' => $tour['ten'],
                 'mo_ta' => $tour['mo_ta'],
                 'hinh_anh' => $tour['hinh_anh'],
-                'so_tien' => 10000,
+                'so_tien' => $tour['so_tien'],
                 'so_ngay' => $tour['so_ngay'],
                 'so_nguoi' => $tour['so_nguoi'],
                 'ma_tag' => $tour['ma_tag'],
-                'nguon_tao' => 'he_thong',
+                'nguon_tao' => 'doi_tac',
                 'trang_thai_duyet' => 'approved',
                 'trang_thai_hien_thi' => true,
                 'ly_do_tu_choi' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
-        }, $destinations);
+        }, $tours);
 
-        DB::table('tours')->upsert(
-            $data,
-            ['ma_tour'],
-            [
-                'ten_tour',
-                'mo_ta',
-                'hinh_anh',
-                'so_tien',
-                'so_ngay',
-                'so_nguoi',
-                'ma_tag',
-                'nguon_tao',
-                'trang_thai_duyet',
-                'trang_thai_hien_thi',
-                'ly_do_tu_choi',
-                'updated_at',
-            ]
-        );
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('tours')->truncate();
+        DB::table('tours')->insert($data);
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

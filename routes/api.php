@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->get('/doi-tac/check-login', [DoiTacAuthContro
 Route::middleware('auth:sanctum')->post('/admin/logout', [AdminController::class, 'logout']);
 Route::middleware('auth:sanctum')->post('/khach-hang/logout', [KhachHangController::class, 'logout']);
 Route::middleware('auth:sanctum')->post('/doi-tac/logout', [DoiTacAuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->put('/doi-tac/profile', [DoiTacAuthController::class, 'updateProfile']);
+Route::middleware('auth:sanctum')->put('/doi-tac/change-password', [DoiTacAuthController::class, 'changePassword']);
 
 Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::get('/admin/doi-tac', [DoiTacAdminController::class, 'index']);

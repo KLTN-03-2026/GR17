@@ -113,4 +113,65 @@ class DoiTacAuthController extends Controller
             'data' => $doiTac,
         ], 201);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $doiTac = $request->user();
+
+        if (!$doiTac instanceof DoiTac) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa đăng nhập đối tác',
+            ], 401);
+        }
+
+        $validated = $request->validate([
+            'ten_doi_tac' => 'required|string|max:255',
+            'ten_nguoi_dai_dien' => 'required|string|max:255',
+            'so_dien_thoai' => 'nullable|string|max:20',
+            'dia_chi' => 'nullable|string',
+            'ma_so_thue' => 'nullable|string|max:50',
+        ]);
+
+        $doiTac->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật thông tin thành công',
+            'data' => $doiTac->fresh(),
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $doiTac = $request->user();
+
+        if (!$doiTac instanceof DoiTac) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn chưa đăng nhập đối tác',
+            ], 401);
+        }
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8',
+        ]);
+
+        if (!Hash::check($request->current_password, $doiTac->mat_khau)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mật khẩu hiện tại không chính xác'
+            ], 400);
+        }
+
+        $doiTac->update([
+            'mat_khau' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đổi mật khẩu thành công'
+        ]);
+    }
 }

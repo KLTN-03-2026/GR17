@@ -9,42 +9,10 @@ class ChiTietTourSeeder extends Seeder
 {
     public function run(): void
     {
-        $itineraries = [
-            // ================= Tour 1: TDNHA01 (Đà Nẵng - Hội An 2N1Đ) =================
-            // Ngày 1: Đà Nẵng
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'DN_TQ_001', 'order' => 1], // Bán đảo Sơn Trà
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'DN_NA_001', 'order' => 2], // Ăn trưa hải sản Bé Mặn
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'DN_TQ_002', 'order' => 3], // Chiều: Ngũ Hành Sơn
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'DN_KS_001', 'order' => 4], // Tối: Lưu trú Mường Thanh
-            // Ngày 2: Hội An
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'HA_TQ_001', 'order' => 5], // Sáng: Phố cổ Hội An
-            ['ma_tour' => 'TDNHA01', 'ma_dia_diem' => 'HA_NA_002', 'order' => 6], // Trưa: Cơm Gà Bà Buội
-            
-            // ================= Tour 2: THUE01 (Huế 1 Ngày) =================
-            ['ma_tour' => 'THUE01', 'ma_dia_diem' => 'HUE_TQ_001', 'order' => 1], // Sáng: Đại Nội Huế
-            ['ma_tour' => 'THUE01', 'ma_dia_diem' => 'HUE_NA_001', 'order' => 2], // Trưa: Bún Bò Huế
-            ['ma_tour' => 'THUE01', 'ma_dia_diem' => 'HUE_TQ_002', 'order' => 3], // Chiều: Lăng Khải Định
-            ['ma_tour' => 'THUE01', 'ma_dia_diem' => 'HUE_TQ_003', 'order' => 4], // Chiều muộn: Chùa Thiên Mụ
-
-            // ================= Tour 3: TCENTRAL01 (Đà Nẵng - Huế - Hội An 4N3Đ) =================
-            // Ngày 1: Đà Nẵng
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'DN_TQ_003', 'order' => 1], // Sáng: Bà Nà Hills
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'DN_NA_002', 'order' => 2], // Trưa: Mì Quảng Bà Mua
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'DN_KS_002', 'order' => 3], // Tối: InterContinental Resort
-            // Ngày 2: Huế
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HUE_TQ_001', 'order' => 4], // Sáng: Đại Nội
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HUE_NA_002', 'order' => 5], // Trưa: Cơm Niêu Khải Hoàn
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HUE_KS_001', 'order' => 6], // Tối: Saigon Morin Hotel
-            // Ngày 3 & 4: Hội An
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HA_TQ_002', 'order' => 7], // Sáng: Rừng Dừa Bảy Mẫu
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HA_KS_001', 'order' => 8], // Lưu trú: Hoi An Historic
-            ['ma_tour' => 'TCENTRAL01', 'ma_dia_diem' => 'HA_NA_001', 'order' => 9], // Trưa: Bông Hồng Trắng
-
-            // ================= Tour 4: THA01 (Hội An - Cù Lao Chàm 2N1Đ) =================
-            ['ma_tour' => 'THA01', 'ma_dia_diem' => 'HA_TQ_003', 'order' => 1], // Ngày 1: Đảo Cù Lao Chàm
-            ['ma_tour' => 'THA01', 'ma_dia_diem' => 'HA_NA_002', 'order' => 2], // Trưa: Cơm Gà Hội An
-            ['ma_tour' => 'THA01', 'ma_dia_diem' => 'HA_KS_002', 'order' => 3], // Tối: Mường Thanh Hội An
-            ['ma_tour' => 'THA01', 'ma_dia_diem' => 'HA_TQ_002', 'order' => 4], // Ngày 2: Rừng dừa Bảy Mẫu
+        $allLocations = [
+            'DN_TQ_001', 'DN_TQ_002', 'DN_TQ_003', 'DN_TQ_004', 'DN_KS_001', 'DN_KS_002', 'DN_NA_001', 'DN_NA_002',
+            'HUE_TQ_001', 'HUE_TQ_002', 'HUE_TQ_003', 'HUE_KS_001', 'HUE_KS_002', 'HUE_NA_001', 'HUE_NA_002',
+            'HA_TQ_001', 'HA_TQ_002', 'HA_TQ_003', 'HA_KS_001', 'HA_KS_002', 'HA_NA_001', 'HA_NA_002'
         ];
 
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -53,17 +21,51 @@ class ChiTietTourSeeder extends Seeder
 
         $data = [];
         $maChiTiet = 1;
-        foreach ($itineraries as $item) {
-            $data[] = [
-                'ma_chi_tiet_tour' => 'CT' . str_pad($maChiTiet++, 3, '0', STR_PAD_LEFT),
-                'ma_tour' => $item['ma_tour'],
-                'ma_dia_diem' => $item['ma_dia_diem'],
-                'thu_tu_hanh_trinh' => $item['order'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        
+        $tours = DB::table('tours')->get(['ma_tour', 'so_ngay', 'ten_tour']);
+        mt_srand(12345);
+        
+        foreach ($tours as $tour) {
+            $locationsForTour = [];
+            if (str_contains($tour->ten_tour, 'Đà Nẵng') && str_contains($tour->ten_tour, 'Hội An')) {
+                $locationsForTour = array_filter($allLocations, fn($l) => str_starts_with($l, 'DN_') || str_starts_with($l, 'HA_'));
+            } elseif (str_contains($tour->ten_tour, 'Huế')) {
+                $locationsForTour = array_filter($allLocations, fn($l) => str_starts_with($l, 'HUE_') || str_starts_with($l, 'DN_'));
+            } else {
+                $locationsForTour = $allLocations;
+            }
+            $locationsForTour = array_values($locationsForTour);
+            
+            $locationsCount = $tour->so_ngay * rand(2, 3);
+            if ($locationsCount > count($locationsForTour)) {
+                $locationsCount = count($locationsForTour);
+            }
+            
+            $keys = (array) array_rand($locationsForTour, $locationsCount);
+            // If only 1 item is returned from array_rand, it's not an array, so we ensure it is
+            if (!is_array($keys)) {
+                $keys = [$keys];
+            }
+            
+            $selectedLocations = array_map(fn($k) => $locationsForTour[$k], $keys);
+            
+            foreach ($selectedLocations as $index => $loc) {
+                $data[] = [
+                    'ma_chi_tiet_tour' => 'CT' . str_pad($maChiTiet++, 4, '0', STR_PAD_LEFT),
+                    'ma_tour' => $tour->ma_tour,
+                    'ma_dia_diem' => $loc,
+                    'ngay_hanh_trinh' => (int) floor($index / 3) + 1,
+                    'thu_tu_hanh_trinh' => $index + 1,
+                    'ghi_chu_hanh_trinh' => "Khám phá địa danh nổi bật trong hành trình.",
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        DB::table('chi_tiet_tours')->insert($data);
+        $chunks = array_chunk($data, 100);
+        foreach ($chunks as $chunk) {
+            DB::table('chi_tiet_tours')->insert($chunk);
+        }
     }
 }

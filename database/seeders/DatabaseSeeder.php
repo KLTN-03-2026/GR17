@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             ThanhVienNhomSeeder::class,
             KeHoachSeeder::class,
             ChiTietTourSeeder::class,
-            DoiTacSampleDataSeeder::class,
+            // DoiTacSampleDataSeeder::class,
             TourKhoiHanhSeeder::class,
             XeKeHoachSeeder::class,
             HoatDongChiTietSeeder::class,

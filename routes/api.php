@@ -164,6 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Public routes for DiaDiem
 Route::get('/dia-diem', [DiaDiemController::class, 'index']);
 Route::get('/dia-diem/{maDiaDiem}', [DiaDiemController::class, 'show']);
+Route::get('/dia-diem/{maDiaDiem}/tuong-tu', [DiaDiemController::class, 'similar']);
 Route::get('/dia-diem/filter/type/{loai}', [DiaDiemController::class, 'filterByType']);
 Route::get('/dia-diem/filter/tag/{maTag}', [DiaDiemController::class, 'filterByTag']);
 

@@ -180,4 +180,32 @@ class DiaDiemController extends Controller
             'data' => $diaDiems,
         ], 200);
     }
+
+    /**
+     * Lấy danh sách địa điểm tương tự (cùng loại, khác ID).
+     */
+    public function similar($maDiaDiem)
+    {
+        $diaDiem = DiaDiem::approved()->find($maDiaDiem);
+
+        if (!$diaDiem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Địa điểm không tồn tại',
+            ], 404);
+        }
+
+        $similarDiaDiems = DiaDiem::approved()
+            ->where('loai', $diaDiem->loai)
+            ->where('ma_dia_diem', '!=', $maDiaDiem)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lấy địa điểm tương tự thành công',
+            'data' => $similarDiaDiems,
+        ], 200);
+    }
 }

@@ -32,7 +32,9 @@ class CustomerTourPaymentController extends Controller
                 $khachHang,
                 $ma_tour,
                 (string) $data['ma_thoi_gian_tour'],
-                (array) $data['thong_tin_nguoi_dat']
+                (array) $data['thong_tin_nguoi_dat'],
+                $data['ma_voucher'] ?? null,
+                (int) ($data['so_luong_khach'] ?? 1)
             );
 
             return response()->json([

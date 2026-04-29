@@ -21,6 +21,7 @@ class HoaDon extends Model
         'ma_khach_hang_dat',
         'loai_hoa_don',
         'ma_doi_tuong',
+        'so_luong_khach',
         'ma_thoi_gian_tour',
         'tong_tien',
         'trang_thai_thanh_toan',
@@ -34,12 +35,16 @@ class HoaDon extends Model
         'dia_chi_nguoi_dat',
         'ngay_tao',
         'paid_at',
+        'ma_voucher',
+        'tien_giam_gia',
     ];
 
     protected $casts = [
         'tong_tien' => 'decimal:2',
+        'tien_giam_gia' => 'decimal:2',
         'loai_hoa_don' => 'integer',
         'trang_thai_thanh_toan' => 'integer',
+        'so_luong_khach' => 'integer',
         'ngay_tao' => 'datetime',
         'paid_at' => 'datetime',
     ];

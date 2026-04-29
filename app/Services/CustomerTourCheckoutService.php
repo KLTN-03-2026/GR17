@@ -27,6 +27,8 @@ class CustomerTourCheckoutService
         string $maTour,
         string $maThoiGianTour,
         array $thongTinNguoiDat,
+        ?string $maVoucher = null,
+        int $soLuongKhach = 1
     ): array {
         $tour = Tour::publiclyVisible()
             ->where('ma_tour', $maTour)
@@ -55,14 +57,58 @@ class CustomerTourCheckoutService
             ]);
         }
 
-        $tongTien = (int) round((float) $tour->so_tien);
+        if ($soLuongKhach > $lichKhoiHanh->so_cho) {
+            throw ValidationException::withMessages([
+                'so_luong_khach' => "Rất tiếc, tour chỉ còn trống {$lichKhoiHanh->so_cho} chỗ.",
+            ]);
+        }
+
+        $tongTien = ((int) round((float) $tour->so_tien)) * $soLuongKhach;
         if ($tongTien <= 0) {
             throw ValidationException::withMessages([
                 'ma_tour' => 'Tour này chưa có giá hợp lệ để thanh toán.',
             ]);
         }
 
-        return DB::transaction(function () use ($khachHang, $tour, $lichKhoiHanh, $thongTinNguoiDat, $tongTien): array {
+        $tienGiamGia = 0;
+        $voucherModel = null;
+        if ($maVoucher) {
+            $voucherModel = \App\Models\Voucher::where('ma_voucher', $maVoucher)->first();
+            if (!$voucherModel) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Mã giảm giá không tồn tại.']);
+            }
+            if (!$voucherModel->trang_thai) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Mã giảm giá đã bị khóa.']);
+            }
+            $now = \Carbon\Carbon::now();
+            if ($now < $voucherModel->ngay_bat_dau || $now > $voucherModel->ngay_ket_thuc) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Mã giảm giá không trong thời gian sử dụng.']);
+            }
+            if ($voucherModel->da_su_dung >= $voucherModel->so_luong) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Mã giảm giá đã hết lượt sử dụng.']);
+            }
+            if ($tongTien < $voucherModel->don_toi_thieu) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Đơn hàng chưa đạt giá trị tối thiểu.']);
+            }
+            if ($voucherModel->ma_doi_tac && $voucherModel->ma_doi_tac !== $tour->ma_doi_tac) {
+                throw ValidationException::withMessages(['ma_voucher' => 'Mã giảm giá không áp dụng cho tour này.']);
+            }
+
+            if ($voucherModel->loai_giam_gia == 'fixed') {
+                $tienGiamGia = $voucherModel->gia_tri_giam;
+            } else {
+                $tienGiamGia = ($tongTien * $voucherModel->gia_tri_giam) / 100;
+                if ($voucherModel->giam_toi_da && $tienGiamGia > $voucherModel->giam_toi_da) {
+                    $tienGiamGia = $voucherModel->giam_toi_da;
+                }
+            }
+            if ($tienGiamGia > $tongTien) {
+                $tienGiamGia = $tongTien;
+            }
+            $tongTien = $tongTien - $tienGiamGia;
+        }
+
+        return DB::transaction(function () use ($khachHang, $tour, $lichKhoiHanh, $thongTinNguoiDat, $tongTien, $maVoucher, $tienGiamGia, $voucherModel, $soLuongKhach): array {
             $maHoaDon = $this->invoiceCodeGenerator->generate();
             $maNhom = 'N' . $maHoaDon;
             $maThanhVien = 'TV' . $maHoaDon;
@@ -96,8 +142,15 @@ class CustomerTourCheckoutService
                 'email_nguoi_dat' => $thongTinNguoiDat['email'] ?? $khachHang->Email,
                 'so_dien_thoai_nguoi_dat' => $thongTinNguoiDat['so_dien_thoai'] ?? $khachHang->so_dien_thoai,
                 'dia_chi_nguoi_dat' => $thongTinNguoiDat['dia_chi'] ?? null,
+                'so_luong_khach' => $soLuongKhach,
                 'ngay_tao' => now(),
+                'ma_voucher' => $maVoucher,
+                'tien_giam_gia' => $tienGiamGia,
             ]);
+
+            if ($voucherModel) {
+                $voucherModel->increment('da_su_dung');
+            }
 
             $this->createQrAttempt($hoaDon, $tongTien, $qrData);
 

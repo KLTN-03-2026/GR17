@@ -64,8 +64,8 @@ class HoaDonPaymentSyncService
             if ($hoaDon->ma_thoi_gian_tour) {
                 TourKhoiHanh::query()
                     ->where('ma_thoi_gian_tour', $hoaDon->ma_thoi_gian_tour)
-                    ->where('so_cho', '>', 0)
-                    ->decrement('so_cho');
+                    ->where('so_cho', '>=', $hoaDon->so_luong_khach ?? 1)
+                    ->decrement('so_cho', $hoaDon->so_luong_khach ?? 1);
             }
 
             $this->createDoiSoatRecordIfNeeded($hoaDon->fresh(['tour']));

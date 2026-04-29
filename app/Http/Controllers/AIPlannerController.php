@@ -190,6 +190,35 @@ class AIPlannerController extends Controller
             // 4. Sinh kịch bản qua AI
             $aiResponse = $this->aiTourGuideService->generatePlan($diemDen, $soNgay, $nganSach, $soThich, $diaDiemsDB, $toursDB, $selectedLocations, $moTa, $selectedTour);
 
+            // Bổ sung tọa độ (kinh_do, vi_do) cho các điểm đến để Frontend vẽ bản đồ
+            if (isset($aiResponse['lichTrinh']) && is_array($aiResponse['lichTrinh'])) {
+                foreach ($aiResponse['lichTrinh'] as &$day) {
+                    if (isset($day['danhSachHoatDong']) && is_array($day['danhSachHoatDong'])) {
+                        foreach ($day['danhSachHoatDong'] as &$act) {
+                            $maDiaDiem = $act['ma_dia_diem'] ?? null;
+                            $tieuDe = $act['tieuDe'] ?? '';
+                            $act['kinh_do'] = null;
+                            $act['vi_do'] = null;
+
+                            if (!empty($maDiaDiem) && $maDiaDiem !== 'null') {
+                                $loc = DiaDiem::find($maDiaDiem);
+                                if ($loc) {
+                                    $act['kinh_do'] = $loc->kinh_do;
+                                    $act['vi_do'] = $loc->vi_do;
+                                }
+                            } else if (!empty($tieuDe)) {
+                                $loc = DiaDiem::where('ten_dia_diem', 'LIKE', '%' . $tieuDe . '%')->first();
+                                if ($loc) {
+                                    $act['ma_dia_diem'] = $loc->ma_dia_diem;
+                                    $act['kinh_do'] = $loc->kinh_do;
+                                    $act['vi_do'] = $loc->vi_do;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => $aiResponse,

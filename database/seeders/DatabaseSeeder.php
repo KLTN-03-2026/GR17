@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             KhachHangSeeder::class,
             DoiTacSeeder::class,
             SoThichSeeder::class,
+            VoucherSeeder::class,
 
                 // Core Data
             DiaDiemSeeder::class,
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
             HoaDonSeeder::class,
             PartnerRevenueDemoSeeder::class,
             DanhSachYeuThichSeeder::class,
+            PhanHoiSeeder::class,
         ]);
     }
 }

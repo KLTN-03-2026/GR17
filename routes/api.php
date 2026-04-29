@@ -41,10 +41,23 @@ use App\Http\Controllers\CustomerTourPaymentController;
 use App\Http\Controllers\SepayWebhookController;
 use App\Http\Controllers\AdminStatisticController;
 use App\Http\Controllers\PartnerStatisticController;
+use App\Http\Controllers\PhanHoiController;
+use App\Http\Controllers\AdminVoucherController;
+use App\Http\Controllers\DoiTacVoucherController;
+use App\Http\Controllers\VoucherController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+// Auth Admin
+Route::post('admin/login', [AdminController::class, 'login']);
 
 // Public routes
 Route::prefix('khach-hang')->group(function () {
@@ -52,15 +65,17 @@ Route::prefix('khach-hang')->group(function () {
     Route::post('/ke-hoach-ai/goi-y-tour-phu-hop', [AIPlannerController::class, 'suggestRefinedTours']);
     Route::post('/ke-hoach-ai', [AIPlannerController::class, 'generateItinerary']);
     Route::post('/ke-hoach-ai/save', [AIPlannerController::class, 'saveItinerary']);
+    Route::post('/phan-hoi', [PhanHoiController::class, 'store']);
+    Route::get('/voucher/available', [VoucherController::class, 'getAvailableVouchers']);
+    Route::post('/voucher/apply', [VoucherController::class, 'applyVoucher']);
+    Route::post('/register', [KhachHangController::class, 'register']);
+    Route::post('/login', [KhachHangController::class, 'login']);
 });
 
 // Debug routes for AI
 Route::get('/debug/gemini', [AIPlannerController::class, 'testGemini']);
 Route::get('/debug/openai', [AIPlannerController::class, 'testOpenAI']);
 
-Route::post('/admin/login', [AdminController::class, 'login']);
-Route::post('/khach-hang/register', [KhachHangController::class, 'register']);
-Route::post('/khach-hang/login', [KhachHangController::class, 'login']);
 Route::post('/doi-tac/register', [DoiTacAuthController::class, 'register']);
 Route::post('/doi-tac/login', [DoiTacAuthController::class, 'login']);
 Route::post('/payments/sepay/webhook', [SepayWebhookController::class, 'handle']);
@@ -109,6 +124,13 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::get('/admin/statistics/users', [AdminStatisticController::class, 'getUserStatistics']);
     Route::get('/admin/statistics/locations-tours', [AdminStatisticController::class, 'getLocationAndTourStatistics']);
     Route::get('/admin/statistics/reconciliation', [AdminStatisticController::class, 'getReconciliationStatistics']);
+
+    // API Quản lý Phản Hồi / Báo Cáo Lỗi
+    Route::get('/admin/phan-hoi', [PhanHoiController::class, 'index']);
+    Route::put('/admin/phan-hoi/{id}/trang-thai', [PhanHoiController::class, 'updateStatus']);
+
+    // API Quản lý Voucher (Admin)
+    Route::apiResource('/admin/vouchers', AdminVoucherController::class);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -159,6 +181,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doi-tac/statistics/revenue', [PartnerStatisticController::class, 'getPartnerRevenue']);
     Route::get('/doi-tac/statistics/ratings', [PartnerStatisticController::class, 'getFeedbackAndRatings']);
     Route::get('/doi-tac/statistics/tours', [PartnerStatisticController::class, 'getTourPerformance']);
+
+    // API Đối tác Quản lý Voucher
+    Route::apiResource('/doi-tac/vouchers', DoiTacVoucherController::class);
 });
 
 // Public routes for DiaDiem

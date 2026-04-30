@@ -130,6 +130,7 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::put('/admin/phan-hoi/{id}/trang-thai', [PhanHoiController::class, 'updateStatus']);
 
     // API Quản lý Voucher (Admin)
+    Route::patch('/admin/vouchers/{voucher}/status', [AdminVoucherController::class, 'changeStatus']);
     Route::apiResource('/admin/vouchers', AdminVoucherController::class);
 });
 
@@ -183,6 +184,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doi-tac/statistics/tours', [PartnerStatisticController::class, 'getTourPerformance']);
 
     // API Đối tác Quản lý Voucher
+    Route::patch('/doi-tac/vouchers/{voucher}/status', [DoiTacVoucherController::class, 'changeStatus']);
     Route::apiResource('/doi-tac/vouchers', DoiTacVoucherController::class);
 });
 

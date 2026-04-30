@@ -21,7 +21,6 @@ class Tour extends Model
         'ten_tour',
         'mo_ta',
         'hinh_anh',
-        'so_tien',
         'so_ngay',
         'so_nguoi',
         'ma_tag',
@@ -45,6 +44,24 @@ class Tour extends Model
         return $this->hasMany(ChiTietTour::class, 'ma_tour', 'ma_tour')
             ->orderBy('ngay_hanh_trinh')
             ->orderBy('thu_tu_hanh_trinh');
+    }
+
+    public function tourKhoiHanhs()
+    {
+        return $this->hasMany(TourKhoiHanh::class, 'ma_tour', 'ma_tour');
+    }
+
+    // Tạo accessor so_tien ảo để đảm bảo tương thích ngược với Frontend và lấy giá thấp nhất
+    protected $appends = ['so_tien'];
+
+    public function getSoTienAttribute()
+    {
+        // Lấy giá trị thấp nhất từ các chuyến khởi hành
+        // Chú ý: Cần eager load tourKhoiHanhs ở query để tránh N+1
+        if ($this->relationLoaded('tourKhoiHanhs')) {
+            return $this->tourKhoiHanhs->min('so_tien') ?? 0;
+        }
+        return $this->tourKhoiHanhs()->min('so_tien') ?? 0;
     }
 
     public function scopePubliclyVisible($query)

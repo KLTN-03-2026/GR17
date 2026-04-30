@@ -10,7 +10,7 @@ class DoiTacVoucherController extends Controller
 {
     private function getPartnerId()
     {
-        return auth('api_doitac')->user()->Ma_doi_tac;
+        return request()->user()->ma_doi_tac;
     }
 
     public function index(Request $request)
@@ -86,6 +86,22 @@ class DoiTacVoucherController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật mã giảm giá thành công',
+            'data' => $voucher
+        ]);
+    }
+
+    public function changeStatus($id)
+    {
+        $voucher = Voucher::where('ma_doi_tac', $this->getPartnerId())->find($id);
+        if (!$voucher) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy'], 404);
+        }
+
+        $voucher->update(['trang_thai' => !$voucher->trang_thai]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đổi trạng thái thành công',
             'data' => $voucher
         ]);
     }

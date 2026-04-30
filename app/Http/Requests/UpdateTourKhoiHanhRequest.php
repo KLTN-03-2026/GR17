@@ -8,6 +8,7 @@ class UpdateTourKhoiHanhRequest extends BaseRequest
     {
         return [
             'ma_tour' => 'sometimes|required|max:10',
+            'so_tien' => 'sometimes|required|numeric|min:0',
             'ngay_bat_dau' => 'nullable|date',
             'ngay_ket_thuc' => 'nullable|date|after_or_equal:ngay_bat_dau',
             'so_cho' => 'nullable|integer',

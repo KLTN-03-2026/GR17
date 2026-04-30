@@ -18,6 +18,7 @@ class TourKhoiHanh extends Model
     protected $fillable = [
         'ma_thoi_gian_tour',
         'ma_tour',
+        'so_tien',
         'ngay_bat_dau',
         'ngay_ket_thuc',
         'so_cho',

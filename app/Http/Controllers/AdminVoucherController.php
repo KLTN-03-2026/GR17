@@ -84,6 +84,22 @@ class AdminVoucherController extends Controller
         ]);
     }
 
+    public function changeStatus($id)
+    {
+        $voucher = Voucher::whereNull('ma_doi_tac')->find($id);
+        if (!$voucher) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy'], 404);
+        }
+
+        $voucher->update(['trang_thai' => !$voucher->trang_thai]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đổi trạng thái thành công',
+            'data' => $voucher
+        ]);
+    }
+
     public function destroy($id)
     {
         $voucher = Voucher::whereNull('ma_doi_tac')->find($id);

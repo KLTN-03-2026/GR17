@@ -63,7 +63,8 @@ class CustomerTourCheckoutService
             ]);
         }
 
-        $tongTien = ((int) round((float) $tour->so_tien)) * $soLuongKhach;
+        $giaTour = $lichKhoiHanh->so_tien > 0 ? $lichKhoiHanh->so_tien : $tour->so_tien;
+        $tongTien = ((int) round((float) $giaTour)) * $soLuongKhach;
         if ($tongTien <= 0) {
             throw ValidationException::withMessages([
                 'ma_tour' => 'Tour này chưa có giá hợp lệ để thanh toán.',

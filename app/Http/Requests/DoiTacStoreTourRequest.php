@@ -10,7 +10,6 @@ class DoiTacStoreTourRequest extends BaseRequest
             'ten_tour' => 'required|string|max:255',
             'mo_ta' => 'nullable|string',
             'hinh_anh' => 'nullable|string',
-            'so_tien' => 'nullable|numeric|min:0',
             'so_ngay' => 'nullable|integer|min:1',
             'so_nguoi' => 'nullable|integer|min:1',
             'ma_tag' => 'nullable|string|max:50',

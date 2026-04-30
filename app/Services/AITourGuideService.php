@@ -25,7 +25,16 @@ class AITourGuideService
 
         $strSoThich = implode(', ', $soThich);
         $strSelectedLocs = empty($selectedLocations) ? "Không có chỉ định đặc biệt." : "CÁC ĐỊA ĐIỂM BẮT BUỘC PHẢI CÓ TRONG LỊCH TRÌNH: " . implode(', ', $selectedLocations);
-        $strSelectedTour = $selectedTour ? "KHÁCH HÀNG ĐÃ CHỌN TOUR NÀY: " . $selectedTour['ten_tour'] . " (Mã: " . $selectedTour['ma_tour'] . "). Hãy đưa trọn vẹn các hoạt động của tour này vào lịch trình." : "";
+        $strSelectedTour = "";
+        if ($selectedTour) {
+            $strSelectedTour = "KHÁCH HÀNG ĐÃ CHỌN TOUR NÀY: " . ($selectedTour['ten_tour'] ?? '') . " (Mã: " . ($selectedTour['ma_tour'] ?? '') . "). ";
+            if (!empty($selectedTour['ngay_bat_dau_tour']) && !empty($selectedTour['ngay_ket_thuc_tour'])) {
+                $strSelectedTour .= "THỜI GIAN KHÁCH ĐI TOUR LÀ TỪ NGÀY " . $selectedTour['ngay_bat_dau_tour'] . " ĐẾN NGÀY " . $selectedTour['ngay_ket_thuc_tour'] . ". ";
+                $strSelectedTour .= "YÊU CẦU CỰC KỲ QUAN TRỌNG: BẠN CẤM TUYỆT ĐỐI KHÔNG ĐƯỢC XẾP BẤT KỲ ĐỊA ĐIỂM HAY HOẠT ĐỘNG TỰ DO NÀO VÀO CÁC NGÀY MÀ KHÁCH ĐANG ĐI THEO TOUR (từ " . $selectedTour['ngay_bat_dau_tour'] . " đến " . $selectedTour['ngay_ket_thuc_tour'] . "). ĐỒNG THỜI, BẠN KHÔNG CẦN LÊN LỊCH TRÌNH CHI TIẾT CÁC HOẠT ĐỘNG TRONG TOUR VÀO CÁC NGÀY NÀY. CHỈ CẦN TẠO 1 HOẠT ĐỘNG DUY NHẤT MANG TÊN 'Tham gia tour' KÈM THEO MÃ TOUR CHO CÁC NGÀY ĐÓ ĐỂ GIỮ CHỖ LÀ ĐƯỢC!";
+            } else {
+                $strSelectedTour .= "Bạn KHÔNG CẦN liệt kê hay sắp xếp chi tiết các hoạt động trong tour này. Chỉ cần tạo một hoạt động chung 'Tham gia tour' kèm theo mã tour để giữ chỗ trong lịch trình.";
+            }
+        }
         
         $dbDiaDiemJson = json_encode($diaDiems, JSON_UNESCAPED_UNICODE);
         $dbTourJson = json_encode($tours, JSON_UNESCAPED_UNICODE);
@@ -101,10 +110,10 @@ YÊU CẦU:
 1. Đánh giá xem có Tour nào trong danh sách "Tour gợi ý từ hệ thống" (dựa trên giá tiền, và các điểm đến) phù hợp với ngân sách và sở thích của khách hàng không. NẾU KHÔNG CÓ TOUR NÀO, BẮT BUỘC để mảng `propossedTours` rỗng.
 2. Trả về một danh sách các Tour gợi ý (propossedTours) mà khách hàng có thể chọn. BẮT BUỘC CHỈ SỬ DỤNG CÁC TOUR ĐƯỢC CUNG CẤP TRONG DANH SÁCH, TUYỆT ĐỐI KHÔNG TỰ BỊA RA HOẶC TẠO RA TOUR MỚI VÀ MÃ TOUR MỚI (như CENT001...).
 3. Tạo một lịch trình mẫu tối ưu:
-   - NẾU CÓ TOUR ĐÃ CHỌN (tham khảo phần TOUR ĐÃ CHỌN): BẠN CHẮC CHẮN PHẢI ĐƯA TOUR NÀY VÀO LỊCH TRÌNH. Các hoạt động của tour này phải được giữ nguyên thứ tự và thông tin.
-   - NẾU CÓ ĐỊA ĐIỂM BẮT BUỘC (tham khảo phần LƯU Ý ĐẶC BIỆT): BẠN CHẮC CHẮN PHẢI THÊM CÁC ĐỊA ĐIỂM NÀY VÀO TRONG LỊCH TRÌNH CÁC NGÀY (có thể đan xen với tour nếu hợp lý).
-   - BẮT BUỘC BỔ SUNG LỊCH NGHỈ NGƠI, KHÁCH SẠN, ĂN UỐNG MỖI NGÀY. 
-   - Ưu tiên đưa Tour đã chọn vào lịch trình trước, sau đó sắp xếp các địa điểm bổ sung khác xung quanh để tạo thành một hành trình hoàn chỉnh.
+   - NẾU CÓ TOUR ĐÃ CHỌN (tham khảo phần TOUR ĐÃ CHỌN): Bạn KHÔNG CẦN sắp xếp chi tiết các hoạt động trong tour. Chỉ cần tạo một hoạt động duy nhất mang tên "Tham gia tour" kèm theo `ma_tour` vào các ngày khách đi tour. NẾU CÓ THỜI GIAN ĐI TOUR CỤ THỂ, BẠN CẤM ĐƯỢC XẾP ĐỊA ĐIỂM TỰ ĐI VÀO THỜI GIAN ĐÓ.
+   - NẾU CÓ ĐỊA ĐIỂM BẮT BUỘC (tham khảo phần LƯU Ý ĐẶC BIỆT): BẠN CHẮC CHẮN PHẢI THÊM CÁC ĐỊA ĐIỂM NÀY VÀO TRONG LỊCH TRÌNH CÁC NGÀY (nhưng phải TUYỆT ĐỐI TRÁNH đè lên các ngày khách đã có lịch đi tour).
+   - BẮT BUỘC BỔ SUNG LỊCH NGHỈ NGƠI, KHÁCH SẠN, ĂN UỐNG MỖI NGÀY (ngoại trừ các ngày đã đi tour toàn thời gian). 
+   - Ưu tiên đưa Tour đã chọn vào lịch trình trước, sau đó sắp xếp các địa điểm tự do xung quanh (vào các ngày/khung giờ khách rảnh rỗi) để tạo thành một hành trình hoàn chỉnh.
 4. BẮT BUỘC chỉ trả về 1 chuỗi JSON duy nhất, dạng Object.
 
 MẪU KẾT QUẢ ĐẦU RA (JSON):
@@ -172,9 +181,9 @@ YÊU CẦU QUAN TRỌNG:
 3. Nếu địa điểm lấy từ database, bạn BẮT BUỘC phải giữ nguyên "ma_dia_diem" của địa điểm đó trong kết quả trả về.
 
 BẮT BUỘC chia thành 3 phân loại sau:
-1. Khách sạn / Chỗ nghỉ cho khách hàng (Tối đa 3 khách sạn)
-2. Địa điểm tham quan (Tối đa 5 địa điểm)
-3. Nhà hàng - Quán ăn (Tối đa 4 nhà hàng/quán ăn)
+1. Khách sạn / Chỗ nghỉ cho khách hàng (Tối đa 5 khách sạn)
+2. Địa điểm tham quan (Tối đa 10 địa điểm)
+3. Nhà hàng - Quán ăn (Tối đa 8 nhà hàng/quán ăn)
 
 BẮT BUỘC trả về 1 chuỗi JSON duy nhất dạng Object chứa 3 mảng (khach_san, dia_diem_tham_quan, nha_hang_quan_an).
 Mỗi Object trong mảng gồm các thuộc tính:

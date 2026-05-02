@@ -71,7 +71,6 @@ class TourSeeder extends Seeder
                 'ten_tour' => $tour['ten'],
                 'mo_ta' => $tour['mo_ta'],
                 'hinh_anh' => $tour['hinh_anh'],
-                'so_tien' => $tour['so_tien'],
                 'so_ngay' => $tour['so_ngay'],
                 'so_nguoi' => $tour['so_nguoi'],
                 'ma_tag' => $tour['ma_tag'],

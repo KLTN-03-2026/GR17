@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HoaDon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreHoaDonRequest;
 use App\Http\Requests\UpdateHoaDonRequest;
 use App\Http\Requests\UpdateHoaDonStatusRequest;
+use App\Models\HoaDon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class HoaDonController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $query = HoaDon::query()
             ->with('nhom')
@@ -40,114 +40,74 @@ class HoaDonController extends Controller
             ? $query->paginate(max(1, min($request->integer('per_page'), 100)))
             : $query->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Lay danh sach hoa don thanh cong',
-            'data' => $hoaDons
-        ], 200);
+        return $this->successResponse('Lay danh sach hoa don thanh cong', $hoaDons);
     }
-    public function show($ma_hoa_don)
+
+    public function show($ma_hoa_don): JsonResponse
     {
         $hoaDon = HoaDon::with('nhom')->find($ma_hoa_don);
 
         if (!$hoaDon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy hóa đơn'
-            ], 404);
+            return $this->errorResponse('Khong tim thay hoa don', 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Lấy thông tin hóa đơn thành công',
-            'data' => $hoaDon
-        ], 200);
+        return $this->successResponse('Lay thong tin hoa don thanh cong', $hoaDon);
     }
 
-    public function store(StoreHoaDonRequest $request)
+    public function store(StoreHoaDonRequest $request): JsonResponse
     {
         try {
             $hoaDon = HoaDon::create($request->validated());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Thêm hóa đơn thành công',
-                'data' => $hoaDon
-            ], 201);
-        }
-        catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra khi thêm hóa đơn'
-            ], 500);
+            return $this->successResponse('Them hoa don thanh cong', $hoaDon->load('nhom'), 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Co loi xay ra khi them hoa don', 500);
         }
     }
 
-    public function update(UpdateHoaDonRequest $request, $ma_hoa_don)
+    public function update(UpdateHoaDonRequest $request, $ma_hoa_don): JsonResponse
     {
         $hoaDon = HoaDon::find($ma_hoa_don);
 
         if (!$hoaDon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy hóa đơn'
-            ], 404);
+            return $this->errorResponse('Khong tim thay hoa don', 404);
         }
 
         try {
             $hoaDon->update($request->validated());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Cập nhật hóa đơn thành công',
-                'data' => $hoaDon
-            ], 200);
-        }
-        catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cập nhật hóa đơn thất bại'
-            ], 500);
+            return $this->successResponse('Cap nhat hoa don thanh cong', $hoaDon->load('nhom'));
+        } catch (\Exception $e) {
+            return $this->errorResponse('Cap nhat hoa don that bai', 500);
         }
     }
 
-    public function updateStatus(UpdateHoaDonStatusRequest $request, $ma_hoa_don)
+    public function updateStatus(UpdateHoaDonStatusRequest $request, $ma_hoa_don): JsonResponse
     {
         $hoaDon = HoaDon::find($ma_hoa_don);
 
         if (!$hoaDon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Khong tim thay hoa don'
-            ], 404);
+            return $this->errorResponse('Khong tim thay hoa don', 404);
         }
 
         $hoaDon->update($request->validated());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cap nhat trang thai hoa don thanh cong',
-            'data' => $hoaDon->load('nhom')
-        ], 200);
+        return $this->successResponse('Cap nhat trang thai hoa don thanh cong', $hoaDon->load('nhom'));
     }
 
-    public function getByNhom($maNhom)
+    public function getByNhom($maNhom): JsonResponse
     {
         $hoaDons = HoaDon::query()
             ->with('nhom')
-            ->where('ma_nhom', $maNhom)
+            ->forGroup($maNhom)
             ->orderBy('ngay_tao', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Lay hoa don theo nhom thanh cong',
-            'data' => $hoaDons
-        ], 200);
+        return $this->successResponse('Lay hoa don theo nhom thanh cong', $hoaDons);
     }
 
-    public function summary(Request $request)
+    public function summary(Request $request): JsonResponse
     {
         $query = HoaDon::query()
             ->when($request->filled('ma_nhom'), function ($query) use ($request) {
@@ -165,45 +125,53 @@ class HoaDonController extends Controller
             ->groupBy('trang_thai_thanh_toan')
             ->pluck('total', 'trang_thai_thanh_toan');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Thong ke hoa don thanh cong',
-            'data' => [
-                'total_invoices' => (clone $query)->count(),
-                'total_amount' => (float) (clone $query)->sum('tong_tien'),
-                'paid_count' => (int) ($statusCounts[1] ?? 0),
-                'unpaid_count' => (int) ($statusCounts[0] ?? 0),
-                'pending_count' => (int) ($statusCounts[2] ?? 0),
-                'paid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', 1)->sum('tong_tien'),
-                'unpaid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', 0)->sum('tong_tien'),
-            ],
-        ], 200);
+        return $this->successResponse('Thong ke hoa don thanh cong', [
+            'total_invoices' => (clone $query)->count(),
+            'total_amount' => (float) (clone $query)->sum('tong_tien'),
+            'paid_count' => (int) ($statusCounts[HoaDon::STATUS_PAID] ?? 0),
+            'unpaid_count' => (int) ($statusCounts[HoaDon::STATUS_UNPAID] ?? 0),
+            'pending_count' => (int) ($statusCounts[HoaDon::STATUS_PENDING] ?? 0),
+            'paid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', HoaDon::STATUS_PAID)->sum('tong_tien'),
+            'unpaid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', HoaDon::STATUS_UNPAID)->sum('tong_tien'),
+        ]);
     }
 
-    public function destroy($ma_hoa_don)
+    public function destroy($ma_hoa_don): JsonResponse
     {
         $hoaDon = HoaDon::find($ma_hoa_don);
 
         if (!$hoaDon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy hóa đơn'
-            ], 404);
+            return $this->errorResponse('Khong tim thay hoa don', 404);
         }
 
         try {
             $hoaDon->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Xóa hóa đơn thành công'
-            ], 200);
+            return $this->successResponse('Xoa hoa don thanh cong');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Xoa hoa don that bai. Co the hoa don dang duoc su dung.', 500);
         }
-        catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Xóa hóa đơn thất bại. Có thể hóa đơn đang được sử dụng.'
-            ], 500);
+    }
+
+    private function successResponse(string $message, mixed $data = null, int $status = 200): JsonResponse
+    {
+        $payload = [
+            'success' => true,
+            'message' => $message,
+        ];
+
+        if ($data !== null) {
+            $payload['data'] = $data;
         }
+
+        return response()->json($payload, $status);
+    }
+
+    private function errorResponse(string $message, int $status): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], $status);
     }
 }

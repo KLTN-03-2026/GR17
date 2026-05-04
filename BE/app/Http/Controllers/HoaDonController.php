@@ -147,6 +147,39 @@ class HoaDonController extends Controller
         ], 200);
     }
 
+    public function summary(Request $request)
+    {
+        $query = HoaDon::query()
+            ->when($request->filled('ma_nhom'), function ($query) use ($request) {
+                $query->where('ma_nhom', $request->input('ma_nhom'));
+            })
+            ->when($request->filled('date_from'), function ($query) use ($request) {
+                $query->whereDate('ngay_tao', '>=', $request->input('date_from'));
+            })
+            ->when($request->filled('date_to'), function ($query) use ($request) {
+                $query->whereDate('ngay_tao', '<=', $request->input('date_to'));
+            });
+
+        $statusCounts = (clone $query)
+            ->selectRaw('trang_thai_thanh_toan, COUNT(*) as total')
+            ->groupBy('trang_thai_thanh_toan')
+            ->pluck('total', 'trang_thai_thanh_toan');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thong ke hoa don thanh cong',
+            'data' => [
+                'total_invoices' => (clone $query)->count(),
+                'total_amount' => (float) (clone $query)->sum('tong_tien'),
+                'paid_count' => (int) ($statusCounts[1] ?? 0),
+                'unpaid_count' => (int) ($statusCounts[0] ?? 0),
+                'pending_count' => (int) ($statusCounts[2] ?? 0),
+                'paid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', 1)->sum('tong_tien'),
+                'unpaid_amount' => (float) (clone $query)->where('trang_thai_thanh_toan', 0)->sum('tong_tien'),
+            ],
+        ], 200);
+    }
+
     public function destroy($ma_hoa_don)
     {
         $hoaDon = HoaDon::find($ma_hoa_don);

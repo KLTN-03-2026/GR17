@@ -16,6 +16,7 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('tour', TourController::class);
 
 Route::prefix('admin')->group(function () {
+    Route::get('hoa-don/summary', [HoaDonController::class, 'summary']);
     Route::patch('hoa-don/{ma_hoa_don}/status', [HoaDonController::class, 'updateStatus']);
     Route::get('hoa-don/nhom/{maNhom}', [HoaDonController::class, 'getByNhom']);
     Route::apiResource('hoa-don', HoaDonController::class);

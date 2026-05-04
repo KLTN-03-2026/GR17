@@ -67,6 +67,33 @@ class DanhGiaKeHoachController extends Controller
         ]);
     }
 
+    public function summary(Request $request): JsonResponse
+    {
+        $query = DanhGiaKeHoach::query()
+            ->when($request->filled('ma_dia_diem'), function ($query) use ($request) {
+                $query->where('ma_dia_diem', $request->input('ma_dia_diem'));
+            });
+
+        $ratingCounts = (clone $query)
+            ->selectRaw('so_sao, COUNT(*) as total')
+            ->groupBy('so_sao')
+            ->orderBy('so_sao')
+            ->pluck('total', 'so_sao');
+
+        $distribution = collect(range(1, 5))
+            ->mapWithKeys(fn ($star) => [$star => (int) ($ratingCounts[$star] ?? 0)]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thong ke danh gia thanh cong',
+            'data' => [
+                'total_reviews' => (clone $query)->count(),
+                'average_rating' => round((float) ((clone $query)->avg('so_sao') ?? 0), 2),
+                'rating_distribution' => $distribution,
+            ],
+        ]);
+    }
+
     public function getByDiaDiem(string $maDiaDiem): JsonResponse
     {
         $reviews = DanhGiaKeHoach::query()

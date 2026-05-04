@@ -43,6 +43,7 @@ Route::prefix('thanh-vien-nhom')->group(function () {
 Route::prefix('danh-gia-ke-hoach')->group(function () {
     Route::get('/', [DanhGiaKeHoachController::class, 'index']);
     Route::get('/search', [DanhGiaKeHoachController::class, 'search']);
+    Route::get('/summary', [DanhGiaKeHoachController::class, 'summary']);
     Route::get('/dia-diem/{maDiaDiem}', [DanhGiaKeHoachController::class, 'getByDiaDiem']);
     Route::get('/{id}', [DanhGiaKeHoachController::class, 'show']);
     Route::post('/', [DanhGiaKeHoachController::class, 'store']);

@@ -43,4 +43,5 @@ Route::prefix('thanh-vien-nhom')->group(function () {
 Route::prefix('danh-gia-ke-hoach')->group(function () {
     Route::get('/', [DanhGiaKeHoachController::class, 'index']);
     Route::get('/{id}', [DanhGiaKeHoachController::class, 'show']);
+    Route::post('/', [DanhGiaKeHoachController::class, 'store']);
 });

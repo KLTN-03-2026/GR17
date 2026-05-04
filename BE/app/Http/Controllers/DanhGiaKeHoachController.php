@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDanhGiaKeHoachRequest;
 use App\Models\DanhGiaKeHoach;
 use Illuminate\Http\JsonResponse;
 
@@ -39,5 +40,16 @@ class DanhGiaKeHoachController extends Controller
             'message' => 'Lay thong tin danh gia thanh cong',
             'data' => $review,
         ]);
+    }
+
+    public function store(StoreDanhGiaKeHoachRequest $request): JsonResponse
+    {
+        $review = DanhGiaKeHoach::query()->create($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Them danh gia thanh cong',
+            'data' => $review->load(['khachHang', 'diaDiem']),
+        ], 201);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\HoaDonController;
 use App\Http\Controllers\ChiTietTourController;
 use App\Http\Controllers\NhomController;
 use App\Http\Controllers\ThanhVienNhomController;
+use App\Http\Controllers\DanhGiaKeHoachController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -37,4 +38,9 @@ Route::prefix('thanh-vien-nhom')->group(function () {
     Route::post('/', [ThanhVienNhomController::class, 'store']);
     Route::put('/{id}', [ThanhVienNhomController::class, 'update']);
     Route::delete('/{id}', [ThanhVienNhomController::class, 'destroy']);
+});
+
+Route::prefix('danh-gia-ke-hoach')->group(function () {
+    Route::get('/', [DanhGiaKeHoachController::class, 'index']);
+    Route::get('/{id}', [DanhGiaKeHoachController::class, 'show']);
 });

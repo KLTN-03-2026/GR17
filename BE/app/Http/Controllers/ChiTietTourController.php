@@ -12,7 +12,7 @@ class ChiTietTourController extends Controller
 {
     public function index()
     {
-        $chiTietTours = ChiTietTour::with(['diaDiem', 'tour'])->get();
+        $chiTietTours = ChiTietTour::all();
 
         if ($chiTietTours->isEmpty()) {
             return response()->json([
@@ -30,7 +30,7 @@ class ChiTietTourController extends Controller
 
     public function show($ma_chi_tiet_tour)
     {
-        $chiTietTour = ChiTietTour::with(['diaDiem', 'tour'])->find($ma_chi_tiet_tour);
+        $chiTietTour = ChiTietTour::find($ma_chi_tiet_tour);
 
         if (!$chiTietTour) {
             return response()->json([
@@ -115,16 +115,8 @@ class ChiTietTourController extends Controller
         catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-<<<<<<< HEAD
                 'message' => 'Xóa chi tiết tour thất bại. Có thể chi tiết tour đang được sử dụng.'
             ], 500);
         }
     }
 }
-=======
-                'message' => 'Xóa chi tiết tour thất bại.'
-            ], 500);
-        }
-    }
-}
->>>>>>> f18e65568abb7ef9897b859e68d91f1b38eb1e05

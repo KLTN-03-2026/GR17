@@ -131,6 +131,22 @@ class HoaDonController extends Controller
         ], 200);
     }
 
+    public function getByNhom($maNhom)
+    {
+        $hoaDons = HoaDon::query()
+            ->with('nhom')
+            ->where('ma_nhom', $maNhom)
+            ->orderBy('ngay_tao', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lay hoa don theo nhom thanh cong',
+            'data' => $hoaDons
+        ], 200);
+    }
+
     public function destroy($ma_hoa_don)
     {
         $hoaDon = HoaDon::find($ma_hoa_don);

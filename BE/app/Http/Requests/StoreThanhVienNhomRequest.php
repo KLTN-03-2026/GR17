@@ -18,7 +18,7 @@ class StoreThanhVienNhomRequest extends BaseRequest
                     fn ($query) => $query->where('Ma_nhom', $this->input('Ma_nhom'))
                 ),
             ],
-            'vai_tro' => 'required|integer|in:0,1',
+            'vai_tro' => 'sometimes|nullable|integer|in:0,1',
         ];
     }
 

@@ -63,7 +63,23 @@ class ThanhVienNhomController extends Controller
 
     public function store(StoreThanhVienNhomRequest $request): JsonResponse
     {
-        $member = ThanhVienNhom::create($request->validated());
+        $validated = $request->validated();
+
+        $exists = ThanhVienNhom::query()
+            ->where('Ma_nhom', $validated['Ma_nhom'])
+            ->where('Ma_khach_hang', $validated['Ma_khach_hang'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khach hang da ton tai trong nhom nay',
+            ], 422);
+        }
+
+        $validated['vai_tro'] = $validated['vai_tro'] ?? 0;
+
+        $member = ThanhVienNhom::create($validated);
 
         return response()->json([
             'success' => true,

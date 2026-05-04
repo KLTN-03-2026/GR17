@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNhomRequest;
+use App\Http\Requests\UpdateNhomRequest;
 use App\Models\Nhom;
 use Illuminate\Http\JsonResponse;
 
@@ -45,5 +46,25 @@ class NhomController extends Controller
             'success' => true,
             'data' => $group,
         ], 201);
+    }
+
+    public function update(UpdateNhomRequest $request, string $id): JsonResponse
+    {
+        $group = Nhom::query()->where('Ma_nhom', $id)->first();
+
+        if (!$group) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nhom not found.',
+            ], 404);
+        }
+
+        $group->update($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cap nhat nhom thanh cong.',
+            'data' => $group,
+        ]);
     }
 }

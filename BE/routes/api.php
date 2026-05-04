@@ -24,6 +24,7 @@ Route::prefix('nhom')->group(function () {
     Route::get('/', [NhomController::class, 'index']);
     Route::get('/{id}', [NhomController::class, 'show']);
     Route::post('/', [NhomController::class, 'store']);
+    Route::put('/{id}', [NhomController::class, 'update']);
 });
 
 Route::prefix('thanh-vien-nhom')->group(function () {

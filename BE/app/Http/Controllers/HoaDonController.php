@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreHoaDonRequest;
 use App\Http\Requests\UpdateHoaDonRequest;
+use App\Http\Requests\UpdateHoaDonStatusRequest;
 
 class HoaDonController extends Controller
 {
@@ -108,6 +109,26 @@ class HoaDonController extends Controller
                 'message' => 'Cập nhật hóa đơn thất bại'
             ], 500);
         }
+    }
+
+    public function updateStatus(UpdateHoaDonStatusRequest $request, $ma_hoa_don)
+    {
+        $hoaDon = HoaDon::find($ma_hoa_don);
+
+        if (!$hoaDon) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khong tim thay hoa don'
+            ], 404);
+        }
+
+        $hoaDon->update($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cap nhat trang thai hoa don thanh cong',
+            'data' => $hoaDon->load('nhom')
+        ], 200);
     }
 
     public function destroy($ma_hoa_don)

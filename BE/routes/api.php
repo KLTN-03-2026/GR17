@@ -22,9 +22,11 @@ Route::apiResource('chi-tiet-tour', ChiTietTourController::class);
 
 Route::prefix('nhom')->group(function () {
     Route::get('/', [NhomController::class, 'index']);
+    Route::get('/search', [NhomController::class, 'search']);
     Route::get('/{id}', [NhomController::class, 'show']);
     Route::post('/', [NhomController::class, 'store']);
     Route::put('/{id}', [NhomController::class, 'update']);
+    Route::delete('/{id}', [NhomController::class, 'destroy']);
 });
 
 Route::prefix('thanh-vien-nhom')->group(function () {

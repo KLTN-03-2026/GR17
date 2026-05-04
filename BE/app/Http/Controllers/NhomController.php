@@ -12,7 +12,10 @@ class NhomController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = Nhom::query()->get();
+        $data = Nhom::query()
+            ->withCount('thanhVienNhom')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -22,7 +25,11 @@ class NhomController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $group = Nhom::query()->where('Ma_nhom', $id)->first();
+        $group = Nhom::query()
+            ->with(['thanhVienNhom.khachHang'])
+            ->withCount('thanhVienNhom')
+            ->where('Ma_nhom', $id)
+            ->first();
 
         if (!$group) {
             return response()->json([
@@ -91,6 +98,7 @@ class NhomController extends Controller
     public function search(Request $request): JsonResponse
     {
         $groups = Nhom::query()
+            ->withCount('thanhVienNhom')
             ->when($request->filled('Ma_nhom'), function ($query) use ($request) {
                 $query->where('Ma_nhom', 'like', '%' . trim((string) $request->query('Ma_nhom')) . '%');
             })

@@ -114,7 +114,21 @@ class ThanhVienNhomController extends Controller
             ], 404);
         }
 
-        $member->update($request->validated());
+        $validated = $request->validated();
+
+        if (
+            array_key_exists('vai_tro', $validated)
+            && (int) $member->vai_tro === 1
+            && (int) $validated['vai_tro'] === 0
+            && $this->isLastLeader($member)
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nhom phai co it nhat mot nhom truong',
+            ], 422);
+        }
+
+        $member->update($validated);
 
         return response()->json([
             'success' => true,
@@ -134,11 +148,27 @@ class ThanhVienNhomController extends Controller
             ], 404);
         }
 
+        if ((int) $member->vai_tro === 1 && $this->isLastLeader($member)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khong the xoa nhom truong cuoi cung cua nhom',
+            ], 422);
+        }
+
         $member->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Xoa thanh vien nhom thanh cong',
         ]);
+    }
+
+    private function isLastLeader(ThanhVienNhom $member): bool
+    {
+        return ThanhVienNhom::query()
+            ->where('Ma_nhom', $member->Ma_nhom)
+            ->where('vai_tro', 1)
+            ->where('Ma_thanh_vien', '!=', $member->Ma_thanh_vien)
+            ->doesntExist();
     }
 }

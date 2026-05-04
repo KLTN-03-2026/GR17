@@ -19,6 +19,7 @@ return new class extends Migration
             $table->tinyInteger('so_sao')->comment('Số sao: 1-5');
             $table->text('noi_dung')->nullable();
             $table->timestamps();
+            $table->unique(['Ma_khach_hang', 'ma_dia_diem'], 'danh_gia_ke_hoach_customer_place_unique');
 
             $table->foreign('Ma_khach_hang')
                   ->references('Ma_khach_hang')->on('khach_hang')

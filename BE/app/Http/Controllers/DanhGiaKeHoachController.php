@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDanhGiaKeHoachRequest;
+use App\Http\Requests\UpdateDanhGiaKeHoachRequest;
 use App\Models\DanhGiaKeHoach;
 use Illuminate\Http\JsonResponse;
 
@@ -51,5 +52,44 @@ class DanhGiaKeHoachController extends Controller
             'message' => 'Them danh gia thanh cong',
             'data' => $review->load(['khachHang', 'diaDiem']),
         ], 201);
+    }
+
+    public function update(UpdateDanhGiaKeHoachRequest $request, string $id): JsonResponse
+    {
+        $review = DanhGiaKeHoach::query()->find($id);
+
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khong tim thay danh gia',
+            ], 404);
+        }
+
+        $review->update($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cap nhat danh gia thanh cong',
+            'data' => $review->load(['khachHang', 'diaDiem']),
+        ]);
+    }
+
+    public function destroy(string $id): JsonResponse
+    {
+        $review = DanhGiaKeHoach::query()->find($id);
+
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khong tim thay danh gia',
+            ], 404);
+        }
+
+        $review->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Xoa danh gia thanh cong',
+        ]);
     }
 }

@@ -10,9 +10,18 @@ use Illuminate\Http\Request;
 
 class ThanhVienNhomController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $members = ThanhVienNhom::with(['nhom', 'khachHang'])->get();
+        $query = ThanhVienNhom::with(['nhom', 'khachHang'])
+            ->when($request->filled('Ma_nhom'), fn ($query) => $query->where('Ma_nhom', $request->query('Ma_nhom')))
+            ->when($request->filled('Ma_khach_hang'), fn ($query) => $query->where('Ma_khach_hang', $request->query('Ma_khach_hang')))
+            ->when($request->filled('vai_tro'), fn ($query) => $query->where('vai_tro', $request->query('vai_tro')))
+            ->orderBy('created_at', 'desc');
+
+        $perPage = (int) $request->query('per_page', 0);
+        $members = $perPage > 0
+            ? $query->paginate(min($perPage, 50))
+            : $query->get();
 
         return response()->json([
             'success' => true,

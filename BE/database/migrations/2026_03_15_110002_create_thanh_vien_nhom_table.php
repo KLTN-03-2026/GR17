@@ -25,6 +25,11 @@ return new class extends Migration
             $table->foreign('Ma_khach_hang')
                   ->references('Ma_khach_hang')->on('khach_hang')
                   ->onDelete('cascade');
+
+            $table->unique(
+                ['Ma_nhom', 'Ma_khach_hang'],
+                'thanh_vien_nhom_group_customer_unique'
+            );
         });
     }
 

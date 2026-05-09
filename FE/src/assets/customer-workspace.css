@@ -1,0 +1,184 @@
+.customer-app-layout .customer-dashboard-page,
+.customer-app-layout .plan-page,
+.customer-app-layout .destination-page,
+.customer-app-layout .detail-page,
+.customer-app-layout .favorite-layout,
+.customer-app-layout .review-layout,
+.customer-app-layout .group-layout,
+.customer-app-layout .member-layout,
+.customer-app-layout .checkout-page {
+  min-height: 100%;
+  background: transparent !important;
+}
+
+.customer-app-layout .customer-dashboard-layout,
+.customer-app-layout .plan-layout,
+.customer-app-layout .destination-layout,
+.customer-app-layout .detail-layout,
+.customer-app-layout .favorite-layout,
+.customer-app-layout .review-layout,
+.customer-app-layout .group-layout,
+.customer-app-layout .member-layout {
+  width: min(1840px, calc(100% - 64px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 56px !important;
+  display: grid;
+  grid-template-columns: 352px minmax(0, 1fr) !important;
+  gap: 36px !important;
+  min-height: calc(100vh - 72px);
+}
+
+.customer-app-layout .customer-dashboard-content,
+.customer-app-layout .plan-content,
+.customer-app-layout .destination-content,
+.customer-app-layout .detail-content,
+.customer-app-layout .favorite-content,
+.customer-app-layout .review-content,
+.customer-app-layout .group-content,
+.customer-app-layout .member-content {
+  padding: 10px 12px 0 0 !important;
+  min-width: 0;
+}
+
+.customer-app-layout .customer-dashboard-layout,
+.customer-app-layout .plan-layout,
+.customer-app-layout .destination-layout,
+.customer-app-layout .detail-layout,
+.customer-app-layout .favorite-layout,
+.customer-app-layout .review-layout,
+.customer-app-layout .group-layout {
+  align-items: start;
+}
+
+.customer-app-layout .plan-page .notice,
+.customer-app-layout .destination-page .notice,
+.customer-app-layout .customer-dashboard-page .notice {
+  border-radius: 22px;
+}
+
+.customer-app-layout .destination-grid,
+.customer-app-layout .plan-grid,
+.customer-app-layout .stats-grid,
+.customer-app-layout .overview-grid {
+  gap: 20px !important;
+}
+
+.customer-app-layout .order-history-page,
+.customer-app-layout .customer-profile-page {
+  gap: 28px;
+}
+
+.customer-app-layout .page-header,
+.customer-app-layout .hero,
+.customer-app-layout .plan-hero-card,
+.customer-app-layout .destination-hero,
+.customer-app-layout .hero-card {
+  border-radius: 28px !important;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06) !important;
+}
+
+.customer-app-layout .checkout-workspace {
+  width: min(1840px, calc(100% - 64px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 56px !important;
+  display: grid;
+  grid-template-columns: 352px minmax(0, 1fr) !important;
+  gap: 36px !important;
+}
+
+.customer-app-layout .checkout-shell {
+  width: 100% !important;
+  padding: 16px 8px 56px 0 !important;
+}
+
+.customer-app-layout .checkout-grid {
+  grid-template-columns: minmax(0, 1.55fr) 430px !important;
+  gap: 32px !important;
+}
+
+.customer-app-layout .panel,
+.customer-app-layout .summary-card {
+  border-radius: 30px !important;
+}
+
+.customer-app-layout .qr-layout {
+  grid-template-columns: 430px minmax(0, 1fr) !important;
+  gap: 24px !important;
+}
+
+.customer-app-layout .qr-preview {
+  min-height: 430px !important;
+  padding: 24px !important;
+}
+
+.customer-app-layout .qr-preview img {
+  max-width: 400px !important;
+}
+
+.customer-app-layout .payment-meta {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.customer-app-layout .history-table th,
+.customer-app-layout .history-table td {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+@media (max-width: 1280px) {
+  .customer-app-layout .customer-dashboard-layout,
+  .customer-app-layout .plan-layout,
+  .customer-app-layout .destination-layout,
+  .customer-app-layout .detail-layout,
+  .customer-app-layout .favorite-layout,
+  .customer-app-layout .review-layout,
+  .customer-app-layout .group-layout,
+  .customer-app-layout .member-layout {
+    grid-template-columns: 1fr !important;
+    width: min(100%, calc(100% - 40px)) !important;
+    gap: 24px !important;
+  }
+
+  .customer-app-layout .checkout-workspace {
+    grid-template-columns: 1fr !important;
+    width: min(100%, calc(100% - 40px)) !important;
+    gap: 24px !important;
+  }
+
+  .customer-app-layout .checkout-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customer-app-layout .qr-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .customer-app-layout .customer-dashboard-layout,
+  .customer-app-layout .plan-layout,
+  .customer-app-layout .destination-layout,
+  .customer-app-layout .detail-layout,
+  .customer-app-layout .favorite-layout,
+  .customer-app-layout .review-layout,
+  .customer-app-layout .group-layout,
+  .customer-app-layout .member-layout,
+  .customer-app-layout .checkout-workspace,
+  .customer-app-layout .checkout-shell {
+    width: min(100%, calc(100% - 24px)) !important;
+    gap: 18px !important;
+  }
+
+  .customer-app-layout .payment-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customer-app-layout .qr-preview {
+    min-height: 320px !important;
+  }
+
+  .customer-app-layout .qr-preview img {
+    max-width: 280px !important;
+  }
+}

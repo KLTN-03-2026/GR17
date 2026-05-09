@@ -6,16 +6,29 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:imports": "node scripts/check-imports.mjs",
+    "test:auth-session": "node scripts/test-auth-session.mjs",
+    "test:ai-surfaces": "node scripts/test-ai-surfaces.mjs",
+    "test:customer-dashboard": "node scripts/test-customer-dashboard.mjs",
+    "test:customer-list-pagination": "node scripts/test-customer-list-pagination.mjs",
+    "test:itinerary-map": "node scripts/test-itinerary-map-data.mjs",
+    "test:order-history-ui": "node scripts/test-order-history-ui.mjs",
+    "test:tour-checkout-experience": "node scripts/test-tour-checkout-experience.mjs",
+    "test:vi-localization": "node scripts/test-vi-localization.mjs"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@meforma/vue-toaster": "^1.3.0",
+    "axios": "^1.13.6",
+    "chart.js": "^4.5.1",
+    "leaflet": "^1.9.4",
     "vue": "^3.3.4",
+    "vue-chartjs": "^5.3.3",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-vue": "^5.0.0",
-    "tailwindcss": "^4.1.1",
-    "vite": "^5.2.0"
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.5"
   }
 }

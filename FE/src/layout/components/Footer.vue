@@ -1,66 +1,53 @@
 <template>
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-content">
-        <!-- Company Info -->
-        <div class="footer-section">
-          <h4>
-            <i class="fas fa-paper-plane"></i>
-            Smart Travel
-          </h4>
-          <p>Making world exploration accessible and personalized through intelligent planning.</p>
-          <div class="social-links">
-            <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__top">
+        <div class="site-footer__brand">
+          <div class="site-footer__logo-line">
+            <span class="site-footer__mark">
+              <i class="fas fa-map"></i>
+            </span>
+            <strong>Smart Travel</strong>
           </div>
+          <p>
+            Mang thế giới đến gần bạn hơn bằng cách lập kế hoạch du lịch thông minh, cá nhân hóa.
+          </p>
         </div>
 
-        <!-- Company Links -->
-        <div class="footer-section">
-          <h5>Company</h5>
-          <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Partners</a></li>
-            <li><a href="#">Press</a></li>
-          </ul>
-        </div>
+        <div class="site-footer__links">
+          <div class="site-footer__column">
+            <h5>Công ty</h5>
+            <a href="#">Về Chúng Tôi</a>
+            <a href="#">Tuyển Dụng</a>
+            <a href="#">Đối Tác</a>
+            <a href="#">Truyền Thông</a>
+          </div>
 
-        <!-- Support Links -->
-        <div class="footer-section">
-          <h5>Support</h5>
-          <ul>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
+          <div class="site-footer__column">
+            <h5>Hỗ trợ</h5>
+            <a href="#">Trung Tâm Trợ Giúp</a>
+            <a href="#">Liên Hệ Hỗ Trợ</a>
+            <a href="#">Chính Sách Bảo Mật</a>
+            <a href="#">Điều Khoản Dịch Vụ</a>
+          </div>
 
-        <!-- Newsletter -->
-        <div class="footer-section">
-          <h5>Newsletter</h5>
-          <p>Get travel tips and exclusive deals in your inbox.</p>
-          <form @submit.prevent="subscribeNewsletter" class="newsletter-form">
-            <input 
-              type="email" 
-              placeholder="Your email" 
-              v-model="email"
-              required
-            >
-            <button type="submit" class="btn-submit">Join</button>
-          </form>
+          <div class="site-footer__column site-footer__column--newsletter">
+            <h5>Bản tin</h5>
+            <p>Nhận mẹo du lịch và ưu đãi độc quyền qua email của bạn.</p>
+            <form class="site-footer__newsletter" @submit.prevent="subscribeNewsletter">
+              <input v-model="email" type="email" placeholder="Email của bạn" required>
+              <button type="submit">Đăng ký</button>
+            </form>
+          </div>
         </div>
       </div>
 
-      <!-- Copyright -->
-      <div class="footer-bottom">
-        <p>&copy; {{ currentYear }} Smart Travel. All rights reserved.</p>
-        <div class="footer-icons">
-          <a href="#"><i class="fab fa-facebook"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-linkedin"></i></a>
+      <div class="site-footer__bottom">
+        <p>&copy; 2026 Smart Travel. Mọi quyền được bảo lưu.</p>
+        <div class="site-footer__socials">
+          <a href="#" aria-label="Toàn cầu"><i class="fas fa-globe"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Chia sẻ"><i class="fas fa-share-alt"></i></a>
         </div>
       </div>
     </div>
@@ -69,208 +56,168 @@
 
 <script>
 export default {
-  name: 'Footer',
+  name: "Footer",
   data() {
     return {
-      currentYear: new Date().getFullYear(),
-      email: '',
+      email: "",
     };
   },
   methods: {
     subscribeNewsletter() {
-      console.log('Subscribed:', this.email);
-      this.email = '';
+      console.log("Đã đăng ký:", this.email);
+      this.email = "";
     },
   },
 };
 </script>
 
 <style scoped>
-.footer {
-  background-color: #1f2937;
-  color: #d1d5db;
-  padding: 3rem 0;
-  margin-top: 4rem;
+.site-footer {
+  margin-top: 0;
+  background: #f4f7fb;
+  border-top: 1px solid #e7edf4;
 }
 
-.footer-container {
-  max-width: 1200px;
+.site-footer__inner {
+  width: min(1240px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 32px 0 24px;
 }
 
-.footer-content {
+.site-footer__top {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #374151;
+  grid-template-columns: 1.15fr 2fr;
+  gap: 44px;
+  padding-bottom: 22px;
 }
 
-.footer-section h4 {
+.site-footer__logo-line {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: white;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: #0f172a;
 }
 
-.footer-section h4 i {
-  color: #6366f1;
-}
-
-.footer-section h5 {
-  color: white;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.footer-section p {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.footer-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-section li {
-  margin-bottom: 0.5rem;
-}
-
-.footer-section a {
-  color: #d1d5db;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  font-size: 0.9rem;
-}
-
-.footer-section a:hover {
-  color: #6366f1;
-}
-
-.social-links {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.social-link {
+.site-footer__mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: #374151;
-  color: #d1d5db;
-  border-radius: 50%;
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #4f2cff 0%, #643dff 100%);
+  color: #fff;
+  font-size: 0.68rem;
 }
 
-.social-link:hover {
-  background-color: #6366f1;
-  color: white;
-}
-
-.newsletter-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.newsletter-form input {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.35rem;
-  background-color: #374151;
-  color: white;
-  font-size: 0.9rem;
-}
-
-.newsletter-form input::placeholder {
-  color: #9ca3af;
-}
-
-.newsletter-form input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px #6366f1;
-}
-
-.btn-submit {
-  padding: 0.5rem 1rem;
-  background-color: #6366f1;
-  color: white;
-  border: none;
-  border-radius: 0.35rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.btn-submit:hover {
-  background-color: #4f46e5;
-}
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-}
-
-.footer-bottom p {
+.site-footer__brand p,
+.site-footer__column p {
   margin: 0;
-  font-size: 0.85rem;
-  color: #9ca3af;
+  color: #7b8699;
+  font-size: 0.84rem;
+  line-height: 1.8;
 }
 
-.footer-icons {
+.site-footer__links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.site-footer__column {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.footer-icons a {
-  color: #9ca3af;
-  font-size: 1.1rem;
-  transition: color 0.3s ease;
+.site-footer__column h5 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 0.92rem;
 }
 
-.footer-icons a:hover {
-  color: #6366f1;
+.site-footer__column a {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.84rem;
+}
+
+.site-footer__newsletter {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.site-footer__newsletter input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 14px;
+  outline: none;
+}
+
+.site-footer__newsletter button {
+  min-width: 64px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4a24f5 0%, #5a34ff 100%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.site-footer__bottom {
+  border-top: 1px solid #e3e9f2;
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-footer__bottom p {
+  margin: 0;
+  color: #98a2b3;
+  font-size: 0.76rem;
+}
+
+.site-footer__socials {
+  display: flex;
+  gap: 14px;
+}
+
+.site-footer__socials a {
+  color: #7c8798;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .site-footer__top {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer__links {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
-  .footer {
-    padding: 2rem 0;
+  .site-footer__inner {
+    width: calc(100% - 24px);
   }
 
-  .footer-container {
-    padding: 0 1rem;
-  }
-
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .footer-bottom {
+  .site-footer__newsletter {
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
   }
 
-  .newsletter-form {
+  .site-footer__bottom {
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>
-

@@ -18,6 +18,8 @@ class AIPlannerRequest extends FormRequest
         $this->merge([
             'diem_den' => $this->input('diem_den', $this->input('diemDen')),
             'so_ngay' => $this->input('so_ngay', $this->input('soNgay')),
+            'ngay_bat_dau' => $this->input('ngay_bat_dau', $this->input('ngayBatDau')),
+            'ngay_ket_thuc' => $this->input('ngay_ket_thuc', $this->input('ngayKetThuc')),
             'ngan_sach' => $this->input('ngan_sach', $this->input('nganSach')),
             'so_thich' => $this->input('so_thich', $this->input('soThich', [])),
             'mo_ta_chuyen_di' => $this->input('mo_ta_chuyen_di', $this->input('moTaChuyenDi', $this->input('moTa', ''))),
@@ -28,7 +30,9 @@ class AIPlannerRequest extends FormRequest
     {
         return [
             'diem_den' => 'required|string',
-            'so_ngay' => 'required|integer|min:1|max:7',
+            'so_ngay' => 'nullable|integer|min:1|max:7',
+            'ngay_bat_dau' => 'nullable|date',
+            'ngay_ket_thuc' => 'nullable|date|after_or_equal:ngay_bat_dau',
             'ngan_sach' => 'required',
         ];
     }

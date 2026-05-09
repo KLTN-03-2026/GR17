@@ -20,6 +20,9 @@ class HoatDongChiTiet extends Model
         'ma_ke_hoach',
         'ma_nhom',
         'ma_dia_diem',
+        'ma_tour',
+        'ma_thoi_gian_tour',
+        'ghi_chu',
         'gio_bat_dau',
         'gio_ket_thuc',
         'ngay_cu_the',
@@ -38,5 +41,15 @@ class HoatDongChiTiet extends Model
     public function diaDiem()
     {
         return $this->belongsTo(DiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
+    }
+
+    public function tourKhoiHanh()
+    {
+        return $this->belongsTo(TourKhoiHanh::class, 'ma_thoi_gian_tour', 'ma_thoi_gian_tour');
+    }
+
+    public function tour()
+    {
+        return $this->belongsTo(Tour::class, 'ma_tour', 'ma_tour');
     }
 }

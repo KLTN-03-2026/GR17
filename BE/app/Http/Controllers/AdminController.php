@@ -33,6 +33,19 @@ class AdminController extends Controller
         ], 200);
     }
 
+    public function logout(Request $request)
+    {
+        $admin = $request->user();
+        if ($admin) {
+            $admin->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng xuất thành công'
+        ], 200);
+    }
+
     public function login(AdminLoginRequest $request)
     {
         $admin = Admin::where('Email', $request->email)->first();
@@ -86,34 +99,57 @@ class AdminController extends Controller
             'data' => $admin
         ], 200);
     }
+    // public function store(AdminStoreRequest $request)
+    // {
+    //     try {
+
+    //         $data = $request->validated();
+    //         $data['Mat_khau'] = Hash::make($data['Mat_khau']);
+
+    //         $admin = Admin::create($data);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Thêm quản trị viên thành công',
+    //             'data' => $admin
+    //         ], 201);
+    //     }
+    //     catch (\Exception $e) {
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Có lỗi xảy ra khi thêm quản trị viên'
+    //         ], 500);
+    //     }
+    // }
     public function store(AdminStoreRequest $request)
     {
         try {
-
             $data = $request->validated();
             $data['Mat_khau'] = Hash::make($data['Mat_khau']);
-
             $admin = Admin::create($data);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Thêm quản trị viên thành công',
                 'data' => $admin
             ], 201);
-        }
-        catch (\Exception $e) {
-
+        } catch (\Exception $e) {
+            // Hiển thị chi tiết lỗi ($e->getMessage()) để biết lý do thất bại
             return response()->json([
                 'success' => false,
-                'message' => 'Có lỗi xảy ra khi thêm quản trị viên'
+                'message' => 'Lỗi: ' . $e->getMessage()
             ], 500);
         }
     }
+
     public function update(AdminUpdateRequest $request, $id)
     {
         $admin = Admin::find($id);
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Không tìm thấy quản trị viên'], 404);
+        }
+        if ($admin->IsAdmin == 1) {
+            return response()->json(['success' => false, 'message' => 'Không được phép cập nhật tài khoản Admin hệ thống'], 403);
         }
         try {
             $admin->update($request->validated());
@@ -123,8 +159,7 @@ class AdminController extends Controller
                 'message' => 'Cập nhật quản trị viên thành công',
                 'data' => $admin
             ], 200);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             return response()->json([
                 'success' => false,
@@ -141,6 +176,12 @@ class AdminController extends Controller
         //         'message' => 'Không tìm thấy quản trị viên'
         //     ], 404);
         // }
+        if ($admin && $admin->IsAdmin == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không được phép xóa tài khoản Admin hệ thống'
+            ], 403);
+        }
         $admin->delete();
 
         return response()->json([
@@ -206,6 +247,12 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Không tìm thấy quản trị viên'
             ], 404);
+        }
+        if ($admin->IsAdmin == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không được phép thay đổi trạng thái tài khoản Admin hệ thống'
+            ], 403);
         }
         $admin->update($request->validated());
         return response()->json([

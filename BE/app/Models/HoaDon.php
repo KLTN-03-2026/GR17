@@ -10,12 +10,6 @@ class HoaDon extends Model
     use \App\Traits\GeneratesIdFromZero;
     use HasFactory;
 
-    public const TYPE_TOUR = 0;
-    public const TYPE_PLAN = 1;
-    public const STATUS_UNPAID = 0;
-    public const STATUS_PAID = 1;
-    public const STATUS_PENDING = 2;
-
     protected $table = 'hoa_don';
     protected $primaryKey = 'ma_hoa_don';
     public $incrementing = false;
@@ -24,19 +18,35 @@ class HoaDon extends Model
     protected $fillable = [
         'ma_hoa_don',
         'ma_nhom',
+        'ma_khach_hang_dat',
         'loai_hoa_don',
         'ma_doi_tuong',
+        'so_luong_khach',
+        'ma_thoi_gian_tour',
         'tong_tien',
         'trang_thai_thanh_toan',
+        'payment_method',
+        'payment_status',
+        'payment_reference',
         'ma_giao_dich',
+        'ten_nguoi_dat',
+        'email_nguoi_dat',
+        'so_dien_thoai_nguoi_dat',
+        'dia_chi_nguoi_dat',
         'ngay_tao',
+        'paid_at',
+        'ma_voucher',
+        'tien_giam_gia',
     ];
 
     protected $casts = [
         'tong_tien' => 'decimal:2',
+        'tien_giam_gia' => 'decimal:2',
         'loai_hoa_don' => 'integer',
         'trang_thai_thanh_toan' => 'integer',
+        'so_luong_khach' => 'integer',
         'ngay_tao' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     public function nhom()
@@ -44,27 +54,35 @@ class HoaDon extends Model
         return $this->belongsTo(Nhom::class, 'ma_nhom', 'Ma_nhom');
     }
 
-    public function scopeForGroup($query, string $maNhom)
+    public function khachHangDat()
     {
-        return $query->where('ma_nhom', $maNhom);
+        return $this->belongsTo(KhachHang::class, 'ma_khach_hang_dat', 'Ma_khach_hang');
     }
 
-    public function scopePaid($query)
+    public function tour()
     {
-        return $query->where('trang_thai_thanh_toan', self::STATUS_PAID);
+        return $this->belongsTo(Tour::class, 'ma_doi_tuong', 'ma_tour');
     }
 
-    public function scopeUnpaid($query)
+    public function tourKhoiHanh()
     {
-        return $query->where('trang_thai_thanh_toan', self::STATUS_UNPAID);
+        return $this->belongsTo(TourKhoiHanh::class, 'ma_thoi_gian_tour', 'ma_thoi_gian_tour');
     }
 
-    public function getTrangThaiThanhToanLabelAttribute(): string
+    public function giaoDichQrs()
     {
-        return match ($this->trang_thai_thanh_toan) {
-            self::STATUS_PAID => 'Da thanh toan',
-            self::STATUS_PENDING => 'Cho xac nhan',
-            default => 'Chua thanh toan',
-        };
+        return $this->hasMany(GiaoDichQr::class, 'ma_hoa_don', 'ma_hoa_don');
+    }
+
+    public function latestQrPayment()
+    {
+        return $this->hasOne(GiaoDichQr::class, 'ma_hoa_don', 'ma_hoa_don')->latestOfMany('created_at');
+    }
+
+    public function latestPendingQrPayment()
+    {
+        return $this->hasOne(GiaoDichQr::class, 'ma_hoa_don', 'ma_hoa_don')
+            ->where('trang_thai', 'pending')
+            ->latestOfMany('created_at');
     }
 }

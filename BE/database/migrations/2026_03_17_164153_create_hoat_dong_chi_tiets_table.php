@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('ma_ke_hoach', 10);
             $table->string('ma_nhom', 20);
             $table->string('ma_dia_diem');
+            $table->string('ma_tour', 10)->nullable();
+            $table->string('ma_thoi_gian_tour', 10)->nullable();
+            $table->text('ghi_chu')->nullable();
             $table->time('gio_bat_dau');
             $table->time('gio_ket_thuc');
             $table->date('ngay_cu_the');
@@ -24,6 +27,7 @@ return new class extends Migration
             $table->foreign('ma_ke_hoach')->references('ma_ke_hoach')->on('ke_hoach')->onDelete('cascade');
             $table->foreign('ma_nhom')->references('Ma_nhom')->on('nhom')->onDelete('cascade');
             $table->foreign('ma_dia_diem')->references('ma_dia_diem')->on('dia_diem')->onDelete('cascade');
+            $table->foreign('ma_tour')->references('ma_tour')->on('tours')->onDelete('cascade');
         });
     }
 

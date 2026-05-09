@@ -47,9 +47,11 @@ class DichVuDiaDiemController extends Controller
 
         if ($type === 'ten_dich_vu') {
             $query->where('ten_dich_vu', 'like', "%{$keyword}%");
-        } elseif ($type === 'ma_dia_diem') {
+        }
+        elseif ($type === 'ma_dia_diem') {
             $query->where('ma_dia_diem', 'like', "%{$keyword}%");
-        } else {
+        }
+        else {
             $query->where(function ($q) use ($keyword) {
                 $q->where('ten_dich_vu', 'like', "%{$keyword}%")
                     ->orWhere('ma_dia_diem', 'like', "%{$keyword}%");
@@ -92,7 +94,8 @@ class DichVuDiaDiemController extends Controller
                 'message' => 'Thêm thành công',
                 'data' => $dich_vu
             ], 201);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi: ' . $e->getMessage()
@@ -119,7 +122,8 @@ class DichVuDiaDiemController extends Controller
                 'message' => 'Cập nhật thành công',
                 'data' => $dich_vu
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi: ' . $e->getMessage()
@@ -148,7 +152,8 @@ class DichVuDiaDiemController extends Controller
                 'message' => 'Đổi trạng thái thành công',
                 'data' => $dich_vu
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi: ' . $e->getMessage()
@@ -174,7 +179,8 @@ class DichVuDiaDiemController extends Controller
                 'success' => true,
                 'message' => 'Xoá thành công'
             ]);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi: ' . $e->getMessage()

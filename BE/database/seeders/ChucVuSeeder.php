@@ -10,15 +10,14 @@ class ChucVuSeeder extends Seeder
     public function run(): void
     {
         $chucVuData = [
-            ['ma_chuc_vu' => '001', 'ten_chuc_vu' => 'Giám đốc', 'tinh_trang' => 1],
-            ['ma_chuc_vu' => '002', 'ten_chuc_vu' => 'Quản lý', 'tinh_trang' => 1],
-            ['ma_chuc_vu' => '003', 'ten_chuc_vu' => 'Kỹ sư', 'tinh_trang' => 1],
-            ['ma_chuc_vu' => '004', 'ten_chuc_vu' => 'Thiết kế viên', 'tinh_trang' => 1],
-            ['ma_chuc_vu' => '005', 'ten_chuc_vu' => 'Hỗ trợ khách hàng', 'tinh_trang' => 1],
+            ['ma_chuc_vu' => 'CV001', 'ten_chuc_vu' => 'Admin tổng', 'tinh_trang' => 1],
+            ['ma_chuc_vu' => 'CV002', 'ten_chuc_vu' => 'Nhân viên kinh doanh', 'tinh_trang' => 1],
+            ['ma_chuc_vu' => 'CV003', 'ten_chuc_vu' => 'Nhân viên chăm sóc khách hàng', 'tinh_trang' => 1],
+            ['ma_chuc_vu' => 'CV004', 'ten_chuc_vu' => 'Kế toán', 'tinh_trang' => 1],
         ];
 
         foreach ($chucVuData as $data) {
-            ChucVu::firstOrCreate(
+            ChucVu::updateOrCreate(
                 ['ma_chuc_vu' => $data['ma_chuc_vu']],
                 ['ten_chuc_vu' => $data['ten_chuc_vu'], 'tinh_trang' => $data['tinh_trang']]
             );

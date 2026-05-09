@@ -12,30 +12,45 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-
-$this->call([
-            AdminSeeder::class,
-            KhachHangSeeder::class,
+        $this->call([
+                // Independence / Foundation
             ChucVuSeeder::class,
             ChucNangSeeder::class,
-            DiaDiemSeeder::class,
             TagSeeder::class,
-            TagDiaDiemSeeder::class,
+            CauHinhNgaySeeder::class,
+            CauHinhAiSeeder::class,
+
+                // Core Users & Permissions
+            AdminSeeder::class,
             PhanQuyenAdminSeeder::class,
+            KhachHangSeeder::class,
+            DoiTacSeeder::class,
+            SoThichSeeder::class,
+            VoucherSeeder::class,
+
+                // Core Data
+            DiaDiemSeeder::class,
+            TourSeeder::class,
             XeSeeder::class,
             KeHoachSeeder::class,
             XeKeHoachSeeder::class,
             NhomSeeder::class,
+
+                // Relations & Operational Data
+            TagDiaDiemSeeder::class,
+            DichVuDiaDiemSeeder::class,
             ThanhVienNhomSeeder::class,
+            KeHoachSeeder::class,
+            ChiTietTourSeeder::class,
+            // DoiTacSampleDataSeeder::class,
+            TourKhoiHanhSeeder::class,
+            XeKeHoachSeeder::class,
+            HoatDongChiTietSeeder::class,
             DanhGiaKeHoachSeeder::class,
             HoaDonSeeder::class,
-            HoatDongChiTietSeeder::class,
-            TourSeeder::class,
-            ChiTietTourSeeder::class,
-            TourKhoiHanhSeeder::class,
-            CauHinhNgaySeeder::class,
+            PartnerRevenueDemoSeeder::class,
+            DanhSachYeuThichSeeder::class,
+            PhanHoiSeeder::class,
         ]);
     }
 }

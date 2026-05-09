@@ -10,7 +10,6 @@ class StoreTourRequest extends BaseRequest
             'ten_tour' => 'required|string|max:255',
             'mo_ta' => 'nullable|string',
             'hinh_anh' => 'nullable|string',
-            'so_tien' => 'nullable|numeric',
             'so_ngay' => 'nullable|integer',
             'so_nguoi' => 'nullable|integer',
             'ma_tag' => 'nullable|string'

@@ -10,9 +10,20 @@ use App\Http\Requests\UpdateTourRequest;
 
 class TourController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tours = Tour::all();
+        $query = Tour::publiclyVisible();
+
+        // Lọc tour theo địa điểm nếu có truyền ma_dia_diem
+        if ($request->has('ma_dia_diem')) {
+            $maDiaDiem = $request->ma_dia_diem;
+            $query->whereHas('chiTietTours', function($q) use ($maDiaDiem) {
+                $q->where('ma_dia_diem', $maDiaDiem);
+            });
+        }
+
+        // Lấy danh sách kèm một số quan hệ cần thiết cho frontend hiển thị thẻ tour
+        $tours = $query->with(['doiTac', 'chiTietTours.diaDiem'])->get();
 
         if ($tours->isEmpty()) {
             return response()->json([
@@ -30,7 +41,10 @@ class TourController extends Controller
 
     public function show($ma_tour)
     {
-        $tour = Tour::with('chiTietTours.diaDiem')->find($ma_tour);
+        $tour = Tour::publiclyVisible()
+            ->with('chiTietTours.diaDiem')
+            ->where('ma_tour', $ma_tour)
+            ->first();
 
         if (!$tour) {
             return response()->json([

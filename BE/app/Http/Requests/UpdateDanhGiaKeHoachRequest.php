@@ -11,9 +11,4 @@ class UpdateDanhGiaKeHoachRequest extends BaseRequest
             'noi_dung' => 'nullable|string|max:1000',
         ];
     }
-
-    protected function getErrorMessage()
-    {
-        return 'Du lieu cap nhat danh gia khong hop le';
-    }
 }

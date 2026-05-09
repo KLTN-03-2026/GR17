@@ -13,6 +13,9 @@ class UpdateHoatDongChiTietRequest extends BaseRequest
             'gio_bat_dau' => 'sometimes|required|date_format:H:i',
             'gio_ket_thuc' => 'sometimes|required|date_format:H:i|after:gio_bat_dau',
             'ngay_cu_the' => 'sometimes|required|date_format:Y-m-d',
+            'ghi_chu' => 'nullable|string|max:2000',
+            'ma_tour' => 'nullable|string|max:10',
+            'ma_thoi_gian_tour' => 'nullable|string|max:10',
         ];
     }
 }

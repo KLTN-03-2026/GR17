@@ -63,10 +63,10 @@ graph TD
 - **NPM:** >= 9.x
 - **Backend:** Đã cài đặt và chạy tại `http://127.0.0.1:8000`
 
-### 2. Cài đặt Frontend
+### 2. Cài đặt 
 ```bash
 # Clone repository
-git clone https://github.com/TrieuMonSt/DoAnTotNghiepFE.git
+git clone https://github.com/KLTN-03-2026/GR17
 
 # Di chuyển vào thư mục
 cd DoAnTotNghiepFE

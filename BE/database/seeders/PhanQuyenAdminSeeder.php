@@ -10,32 +10,27 @@ class PhanQuyenAdminSeeder extends Seeder
     public function run(): void
     {
         $phanQuyenData = [
-            // Giám đốc
-            ['ma_phan_quyen'=>'001','ma_chuc_nang'=>'001','ma_chuc_vu'=>'001'],
-            ['ma_phan_quyen'=>'002','ma_chuc_nang'=>'002','ma_chuc_vu'=>'001'],
-            ['ma_phan_quyen'=>'003','ma_chuc_nang'=>'003','ma_chuc_vu'=>'001'],
-            ['ma_phan_quyen'=>'004','ma_chuc_nang'=>'004','ma_chuc_vu'=>'001'],
-            ['ma_phan_quyen'=>'005','ma_chuc_nang'=>'005','ma_chuc_vu'=>'001'],
+            // Admin tổng (CV001) - Có tất cả quyền (101-108)
+            ['ma_chuc_nang' => '101', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '102', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '103', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '104', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '105', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '106', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '107', 'ma_chuc_vu' => 'CV001'],
+            ['ma_chuc_nang' => '108', 'ma_chuc_vu' => 'CV001'],
 
-            // Quản lý
-            ['ma_phan_quyen'=>'006','ma_chuc_nang'=>'001','ma_chuc_vu'=>'002'],
-            ['ma_phan_quyen'=>'007','ma_chuc_nang'=>'002','ma_chuc_vu'=>'002'],
-            ['ma_phan_quyen'=>'008','ma_chuc_nang'=>'003','ma_chuc_vu'=>'002'],
-            ['ma_phan_quyen'=>'009','ma_chuc_nang'=>'005','ma_chuc_vu'=>'002'],
+            // Nhân viên kinh doanh (CV002) - Tour, Địa điểm, Đối tác
+            ['ma_chuc_nang' => '101', 'ma_chuc_vu' => 'CV002'],
+            ['ma_chuc_nang' => '103', 'ma_chuc_vu' => 'CV002'],
+            ['ma_chuc_nang' => '104', 'ma_chuc_vu' => 'CV002'],
 
-            // Kỹ sư
-            ['ma_phan_quyen'=>'010','ma_chuc_nang'=>'001','ma_chuc_vu'=>'003'],
-            ['ma_phan_quyen'=>'011','ma_chuc_nang'=>'002','ma_chuc_vu'=>'003'],
-            ['ma_phan_quyen'=>'012','ma_chuc_nang'=>'005','ma_chuc_vu'=>'003'],
+            // Nhân viên CSKH (CV003) - Khách hàng, Phản hồi
+            ['ma_chuc_nang' => '102', 'ma_chuc_vu' => 'CV003'],
 
-            // Thiết kế viên
-            ['ma_phan_quyen'=>'013','ma_chuc_nang'=>'001','ma_chuc_vu'=>'004'],
-            ['ma_phan_quyen'=>'014','ma_chuc_nang'=>'002','ma_chuc_vu'=>'004'],
-            ['ma_phan_quyen'=>'015','ma_chuc_nang'=>'003','ma_chuc_vu'=>'004'],
-
-            // Hỗ trợ khách hàng
-            ['ma_phan_quyen'=>'016','ma_chuc_nang'=>'001','ma_chuc_vu'=>'005'],
-            ['ma_phan_quyen'=>'017','ma_chuc_nang'=>'005','ma_chuc_vu'=>'005'],
+            // Kế toán (CV004) - Voucher, Thống kê
+            ['ma_chuc_nang' => '105', 'ma_chuc_vu' => 'CV004'],
+            ['ma_chuc_nang' => '106', 'ma_chuc_vu' => 'CV004'],
         ];
 
         foreach ($phanQuyenData as $data) {

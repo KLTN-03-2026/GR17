@@ -4,114 +4,137 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNhomRequest;
 use App\Http\Requests\UpdateNhomRequest;
+use App\Models\KhachHang;
 use App\Models\Nhom;
+use App\Models\ThanhVienNhom;
+use App\Services\CustomerOwnershipService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NhomController extends Controller
 {
-    public function index(): JsonResponse
+    public function __construct(
+        private readonly CustomerOwnershipService $ownershipService,
+    ) {
+    }
+
+    public function index(Request $request): JsonResponse
     {
-        $data = Nhom::query()
-            ->withCount('thanhVienNhom')
+        $user = $request->user();
+        if (!$this->ownershipService->ensureCustomerOrAdmin($user)) {
+            return $this->forbiddenResponse();
+        }
+
+        $nhoms = $this->ownershipService->visibleGroupsQuery($user)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
-    }
-
-    public function show(string $id): JsonResponse
-    {
-        $group = Nhom::query()
-            ->with(['thanhVienNhom.khachHang'])
-            ->withCount('thanhVienNhom')
-            ->where('Ma_nhom', $id)
-            ->first();
-
-        if (!$group) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Nhom not found.',
-            ], 404);
+        if ($nhoms->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Không có nhóm nào'], 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $group,
-        ]);
+        return response()->json(['success' => true, 'data' => $nhoms], 200);
+    }
+
+    public function show(Request $request, string $id): JsonResponse
+    {
+        $nhom = Nhom::query()->find($id);
+        if (!$nhom) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy nhóm'], 404);
+        }
+
+        if (!$this->ownershipService->canAccessGroup($request->user(), $nhom->Ma_nhom)) {
+            return $this->forbiddenResponse();
+        }
+
+        return response()->json(['success' => true, 'data' => $nhom], 200);
     }
 
     public function store(StoreNhomRequest $request): JsonResponse
     {
-        $group = Nhom::query()->create([
-            'ten_nhom' => $request->input('ten_nhom'),
-        ]);
+        $user = $request->user();
+        if (!$this->ownershipService->ensureCustomerOrAdmin($user)) {
+            return $this->forbiddenResponse();
+        }
 
-        return response()->json([
-            'success' => true,
-            'data' => $group,
-        ], 201);
+        $nhom = Nhom::query()->create($request->validated());
+
+        if ($user instanceof KhachHang) {
+            ThanhVienNhom::query()->firstOrCreate(
+                [
+                    'Ma_nhom' => $nhom->Ma_nhom,
+                    'Ma_khach_hang' => $user->Ma_khach_hang,
+                ],
+                [
+                    'vai_tro' => 1,
+                ]
+            );
+        }
+
+        return response()->json(['success' => true, 'message' => 'Thêm nhóm thành công', 'data' => $nhom], 201);
     }
 
     public function update(UpdateNhomRequest $request, string $id): JsonResponse
     {
-        $group = Nhom::query()->where('Ma_nhom', $id)->first();
-
-        if (!$group) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Nhom not found.',
-            ], 404);
+        $nhom = Nhom::query()->find($id);
+        if (!$nhom) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy nhóm'], 404);
         }
 
-        $group->update($request->validated());
+        if (!$this->ownershipService->canManageGroup($request->user(), $nhom->Ma_nhom)) {
+            return $this->forbiddenResponse('Chỉ nhóm trưởng hoặc admin mới có thể cập nhật nhóm.');
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cap nhat nhom thanh cong.',
-            'data' => $group,
-        ]);
+        $nhom->update($request->validated());
+
+        return response()->json(['success' => true, 'message' => 'Cập nhật nhóm thành công', 'data' => $nhom], 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        $group = Nhom::query()->where('Ma_nhom', $id)->first();
-
-        if (!$group) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Nhom not found.',
-            ], 404);
+        $nhom = Nhom::query()->find($id);
+        if (!$nhom) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy nhóm'], 404);
         }
 
-        $group->delete();
+        if (!$this->ownershipService->canManageGroup($request->user(), $nhom->Ma_nhom)) {
+            return $this->forbiddenResponse('Chỉ nhóm trưởng hoặc admin mới có thể xóa nhóm.');
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Xoa nhom thanh cong.',
-        ]);
+        $nhom->delete();
+
+        return response()->json(['success' => true, 'message' => 'Xóa nhóm thành công'], 200);
     }
 
     public function search(Request $request): JsonResponse
     {
-        $groups = Nhom::query()
-            ->withCount('thanhVienNhom')
-            ->when($request->filled('Ma_nhom'), function ($query) use ($request) {
-                $query->where('Ma_nhom', 'like', '%' . trim((string) $request->query('Ma_nhom')) . '%');
-            })
-            ->when($request->filled('ten_nhom'), function ($query) use ($request) {
-                $query->where('ten_nhom', 'like', '%' . trim((string) $request->query('ten_nhom')) . '%');
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $user = $request->user();
+        if (!$this->ownershipService->ensureCustomerOrAdmin($user)) {
+            return $this->forbiddenResponse();
+        }
 
+        $query = $this->ownershipService->visibleGroupsQuery($user);
+
+        if ($request->filled('Ma_nhom')) {
+            $query->where('Ma_nhom', 'like', '%' . $request->string('Ma_nhom')->trim() . '%');
+        }
+        if ($request->filled('ten_nhom')) {
+            $query->where('ten_nhom', 'like', '%' . $request->string('ten_nhom')->trim() . '%');
+        }
+
+        $nhoms = $query->get();
+        if ($nhoms->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy kết quả'], 404);
+        }
+
+        return response()->json(['success' => true, 'data' => $nhoms], 200);
+    }
+
+    private function forbiddenResponse(string $message = 'Bạn không có quyền truy cập nhóm này.'): JsonResponse
+    {
         return response()->json([
-            'success' => true,
-            'message' => 'Tim kiem nhom thanh cong.',
-            'data' => $groups,
-        ]);
+            'success' => false,
+            'message' => $message,
+        ], 403);
     }
 }

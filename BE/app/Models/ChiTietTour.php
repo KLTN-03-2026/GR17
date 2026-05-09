@@ -19,15 +19,18 @@ class ChiTietTour extends Model
         'ma_chi_tiet_tour',
         'ma_tour',
         'ma_dia_diem',
+        'ngay_hanh_trinh',
+        'thu_tu_hanh_trinh',
+        'ghi_chu_hanh_trinh',
     ];
-
-    public function diaDiem()
-    {
-        return $this->belongsTo(DiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
-    }
 
     public function tour()
     {
         return $this->belongsTo(Tour::class, 'ma_tour', 'ma_tour');
+    }
+
+    public function diaDiem()
+    {
+        return $this->belongsTo(DiaDiem::class, 'ma_dia_diem', 'ma_dia_diem');
     }
 }

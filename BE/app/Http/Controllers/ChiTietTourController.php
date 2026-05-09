@@ -115,7 +115,7 @@ class ChiTietTourController extends Controller
         catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Xóa chi tiết tour thất bại. Có thể chi tiết tour đang được sử dụng.'
+                'message' => 'Xóa chi tiết tour thất bại.'
             ], 500);
         }
     }

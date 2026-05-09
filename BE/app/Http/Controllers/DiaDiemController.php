@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDiaDiemRequest;
+use App\Http\Requests\UpdateDiaDiemRequest;
 use App\Models\DiaDiem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreDiaDiemRequest;
-use App\Http\Requests\UpdateDiaDiemRequest;
 
 class DiaDiemController extends Controller
 {
@@ -15,31 +15,32 @@ class DiaDiemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DiaDiem::query();
+        $query = DiaDiem::query()->approved();
+        $perPage = max(1, min((int) $request->query('per_page', 10), 100));
 
-        // Lọc theo loại
         if ($request->has('loai')) {
             $query->where('loai', $request->loai);
         }
 
-        // Lọc theo tag
         if ($request->has('ma_tag')) {
             $query->whereHas('tagDiaDiems', function ($q) {
                 $q->where('ma_tag', request('ma_tag'));
             });
         }
 
-        // Tìm kiếm theo tên
         if ($request->has('search')) {
             $query->where('ten_dia_diem', 'like', '%' . $request->search . '%');
         }
 
-        $diaDiems = $query->with('tagDiaDiems.tag')->paginate(10);
+        $diaDiems = $query
+            ->with('tagDiaDiems.tag')
+            ->paginate($perPage)
+            ->appends($request->query());
 
         return response()->json([
             'success' => true,
             'message' => 'Lấy danh sách địa điểm thành công',
-            'data' => $diaDiems
+            'data' => $diaDiems,
         ], 200);
     }
 
@@ -48,19 +49,21 @@ class DiaDiemController extends Controller
      */
     public function show($maDiaDiem)
     {
-        $diaDiem = DiaDiem::with('tagDiaDiems.tag')->find($maDiaDiem);
+        $diaDiem = DiaDiem::approved()
+            ->with('tagDiaDiems.tag')
+            ->find($maDiaDiem);
 
         if (!$diaDiem) {
             return response()->json([
                 'success' => false,
-                'message' => 'Địa điểm không tồn tại'
+                'message' => 'Địa điểm không tồn tại',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Lấy thông tin chi tiết thành công',
-            'data' => $diaDiem
+            'data' => $diaDiem,
         ], 200);
     }
 
@@ -74,7 +77,7 @@ class DiaDiemController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Thêm địa điểm thành công',
-            'data' => $diaDiem
+            'data' => $diaDiem,
         ], 201);
     }
 
@@ -88,7 +91,7 @@ class DiaDiemController extends Controller
         if (!$diaDiem) {
             return response()->json([
                 'success' => false,
-                'message' => 'Địa điểm không tồn tại'
+                'message' => 'Địa điểm không tồn tại',
             ], 404);
         }
 
@@ -97,7 +100,7 @@ class DiaDiemController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật địa điểm thành công',
-            'data' => $diaDiem
+            'data' => $diaDiem,
         ], 200);
     }
 
@@ -111,7 +114,7 @@ class DiaDiemController extends Controller
         if (!$diaDiem) {
             return response()->json([
                 'success' => false,
-                'message' => 'Địa điểm không tồn tại'
+                'message' => 'Địa điểm không tồn tại',
             ], 404);
         }
 
@@ -119,7 +122,7 @@ class DiaDiemController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Xóa địa điểm thành công'
+            'message' => 'Xóa địa điểm thành công',
         ], 200);
     }
 
@@ -136,16 +139,19 @@ class DiaDiemController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Loại địa điểm không hợp lệ',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
-        $diaDiems = DiaDiem::where('loai', $loai)->with('tagDiaDiems.tag')->get();
+        $diaDiems = DiaDiem::approved()
+            ->where('loai', $loai)
+            ->with('tagDiaDiems.tag')
+            ->get();
 
         return response()->json([
             'success' => true,
             'message' => 'Lọc địa điểm theo loại thành công',
-            'data' => $diaDiems
+            'data' => $diaDiems,
         ], 200);
     }
 
@@ -154,21 +160,52 @@ class DiaDiemController extends Controller
      */
     public function filterByTag($maTag)
     {
-        $diaDiems = DiaDiem::whereHas('tagDiaDiems', function ($query) use ($maTag) {
-            $query->where('ma_tag', $maTag);
-        })->with('tagDiaDiems.tag')->get();
+        $diaDiems = DiaDiem::approved()
+            ->whereHas('tagDiaDiems', function ($query) use ($maTag) {
+                $query->where('ma_tag', $maTag);
+            })
+            ->with('tagDiaDiems.tag')
+            ->get();
 
         if ($diaDiems->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Không tìm thấy địa điểm với tag này'
+                'message' => 'Không tìm thấy địa điểm với tag này',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Lọc địa điểm theo tag thành công',
-            'data' => $diaDiems
+            'data' => $diaDiems,
+        ], 200);
+    }
+
+    /**
+     * Lấy danh sách địa điểm tương tự (cùng loại, khác ID).
+     */
+    public function similar($maDiaDiem)
+    {
+        $diaDiem = DiaDiem::approved()->find($maDiaDiem);
+
+        if (!$diaDiem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Địa điểm không tồn tại',
+            ], 404);
+        }
+
+        $similarDiaDiems = DiaDiem::approved()
+            ->where('loai', $diaDiem->loai)
+            ->where('ma_dia_diem', '!=', $maDiaDiem)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lấy địa điểm tương tự thành công',
+            'data' => $similarDiaDiems,
         ], 200);
     }
 }

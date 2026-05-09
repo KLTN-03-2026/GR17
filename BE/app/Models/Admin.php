@@ -31,4 +31,21 @@ class Admin extends Authenticatable
         'so_dien_thoai',
         'IsAdmin',
     ];
+
+    public function chucVu()
+    {
+        return $this->belongsTo(ChucVu::class, 'ma_chuc_vu');
+    }
+
+    public function hasPermission($chucNangCode)
+    {
+        // Nếu là Super Admin (giả sử ma_chuc_vu = 'CV001' là Admin tổng)
+        if ($this->ma_chuc_vu === 'CV001') {
+            return true;
+        }
+
+        return PhanQuyenAdmin::where('ma_chuc_vu', $this->ma_chuc_vu)
+            ->where('ma_chuc_nang', $chucNangCode)
+            ->exists();
+    }
 }

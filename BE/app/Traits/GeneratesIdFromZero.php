@@ -18,7 +18,7 @@ trait GeneratesIdFromZero
 
             if (empty($model->{$primaryKey})) {
                 $table = $model->getTable();
-
+                
                 // Lấy giá trị lớn nhất của khóa chính dưới dạng số để tăng dần
                 $maxId = DB::table($table)->max(DB::raw('CAST(' . $primaryKey . ' AS UNSIGNED)'));
 

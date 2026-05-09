@@ -27,6 +27,30 @@
       </div>
     </div>
 
+    <section v-if="successSpotlight.visible" class="payment-success-spotlight">
+      <div class="payment-success-spotlight__content">
+        <span class="payment-success-spotlight__badge">{{ successSpotlight.badge }}</span>
+        <h3>{{ successSpotlight.title }}</h3>
+        <p>{{ successSpotlight.summary }}</p>
+
+        <div class="payment-success-spotlight__meta">
+          <div>
+            <span>Số tiền</span>
+            <strong>{{ formattedAmount }}</strong>
+          </div>
+          <div v-if="successSpotlight.timestampLabel">
+            <span>Thời gian ghi nhận</span>
+            <strong>{{ successSpotlight.timestampLabel }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="payment-success-spotlight__button" @click="$emit('view-invoice')">
+        <i class="fas fa-receipt"></i>
+        Xem chi tiết hóa đơn
+      </button>
+    </section>
+
     <div class="payment-meta-grid">
       <div class="payment-meta-card payment-meta-card--accent">
         <span class="payment-meta-card__label">Trạng thái</span>
@@ -121,7 +145,7 @@
           </button>
 
           <button
-            v-if="paymentInfo.payment_status === 'paid'"
+            v-if="paymentInfo.payment_status === 'paid' && !successSpotlight.visible"
             type="button"
             class="payment-view-button"
             @click="$emit('view-invoice')"
@@ -206,6 +230,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    successSpotlight: {
+      type: Object,
+      default: () => ({
+        visible: false,
+        badge: "",
+        title: "",
+        summary: "",
+        timestampLabel: "",
+      }),
+    },
   },
   emits: ["copy-transfer-content", "check-now", "cancel-payment", "view-invoice"],
   data() {
@@ -286,6 +320,97 @@ export default {
   display: grid;
   gap: 10px;
   justify-items: end;
+}
+
+.payment-success-spotlight {
+  margin-bottom: 24px;
+  padding: 22px 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(110, 231, 183, 0.24), transparent 34%),
+    linear-gradient(135deg, rgba(236, 253, 245, 0.98), rgba(220, 252, 231, 0.98));
+  box-shadow:
+    0 24px 48px rgba(16, 185, 129, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+}
+
+.payment-success-spotlight__content {
+  display: grid;
+  gap: 10px;
+}
+
+.payment-success-spotlight__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(4, 120, 87, 0.12);
+  color: #047857;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.payment-success-spotlight h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  color: #065f46;
+  letter-spacing: -0.03em;
+}
+
+.payment-success-spotlight p {
+  margin: 0;
+  color: #166534;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.payment-success-spotlight__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.payment-success-spotlight__meta div {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(167, 243, 208, 0.9);
+  display: grid;
+  gap: 6px;
+}
+
+.payment-success-spotlight__meta span {
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #047857;
+}
+
+.payment-success-spotlight__meta strong {
+  color: #064e3b;
+  font-size: 1.02rem;
+}
+
+.payment-success-spotlight__button {
+  padding: 15px 18px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+  color: #fff;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 18px 28px rgba(16, 185, 129, 0.22);
 }
 
 .payment-status-pill,
@@ -651,6 +776,11 @@ export default {
     justify-items: start;
   }
 
+  .payment-success-spotlight {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
   .payment-meta-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -662,6 +792,10 @@ export default {
   }
 
   .payment-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-success-spotlight__meta {
     grid-template-columns: 1fr;
   }
 

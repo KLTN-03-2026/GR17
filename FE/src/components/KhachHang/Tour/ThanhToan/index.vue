@@ -242,7 +242,7 @@
 </template>
 
 <script>
-import { goiApi } from "../../../../services/httpClient.js";
+import { API_ORIGIN, goiApi } from "../../../../services/httpClient.js";
 import { getStoredCustomerId, getStoredUser } from "../../../Shared/customerSession";
 import CustomerSidebar from "../../CustomerSidebar.vue";
 import PaymentHeroPanel from "./PaymentHeroPanel.vue";
@@ -405,7 +405,7 @@ export default {
     resolveImageUrl(rawUrl) {
       if (!rawUrl) return HINH_MAC_DINH;
       if (rawUrl.startsWith("http") || rawUrl.startsWith("data:")) return rawUrl;
-      return `http://127.0.0.1:8000/${rawUrl.replace(/^\/+/, "")}`;
+      return `${API_ORIGIN}/${rawUrl.replace(/^\/+/, "")}`;
     },
     normalizeTour(item = {}) {
       return {
@@ -607,7 +607,7 @@ export default {
       if (!this.paymentInfo?.ma_hoa_don || this.paymentInfo?.payment_status !== "pending") return;
 
       const confirmed = await showConfirm({
-        title: "Xác nhận hủy",
+        title: "Hủy thanh toán QR",
         message: "Bạn có chắc muốn hủy thanh toán hóa đơn này không?",
         tone: "warning"
       });
